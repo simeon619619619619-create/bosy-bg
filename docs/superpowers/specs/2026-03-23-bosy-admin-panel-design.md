@@ -30,7 +30,8 @@ bosy-bg/
 │   │   ├── blog/              # Блог
 │   │   ├── about/             # За нас
 │   │   ├── bosy-club/         # Клуб/лоялност
-│   │   └── contacts/          # Контакти
+│   │   ├── contacts/          # Контакти
+│   │   └── login/             # Login страница
 │   ├── (admin)/               # Админ панел (auth protected)
 │   │   ├── layout.tsx         # Sidebar + dark theme layout
 │   │   ├── dashboard/         # Overview dashboard
@@ -82,7 +83,7 @@ bosy-bg/
 ### users
 | Column | Type | Notes |
 |--------|------|-------|
-| id | UUID PK | gen_random_uuid() |
+| id | UUID PK | REFERENCES auth.users(id) |
 | email | TEXT UNIQUE | NOT NULL |
 | name | TEXT | NOT NULL |
 | role | TEXT | 'admin' / 'manager' / 'staff' |
@@ -146,6 +147,8 @@ bosy-bg/
 | date | DATE | |
 | synced_at | TIMESTAMPTZ | Кога е синхронизирано |
 
+**Unique constraint:** `UNIQUE(campaign_id, date)` — cron прави upsert, не insert.
+
 ### klaviyo_cache
 | Column | Type | Notes |
 |--------|------|-------|
@@ -153,6 +156,8 @@ bosy-bg/
 | metric_type | TEXT | campaigns/flows/profiles/stats |
 | data | JSONB | Кеширани данни |
 | synced_at | TIMESTAMPTZ | |
+
+**Unique constraint:** `UNIQUE(metric_type)` — един ред per тип метрика.
 
 ### content_blocks
 | Column | Type | Notes |
@@ -190,8 +195,8 @@ bosy-bg/
 ```json
 {
   "crons": [
-    { "path": "/api/cron/sync-meta", "schedule": "*/5 * * * *" },
-    { "path": "/api/cron/sync-klaviyo", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/sync-meta", "schedule": "*/15 * * * *" },
+    { "path": "/api/cron/sync-klaviyo", "schedule": "*/15 * * * *" },
     { "path": "/api/cron/sync-speedy", "schedule": "*/5 * * * *" }
   ]
 }
@@ -216,10 +221,76 @@ bosy-bg/
 ## Auth Flow
 
 1. Supabase Auth с email/password (magic link опционално)
-2. `proxy.ts` проверява сесията на всеки `(admin)/*` route
-3. Ако няма сесия → redirect към `/login`
-4. Роля се чете от `users` таблицата, not от Supabase auth metadata
+2. `users.id` = `auth.users.id` (директна връзка, не отделен UUID)
+3. Login страница: `app/(public)/login/page.tsx`
+4. `proxy.ts` логика:
+   - Използва `@supabase/ssr` `createServerClient` за четене на сесията от cookies
+   - Ако няма сесия → redirect към `/login`
+   - Ако има сесия → query `users` таблицата за role
+   - Route-level enforcement:
+     - `/admin/settings/*` → само `admin`
+     - `/admin/*` → `admin`, `manager`, `staff`
+     - `staff` вижда само orders, customers, shipments (sidebar скрива останалото)
 5. RLS политики enforce permissions на DB ниво
+
+## RLS Policies (SQL)
+
+```sql
+-- Включване на RLS
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shipments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE meta_ads_cache ENABLE ROW LEVEL SECURITY;
+ALTER TABLE klaviyo_cache ENABLE ROW LEVEL SECURITY;
+ALTER TABLE content_blocks ENABLE ROW LEVEL SECURITY;
+
+-- Helper функция за роля
+CREATE OR REPLACE FUNCTION get_user_role()
+RETURNS TEXT AS $$
+  SELECT role FROM users WHERE id = auth.uid();
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- Admin: пълен достъп навсякъде
+CREATE POLICY admin_all ON users FOR ALL USING (get_user_role() = 'admin');
+CREATE POLICY admin_all ON products FOR ALL USING (get_user_role() = 'admin');
+CREATE POLICY admin_all ON orders FOR ALL USING (get_user_role() = 'admin');
+CREATE POLICY admin_all ON customers FOR ALL USING (get_user_role() = 'admin');
+CREATE POLICY admin_all ON shipments FOR ALL USING (get_user_role() = 'admin');
+CREATE POLICY admin_all ON meta_ads_cache FOR ALL USING (get_user_role() = 'admin');
+CREATE POLICY admin_all ON klaviyo_cache FOR ALL USING (get_user_role() = 'admin');
+CREATE POLICY admin_all ON content_blocks FOR ALL USING (get_user_role() = 'admin');
+
+-- Manager: всичко БЕЗ users
+CREATE POLICY manager_all ON products FOR ALL USING (get_user_role() = 'manager');
+CREATE POLICY manager_all ON orders FOR ALL USING (get_user_role() = 'manager');
+CREATE POLICY manager_all ON customers FOR ALL USING (get_user_role() = 'manager');
+CREATE POLICY manager_all ON shipments FOR ALL USING (get_user_role() = 'manager');
+CREATE POLICY manager_all ON meta_ads_cache FOR ALL USING (get_user_role() = 'manager');
+CREATE POLICY manager_all ON klaviyo_cache FOR ALL USING (get_user_role() = 'manager');
+CREATE POLICY manager_all ON content_blocks FOR ALL USING (get_user_role() = 'manager');
+
+-- Staff: само четене на orders, customers, shipments
+CREATE POLICY staff_read ON orders FOR SELECT USING (get_user_role() = 'staff');
+CREATE POLICY staff_read ON customers FOR SELECT USING (get_user_role() = 'staff');
+CREATE POLICY staff_read ON shipments FOR SELECT USING (get_user_role() = 'staff');
+```
+
+## DB Triggers
+
+```sql
+-- Auto-update updated_at
+CREATE OR REPLACE FUNCTION update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN NEW.updated_at = now(); RETURN NEW; END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON products FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON content_blocks FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON shipments FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+```
 
 ## UI Design
 
