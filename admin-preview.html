@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOSY Admin Panel — Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0F0B14;
+      --surface: #1A1520;
+      --surface-hover: #231D2A;
+      --border: #2A2433;
+      --orange: #FF7820;
+      --orange-dim: rgba(255, 120, 32, 0.15);
+      --orange-glow: rgba(255, 120, 32, 0.3);
+      --text: #F5F0FA;
+      --text-secondary: #9B8FB0;
+      --green: #4ADE80;
+      --red: #F87171;
+      --yellow: #FBBF24;
+      --blue: #60A5FA;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 10;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--orange);
+      letter-spacing: 3px;
+      padding: 8px 12px 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .logo span { color: var(--text-secondary); font-size: 12px; font-weight: 400; letter-spacing: 0; display: block; margin-top: 4px; }
+    .nav-section { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1.5px; padding: 16px 12px 8px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px;
+      color: var(--text-secondary); cursor: pointer;
+      transition: all 0.2s; font-size: 14px; font-weight: 500;
+    }
+    .nav-item:hover { background: var(--surface-hover); color: var(--text); }
+    .nav-item.active { background: var(--orange-dim); color: var(--orange); }
+    .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto; background: var(--orange); color: #000;
+      font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px;
+    }
+    .sidebar-footer {
+      margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--orange-dim); display: flex; align-items: center; justify-content: center;
+      color: var(--orange); font-weight: 600; font-size: 14px;
+    }
+    .user-info { font-size: 13px; }
+    .user-info .role { color: var(--text-secondary); font-size: 11px; }
+
+    /* Main */
+    .main { margin-left: 260px; flex: 1; padding: 32px; }
+    .page-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 32px;
+    }
+    .page-title { font-size: 28px; font-weight: 700; }
+    .page-subtitle { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
+    .header-actions { display: flex; gap: 12px; }
+    .btn {
+      padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
+      cursor: pointer; border: none; transition: all 0.2s; font-family: inherit;
+    }
+    .btn-primary { background: var(--orange); color: #000; }
+    .btn-primary:hover { background: #FF8F40; box-shadow: 0 0 20px var(--orange-glow); }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--orange); color: var(--orange); }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 24px; transition: all 0.2s;
+    }
+    .stat-card:hover { border-color: var(--orange); box-shadow: 0 0 30px rgba(255,120,32,0.08); }
+    .stat-label { color: var(--text-secondary); font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .stat-change { font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+    .stat-change.up { color: var(--green); }
+    .stat-change.down { color: var(--red); }
+
+    /* Charts area */
+    .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 32px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 24px;
+    }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px;
+    }
+    .card-title { font-size: 16px; font-weight: 600; }
+    .card-action { color: var(--orange); font-size: 13px; cursor: pointer; }
+
+    /* Chart placeholder */
+    .chart-area {
+      height: 220px; display: flex; align-items: flex-end; gap: 8px; padding-top: 20px;
+    }
+    .chart-bar {
+      flex: 1; border-radius: 6px 6px 0 0; transition: all 0.3s;
+      position: relative; min-width: 20px;
+    }
+    .chart-bar:hover { opacity: 0.8; }
+    .chart-bar .tooltip {
+      display: none; position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+      background: var(--surface-hover); padding: 4px 8px; border-radius: 4px;
+      font-size: 11px; white-space: nowrap; font-family: 'JetBrains Mono', monospace;
+    }
+    .chart-bar:hover .tooltip { display: block; }
+    .chart-labels {
+      display: flex; gap: 8px; margin-top: 12px;
+    }
+    .chart-labels span {
+      flex: 1; text-align: center; font-size: 11px; color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Orders table */
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600;
+      color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--border);
+    }
+    tr:hover td { background: var(--surface-hover); }
+    .order-id { font-family: 'JetBrains Mono', monospace; color: var(--orange); font-size: 13px; }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    }
+    .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .status-pending { background: rgba(251,191,36,0.12); color: var(--yellow); }
+    .status-pending .dot { background: var(--yellow); }
+    .status-confirmed { background: rgba(96,165,250,0.12); color: var(--blue); }
+    .status-confirmed .dot { background: var(--blue); }
+    .status-shipped { background: rgba(255,120,32,0.12); color: var(--orange); }
+    .status-shipped .dot { background: var(--orange); }
+    .status-delivered { background: rgba(74,222,128,0.12); color: var(--green); }
+    .status-delivered .dot { background: var(--green); }
+
+    /* Top Products */
+    .product-list { display: flex; flex-direction: column; gap: 12px; }
+    .product-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px;
+      border-radius: 8px; transition: background 0.2s;
+    }
+    .product-item:hover { background: var(--surface-hover); }
+    .product-img {
+      width: 44px; height: 44px; border-radius: 8px;
+      background: var(--orange-dim); display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .product-name { font-size: 14px; font-weight: 500; }
+    .product-meta { font-size: 12px; color: var(--text-secondary); }
+    .product-sales {
+      margin-left: auto; font-family: 'JetBrains Mono', monospace;
+      font-size: 14px; font-weight: 600; color: var(--green);
+    }
+
+    /* Marketing mini cards */
+    .marketing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .mini-card {
+      background: var(--surface-hover); border-radius: 8px; padding: 16px;
+    }
+    .mini-card .label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .mini-card .value { font-size: 20px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .mini-card .source { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* Tabs */
+    .tabs {
+      display: flex; gap: 4px; background: var(--surface); border-radius: 8px; padding: 4px;
+      width: fit-content;
+    }
+    .tab {
+      padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
+      color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
+    }
+    .tab.active { background: var(--orange-dim); color: var(--orange); }
+    .tab:hover:not(.active) { color: var(--text); }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 16px; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      BOSY
+      <span>Admin Panel</span>
+    </div>
+
+    <div class="nav-section">Главно</div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+
+    <div class="nav-section">Управление</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      Продукти
+      <span class="nav-badge">156</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Поръчки
+      <span class="nav-badge">12</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Клиенти
+      <span class="nav-badge">843</span>
+    </div>
+
+    <div class="nav-section">Маркетинг</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+      Meta Ads
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Klaviyo
+    </div>
+
+    <div class="nav-section">Съдържание</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Банери & Блог
+    </div>
+
+    <div class="nav-section">Доставки</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      Speedy
+      <span class="nav-badge">3</span>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="avatar">БД</div>
+      <div class="user-info">
+        <div>Божо Данчев</div>
+        <div class="role">Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Добре дошъл, Божо. Ето какво се случва днес.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline">Експорт</button>
+        <button class="btn btn-primary">+ Нов продукт</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Приходи днес</div>
+        <div class="stat-value" style="color: var(--green);">2,847 лв</div>
+        <div class="stat-change up">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+          +18.2% спрямо вчера
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Нови поръчки</div>
+        <div class="stat-value" style="color: var(--orange);">12</div>
+        <div class="stat-change up">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+          +3 спрямо вчера
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Активни клиенти</div>
+        <div class="stat-value">843</div>
+        <div class="stat-change up">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+          +24 тази седмица
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Meta Ads ROAS</div>
+        <div class="stat-value" style="color: var(--blue);">3.2x</div>
+        <div class="stat-change down">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+          -0.4 спрямо миналата седмица
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts + Top Products -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Приходи (последни 14 дни)</div>
+          <div class="tabs">
+            <div class="tab active">14 дни</div>
+            <div class="tab">30 дни</div>
+            <div class="tab">90 дни</div>
+          </div>
+        </div>
+        <div class="chart-area">
+          <div class="chart-bar" style="height: 45%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">1,245 лв</span></div>
+          <div class="chart-bar" style="height: 62%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">1,720 лв</span></div>
+          <div class="chart-bar" style="height: 38%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">1,050 лв</span></div>
+          <div class="chart-bar" style="height: 75%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">2,080 лв</span></div>
+          <div class="chart-bar" style="height: 55%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">1,520 лв</span></div>
+          <div class="chart-bar" style="height: 82%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">2,270 лв</span></div>
+          <div class="chart-bar" style="height: 68%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">1,880 лв</span></div>
+          <div class="chart-bar" style="height: 90%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">2,490 лв</span></div>
+          <div class="chart-bar" style="height: 58%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">1,600 лв</span></div>
+          <div class="chart-bar" style="height: 72%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">1,990 лв</span></div>
+          <div class="chart-bar" style="height: 48%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">1,330 лв</span></div>
+          <div class="chart-bar" style="height: 85%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">2,350 лв</span></div>
+          <div class="chart-bar" style="height: 65%; background: linear-gradient(to top, var(--orange), var(--orange-glow));"><span class="tooltip">1,800 лв</span></div>
+          <div class="chart-bar" style="height: 95%; background: linear-gradient(to top, var(--orange), #FF9F50);"><span class="tooltip">2,847 лв</span></div>
+        </div>
+        <div class="chart-labels">
+          <span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Топ продукти</div>
+          <div class="card-action">Виж всички &rarr;</div>
+        </div>
+        <div class="product-list">
+          <div class="product-item">
+            <div class="product-img">🍫</div>
+            <div>
+              <div class="product-name">Протеинов бар Шоколад</div>
+              <div class="product-meta">68 продажби</div>
+            </div>
+            <div class="product-sales">2,380 лв</div>
+          </div>
+          <div class="product-item">
+            <div class="product-img">🎒</div>
+            <div>
+              <div class="product-name">BOSY Раница Оранж</div>
+              <div class="product-meta">34 продажби</div>
+            </div>
+            <div class="product-sales">3,060 лв</div>
+          </div>
+          <div class="product-item">
+            <div class="product-img">🥜</div>
+            <div>
+              <div class="product-name">Протеинов бар Фъстъци</div>
+              <div class="product-meta">52 продажби</div>
+            </div>
+            <div class="product-sales">1,820 лв</div>
+          </div>
+          <div class="product-item">
+            <div class="product-img">🫐</div>
+            <div>
+              <div class="product-name">Протеинов бар Боровинка</div>
+              <div class="product-meta">41 продажби</div>
+            </div>
+            <div class="product-sales">1,435 лв</div>
+          </div>
+          <div class="product-item">
+            <div class="product-img">🧴</div>
+            <div>
+              <div class="product-name">BOSY Шейкър 700мл</div>
+              <div class="product-meta">29 продажби</div>
+            </div>
+            <div class="product-sales">870 лв</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marketing Mini -->
+    <div class="card" style="margin-bottom: 32px;">
+      <div class="card-header">
+        <div class="card-title">Маркетинг Overview</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green);"></div>
+          <span style="font-size:12px;color:var(--text-secondary);">Синхронизирано преди 2 мин</span>
+        </div>
+      </div>
+      <div class="marketing-grid">
+        <div class="mini-card">
+          <div class="label">Meta Ads Харчове</div>
+          <div class="value" style="color: var(--orange);">1,240 лв</div>
+          <div class="source">Последни 7 дни</div>
+        </div>
+        <div class="mini-card">
+          <div class="label">Meta Impressions</div>
+          <div class="value">124.5K</div>
+          <div class="source">Последни 7 дни</div>
+        </div>
+        <div class="mini-card">
+          <div class="label">Klaviyo Open Rate</div>
+          <div class="value" style="color: var(--green);">42.8%</div>
+          <div class="source">Последна кампания</div>
+        </div>
+        <div class="mini-card">
+          <div class="label">Email абонати</div>
+          <div class="value">2,156</div>
+          <div class="source">Klaviyo общо</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Последни поръчки</div>
+        <div class="card-action">Виж всички &rarr;</div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Поръчка</th>
+              <th>Клиент</th>
+              <th>Продукти</th>
+              <th>Сума</th>
+              <th>Статус</th>
+              <th>Speedy</th>
+              <th>Дата</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="order-id">#1047</span></td>
+              <td>Мария Иванова</td>
+              <td>3 продукта</td>
+              <td style="font-family:'JetBrains Mono',monospace;">189.90 лв</td>
+              <td><span class="status-badge status-pending"><span class="dot"></span>Чакаща</span></td>
+              <td style="color:var(--text-secondary);">-</td>
+              <td style="color:var(--text-secondary);">23 мар, 14:32</td>
+            </tr>
+            <tr>
+              <td><span class="order-id">#1046</span></td>
+              <td>Георги Петров</td>
+              <td>1 продукт</td>
+              <td style="font-family:'JetBrains Mono',monospace;">35.00 лв</td>
+              <td><span class="status-badge status-confirmed"><span class="dot"></span>Потвърдена</span></td>
+              <td style="color:var(--text-secondary);">-</td>
+              <td style="color:var(--text-secondary);">23 мар, 12:15</td>
+            </tr>
+            <tr>
+              <td><span class="order-id">#1045</span></td>
+              <td>Елена Димитрова</td>
+              <td>5 продукта</td>
+              <td style="font-family:'JetBrains Mono',monospace;">312.50 лв</td>
+              <td><span class="status-badge status-shipped"><span class="dot"></span>Изпратена</span></td>
+              <td style="font-family:'JetBrains Mono',monospace;color:var(--orange);">SPD-84729</td>
+              <td style="color:var(--text-secondary);">22 мар, 09:48</td>
+            </tr>
+            <tr>
+              <td><span class="order-id">#1044</span></td>
+              <td>Стефан Колев</td>
+              <td>2 продукта</td>
+              <td style="font-family:'JetBrains Mono',monospace;">67.80 лв</td>
+              <td><span class="status-badge status-delivered"><span class="dot"></span>Доставена</span></td>
+              <td style="font-family:'JetBrains Mono',monospace;color:var(--green);">SPD-84615</td>
+              <td style="color:var(--text-secondary);">21 мар, 16:20</td>
+            </tr>
+            <tr>
+              <td><span class="order-id">#1043</span></td>
+              <td>Ана Тодорова</td>
+              <td>4 продукта</td>
+              <td style="font-family:'JetBrains Mono',monospace;">245.00 лв</td>
+              <td><span class="status-badge status-delivered"><span class="dot"></span>Доставена</span></td>
+              <td style="font-family:'JetBrains Mono',monospace;color:var(--green);">SPD-84501</td>
+              <td style="color:var(--text-secondary);">20 мар, 11:05</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>
