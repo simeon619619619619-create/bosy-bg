@@ -101,36 +101,28 @@ export default async function OrdersPage({
                 const customerName =
                   (order.customers as { name: string } | null)?.name ?? '—'
 
+                const orderUrl = `/orders/${order.id}`
                 return (
                   <TableRow key={order.id}>
                     <TableCell>
-                      <Link
-                        href={`/orders/${order.id}`}
-                        className="font-mono text-primary hover:underline"
-                      >
+                      <Link href={orderUrl} className="font-mono text-primary hover:underline">
                         {order.order_number ?? order.id.slice(0, 8)}
                       </Link>
                     </TableCell>
-                    <TableCell>{customerName}</TableCell>
-                    <TableCell>{items.length}</TableCell>
-                    <TableCell className="font-mono">
-                      {Number(order.total ?? 0).toFixed(2)} лв.
-                    </TableCell>
+                    <TableCell><Link href={orderUrl} className="block">{customerName}</Link></TableCell>
+                    <TableCell><Link href={orderUrl} className="block">{items.length}</Link></TableCell>
+                    <TableCell><Link href={orderUrl} className="block font-mono">{Number(order.total ?? 0).toFixed(2)} лв.</Link></TableCell>
+                    <TableCell><Link href={orderUrl}><OrderStatusBadge status={order.status} /></Link></TableCell>
                     <TableCell>
-                      <OrderStatusBadge status={order.status} />
+                      <Link href={orderUrl} className="block">
+                        {order.speedy_tracking_number ? (
+                          <span className="font-mono text-primary">{order.speedy_tracking_number}</span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </Link>
                     </TableCell>
-                    <TableCell>
-                      {order.speedy_tracking_number ? (
-                        <span className="font-mono text-primary">
-                          {order.speedy_tracking_number}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {new Date(order.created_at).toLocaleDateString('bg-BG')}
-                    </TableCell>
+                    <TableCell><Link href={orderUrl} className="block text-muted-foreground">{new Date(order.created_at).toLocaleDateString('bg-BG')}</Link></TableCell>
                   </TableRow>
                 )
               })}
