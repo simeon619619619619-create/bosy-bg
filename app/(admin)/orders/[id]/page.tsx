@@ -38,12 +38,12 @@ export default async function OrderDetailPage({
     name: string
     email: string | null
     phone: string | null
-    address: string | null
+    address: Record<string, string> | string | null
   } | null
 
   const items: OrderItem[] = Array.isArray(order.items) ? order.items : []
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = Number(order.shipping ?? 0)
+  const shipping = Number(order.shipping_cost ?? 0)
   const total = Number(order.total ?? subtotal + shipping)
 
   return (
@@ -167,7 +167,7 @@ export default async function OrderDetailPage({
               </div>
               <div>
                 <span className="text-muted-foreground">Адрес: </span>
-                <span>{customer?.address ?? '—'}</span>
+                <span>{customer?.address ? (typeof customer.address === 'string' ? customer.address : Object.values(customer.address).join(', ')) : '—'}</span>
               </div>
             </div>
           </div>
