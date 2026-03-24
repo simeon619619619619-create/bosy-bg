@@ -95,6 +95,53 @@ export async function deleteProduct(id: string) {
   redirect('/products')
 }
 
+export async function exportProductsCSV() {
+  const supabase = await createServerSupabaseClient()
+
+  const { data: products, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  if (!products || products.length === 0) {
+    return 'name,slug,description,price,compare_price,category,stock_quantity,is_active,image_url\n'
+  }
+
+  const headers = [
+    'name',
+    'slug',
+    'description',
+    'price',
+    'compare_price',
+    'category',
+    'stock_quantity',
+    'is_active',
+    'image_url',
+  ]
+
+  const csvRows = [headers.join(',')]
+
+  for (const product of products) {
+    const row = headers.map((header) => {
+      const value = product[header]
+      if (value === null || value === undefined) return ''
+      const str = String(value)
+      // Escape CSV values that contain commas, quotes, or newlines
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`
+      }
+      return str
+    })
+    csvRows.push(row.join(','))
+  }
+
+  return csvRows.join('\n')
+}
+
 export async function toggleProductActive(id: string, isActive: boolean) {
   const supabase = await createServerSupabaseClient()
 

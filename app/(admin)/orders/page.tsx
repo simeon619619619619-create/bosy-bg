@@ -1,15 +1,7 @@
 import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { OrderStatusBadge } from '@/components/admin/orders/order-status-badge'
+import { OrdersListClient } from '@/components/admin/orders/orders-bulk-actions'
 import { ShoppingBag } from 'lucide-react'
 
 const filterTabs = [
@@ -41,6 +33,19 @@ export default async function OrdersPage({
 
   const { data: orders } = await query
 
+  // Map orders for the client component
+  const mappedOrders = (orders ?? []).map((order) => ({
+    id: order.id,
+    order_number: order.order_number,
+    customer_name:
+      (order.customers as { name: string } | null)?.name ?? '—',
+    items_count: Array.isArray(order.items) ? order.items.length : 0,
+    total: Number(order.total ?? 0),
+    status: order.status,
+    speedy_tracking_number: order.speedy_tracking_number,
+    created_at: order.created_at,
+  }))
+
   return (
     <div>
       {/* Header */}
@@ -68,7 +73,7 @@ export default async function OrdersPage({
         ))}
       </div>
 
-      {/* Table */}
+      {/* Table or empty state */}
       {!orders || orders.length === 0 ? (
         <div className="mt-12 flex flex-col items-center justify-center text-center">
           <div className="flex size-16 items-center justify-center rounded-full bg-muted">
@@ -82,53 +87,7 @@ export default async function OrdersPage({
           </p>
         </div>
       ) : (
-        <div className="mt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Поръчка #</TableHead>
-                <TableHead>Клиент</TableHead>
-                <TableHead>Артикули</TableHead>
-                <TableHead>Общо</TableHead>
-                <TableHead>Статус</TableHead>
-                <TableHead>Speedy</TableHead>
-                <TableHead>Дата</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map((order) => {
-                const items = Array.isArray(order.items) ? order.items : []
-                const customerName =
-                  (order.customers as { name: string } | null)?.name ?? '—'
-
-                const orderUrl = `/orders/${order.id}`
-                return (
-                  <TableRow key={order.id}>
-                    <TableCell>
-                      <Link href={orderUrl} className="font-mono text-primary hover:underline">
-                        {order.order_number ?? order.id.slice(0, 8)}
-                      </Link>
-                    </TableCell>
-                    <TableCell><Link href={orderUrl} className="block">{customerName}</Link></TableCell>
-                    <TableCell><Link href={orderUrl} className="block">{items.length}</Link></TableCell>
-                    <TableCell><Link href={orderUrl} className="block font-mono">{Number(order.total ?? 0).toFixed(2)} лв.</Link></TableCell>
-                    <TableCell><Link href={orderUrl}><OrderStatusBadge status={order.status} /></Link></TableCell>
-                    <TableCell>
-                      <Link href={orderUrl} className="block">
-                        {order.speedy_tracking_number ? (
-                          <span className="font-mono text-primary">{order.speedy_tracking_number}</span>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </Link>
-                    </TableCell>
-                    <TableCell><Link href={orderUrl} className="block text-muted-foreground">{new Date(order.created_at).toLocaleDateString('bg-BG')}</Link></TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </div>
+        <OrdersListClient orders={mappedOrders} />
       )}
     </div>
   )

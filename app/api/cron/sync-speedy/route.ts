@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getSpeedyClient } from '@/lib/speedy/client'
+import { sendDeliveryConfirmation } from '@/lib/resend/client'
 
 export async function GET(request: Request) {
   // Verify cron secret
@@ -85,8 +86,14 @@ export async function GET(request: Request) {
           })
           .eq('id', shipment.id)
 
-        // If delivered, update order too
+        // If delivered, update order and send notification
         if (isDelivered && newStatus !== shipment.status) {
+          const { data: orderData } = await supabase
+            .from('orders')
+            .select('order_number, customers(email)')
+            .eq('id', shipment.order_id)
+            .single()
+
           await supabase
             .from('orders')
             .update({
@@ -94,6 +101,16 @@ export async function GET(request: Request) {
               updated_at: new Date().toISOString(),
             })
             .eq('id', shipment.order_id)
+
+          // Send delivery confirmation email
+          const customerEmail = (orderData?.customers as unknown as { email: string | null } | null)?.email
+          if (customerEmail && orderData?.order_number) {
+            try {
+              await sendDeliveryConfirmation(customerEmail, orderData.order_number)
+            } catch (e) {
+              console.error('Failed to send delivery confirmation:', e)
+            }
+          }
         }
 
         updatedCount++

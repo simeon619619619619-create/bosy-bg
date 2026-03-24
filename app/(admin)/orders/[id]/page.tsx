@@ -8,6 +8,8 @@ import {
   CancelOrderButton,
   ShipWithSpeedyButton,
 } from '@/components/admin/orders/order-actions'
+import { OrderNotes } from '@/components/admin/orders/order-notes'
+import { OrderTimeline } from '@/components/admin/orders/order-timeline'
 import { ArrowLeft } from 'lucide-react'
 
 interface OrderItem {
@@ -73,7 +75,7 @@ export default async function OrderDetailPage({
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-3">
-        {/* Left column — items + totals */}
+        {/* Left column — items + totals + timeline */}
         <div className="lg:col-span-2 space-y-6">
           {/* Items */}
           <div className="rounded-lg border border-border bg-card p-6">
@@ -145,9 +147,17 @@ export default async function OrderDetailPage({
                 </div>
               </div>
             )}
+
+          {/* Timeline */}
+          <OrderTimeline
+            status={order.status}
+            createdAt={order.created_at}
+            updatedAt={order.updated_at ?? null}
+            speedyTrackingNumber={order.speedy_tracking_number ?? null}
+          />
         </div>
 
-        {/* Right column — customer + actions */}
+        {/* Right column — customer + actions + notes */}
         <div className="space-y-6">
           {/* Customer info */}
           <div className="rounded-lg border border-border bg-card p-6">
@@ -206,6 +216,9 @@ export default async function OrderDetailPage({
               )}
             </div>
           </div>
+
+          {/* Notes */}
+          <OrderNotes orderId={order.id} initialNotes={order.notes ?? ''} />
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getSpeedyClient } from '@/lib/speedy/client'
+import { sendShippingNotification } from '@/lib/resend/client'
 
 export async function POST(request: Request) {
   try {
@@ -110,6 +111,19 @@ export async function POST(request: Request) {
         updated_at: new Date().toISOString(),
       })
       .eq('id', orderId)
+
+    // Send shipping notification email
+    if (customer?.email) {
+      try {
+        await sendShippingNotification(
+          customer.email,
+          order.order_number ?? 0,
+          String(trackingNumber)
+        )
+      } catch (e) {
+        console.error('Failed to send shipping notification:', e)
+      }
+    }
 
     return NextResponse.json({ trackingNumber, parcelId })
   } catch (error) {
