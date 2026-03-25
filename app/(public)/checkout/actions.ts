@@ -91,9 +91,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     customerId = newCustomer.id
   }
 
-  // 2. Create order
-  const orderNumber = generateOrderNumber()
-
+  // 2. Create order (order_number is SERIAL auto-increment)
   const orderItems = input.items.map((item) => ({
     id: item.id,
     name: item.name,
@@ -104,7 +102,6 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
-      order_number: orderNumber,
       customer_id: customerId,
       items: orderItems,
       subtotal,
@@ -112,13 +109,8 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       total,
       status: 'pending',
       notes: input.notes || null,
-      shipping_address: {
-        city: input.city,
-        street: input.address,
-        zip: input.postalCode,
-      },
     })
-    .select('id')
+    .select('id, order_number')
     .single()
 
   if (orderError || !order) {
@@ -139,13 +131,14 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     .eq('id', customerId)
 
   // 4. Send email notifications (customer + admin)
+  const orderNum = String(order.order_number)
   await sendNewOrderNotification(
     input.email,
     input.name,
-    orderNumber,
+    orderNum,
     total,
     input.items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }))
   ).catch(() => {})
 
-  return { orderId: order.id, orderNumber }
+  return { orderId: order.id, orderNumber: orderNum }
 }
