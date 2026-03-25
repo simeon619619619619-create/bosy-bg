@@ -1613,25 +1613,35 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
       this.style.background = '';
     }, 1500);
 
-    // Update cart count in header if exists
-    const cartCount = document.querySelector('.cart-count');
-    if (cartCount) {
-      const total = cart.reduce((sum, i) => sum + i.quantity, 0);
-      cartCount.textContent = total;
-      cartCount.style.display = total > 0 ? 'flex' : 'none';
+    // Update cart count and price in header
+    const cartBadge = document.querySelector('.cart-badge');
+    const cartPrice = document.querySelector('.cart-price');
+    const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+    const totalPrice = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    if (cartBadge) {
+      cartBadge.textContent = totalItems;
+      cartBadge.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
+    if (cartPrice) {
+      cartPrice.textContent = totalPrice.toFixed(2) + ' лв.';
     }
   });
 });
 
-// Show cart count on page load
+// Show cart count and price on page load
 (function() {
   try {
     const cart = JSON.parse(localStorage.getItem('bosy-cart') || '[]');
-    const total = cart.reduce((sum, i) => sum + i.quantity, 0);
-    const cartCount = document.querySelector('.cart-count');
-    if (cartCount && total > 0) {
-      cartCount.textContent = total;
-      cartCount.style.display = 'flex';
+    const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+    const totalPrice = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    const cartBadge = document.querySelector('.cart-badge');
+    const cartPrice = document.querySelector('.cart-price');
+    if (cartBadge) {
+      cartBadge.textContent = totalItems;
+      if (totalItems > 0) cartBadge.style.display = 'flex';
+    }
+    if (cartPrice) {
+      cartPrice.textContent = totalPrice.toFixed(2) + ' лв.';
     }
   } catch(e) {}
 })();
