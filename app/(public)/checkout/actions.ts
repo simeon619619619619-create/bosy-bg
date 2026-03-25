@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { sendNewOrderNotification } from '@/lib/resend/client'
 
 interface OrderItem {
   id: string
@@ -136,6 +137,15 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       updated_at: new Date().toISOString(),
     })
     .eq('id', customerId)
+
+  // 4. Send email notifications (customer + admin)
+  await sendNewOrderNotification(
+    input.email,
+    input.name,
+    orderNumber,
+    total,
+    input.items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }))
+  ).catch(() => {})
 
   return { orderId: order.id, orderNumber }
 }

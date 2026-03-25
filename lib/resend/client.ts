@@ -9,6 +9,63 @@ export function getResendClient() {
   return resendClient
 }
 
+export async function sendNewOrderNotification(
+  customerEmail: string,
+  customerName: string,
+  orderNumber: string,
+  total: number,
+  items: Array<{ name: string; quantity: number; price: number }>
+) {
+  const resend = getResendClient()
+  if (!resend) return null
+
+  const itemsHtml = items
+    .map(i => `<tr><td style="padding:8px;border-bottom:1px solid #eee;">${i.name}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${i.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">${(i.price * i.quantity).toFixed(2)} лв.</td></tr>`)
+    .join('')
+
+  const emailHtml = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;">
+      <div style="background:#61a229;padding:24px;text-align:center;">
+        <h1 style="color:#fff;margin:0;font-size:28px;letter-spacing:3px;">BOSY</h1>
+      </div>
+      <div style="padding:32px;">
+        <h2 style="color:#333;margin:0 0 8px;">Благодарим за поръчката!</h2>
+        <p style="color:#666;">Здравейте, ${customerName}!</p>
+        <p style="color:#666;">Вашата поръчка <strong style="color:#61a229;">#${orderNumber}</strong> е получена и ще бъде обработена скоро.</p>
+        <table style="width:100%;border-collapse:collapse;margin:24px 0;">
+          <thead><tr style="background:#f5f5f5;">
+            <th style="padding:8px;text-align:left;">Продукт</th>
+            <th style="padding:8px;text-align:center;">Кол.</th>
+            <th style="padding:8px;text-align:right;">Сума</th>
+          </tr></thead>
+          <tbody>${itemsHtml}</tbody>
+        </table>
+        <p style="font-size:18px;font-weight:bold;text-align:right;color:#333;">Общо: ${total.toFixed(2)} лв.</p>
+        <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
+        <p style="color:#999;font-size:12px;">BOSY — Healthy Kitchen | bosy.bg</p>
+      </div>
+    </div>
+  `
+
+  // Send to customer
+  await resend.emails.send({
+    from: 'BOSY <onboarding@resend.dev>',
+    to: customerEmail,
+    subject: `Поръчка #${orderNumber} — Получена`,
+    html: emailHtml,
+  }).catch(() => {})
+
+  // Send to admin
+  await resend.emails.send({
+    from: 'BOSY <onboarding@resend.dev>',
+    to: 'marketing@bosy.bg',
+    subject: `Нова поръчка #${orderNumber} от ${customerName} — ${total.toFixed(2)} лв.`,
+    html: emailHtml.replace('Благодарим за поръчката!', `Нова поръчка от ${customerName}`).replace(`Здравейте, ${customerName}!`, `Клиент: ${customerName} (${customerEmail})`),
+  }).catch(() => {})
+
+  return true
+}
+
 export async function sendOrderConfirmation(to: string, orderNumber: number, total: number) {
   const resend = getResendClient()
   if (!resend) return null
