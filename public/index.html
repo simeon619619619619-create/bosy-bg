@@ -1554,5 +1554,88 @@ document.querySelectorAll('.products-section .product-card').forEach(card => {
 });
 </script>
 
+<script>
+// Add to cart functionality - syncs with Next.js cart (localStorage 'bosy-cart')
+document.querySelectorAll('.btn-add-cart').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+
+    const card = this.closest('.product-card');
+    if (!card) return;
+
+    const name = card.querySelector('h3').textContent.trim();
+    const img = card.querySelector('.product-img img');
+    const priceBgn = card.querySelector('.price-bgn');
+
+    // Parse BGN price
+    let price = 0;
+    if (priceBgn) {
+      price = parseFloat(priceBgn.textContent.replace(/[^\d.,]/g, '').replace(',', '.'));
+    }
+
+    const slug = name.toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[&+]/g, '-')
+      .replace(/[^a-z0-9-а-яА-Я]/g, '')
+      .replace(/-+/g, '-');
+
+    const item = {
+      id: slug,
+      name: name,
+      slug: slug,
+      price: price,
+      image: img ? img.src : null,
+      quantity: 1
+    };
+
+    // Get existing cart
+    let cart = [];
+    try {
+      cart = JSON.parse(localStorage.getItem('bosy-cart') || '[]');
+    } catch(e) { cart = []; }
+
+    // Check if already in cart
+    const existing = cart.findIndex(i => i.name === name);
+    if (existing >= 0) {
+      cart[existing].quantity += 1;
+    } else {
+      cart.push(item);
+    }
+
+    localStorage.setItem('bosy-cart', JSON.stringify(cart));
+
+    // Visual feedback
+    const origText = this.textContent;
+    this.textContent = 'Добавено ✓';
+    this.style.background = '#4e8a1f';
+    setTimeout(() => {
+      this.textContent = origText;
+      this.style.background = '';
+    }, 1500);
+
+    // Update cart count in header if exists
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount) {
+      const total = cart.reduce((sum, i) => sum + i.quantity, 0);
+      cartCount.textContent = total;
+      cartCount.style.display = total > 0 ? 'flex' : 'none';
+    }
+  });
+});
+
+// Show cart count on page load
+(function() {
+  try {
+    const cart = JSON.parse(localStorage.getItem('bosy-cart') || '[]');
+    const total = cart.reduce((sum, i) => sum + i.quantity, 0);
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount && total > 0) {
+      cartCount.textContent = total;
+      cartCount.style.display = 'flex';
+    }
+  } catch(e) {}
+})();
+</script>
+
 </body>
 </html>
