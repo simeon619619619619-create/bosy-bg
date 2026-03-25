@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import {
   Table,
   TableBody,
@@ -30,10 +30,9 @@ interface Order {
 
 export function OrdersListClient({ orders }: { orders: Order[] }) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [isPending, startTransition] = useTransition()
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') ?? '')
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Filter orders client-side by search query
   const filtered = searchQuery
@@ -70,16 +69,6 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
   function handleSearch(value: string) {
     setSearchQuery(value)
     setSelectedIds(new Set())
-    // Update URL search params
-    startTransition(() => {
-      const params = new URLSearchParams(searchParams.toString())
-      if (value) {
-        params.set('q', value)
-      } else {
-        params.delete('q')
-      }
-      router.push(`/orders?${params.toString()}`)
-    })
   }
 
   const selectedArr = Array.from(selectedIds)

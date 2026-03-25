@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { ProductCard } from '@/components/public/product-card'
 
@@ -30,12 +30,11 @@ export function ShopContent({
   currentSort,
 }: Props) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const [searchInput, setSearchInput] = useState(currentSearch ?? '')
 
   function updateParams(updates: Record<string, string | undefined>) {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
     for (const [key, value] of Object.entries(updates)) {
       if (value) {
         params.set(key, value)
