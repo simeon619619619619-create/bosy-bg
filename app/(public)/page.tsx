@@ -1,102 +1,63 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { FeaturedProducts } from '@/components/public/featured-products'
 
-const BENEFITS = [
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" strokeWidth="2">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M8 12l2-6h4l2 6" />
-        <line x1="7" y1="12" x2="17" y2="12" />
-        <path d="M9 16c1.5 1 4.5 1 6 0" />
-      </svg>
-    ),
-    label: 'Без добавена захар',
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" strokeWidth="2">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
-        <path d="M15 9l-6 6M9 9l6 6" />
-      </svg>
-    ),
-    label: 'Без глутен',
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" strokeWidth="2">
-        <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z" />
-        <circle cx="12" cy="9" r="2.5" />
-      </svg>
-    ),
-    label: 'Растителна основа',
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" strokeWidth="2">
-        <path d="M6.5 6.5l11 11M6.5 17.5l11-11" />
-        <circle cx="12" cy="12" r="10" />
-      </svg>
-    ),
-    label: 'Висок протеин',
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" strokeWidth="2">
-        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z" />
-        <circle cx="12" cy="12" r="3" />
-      </svg>
-    ),
-    label: 'Omega-3',
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" strokeWidth="2">
-        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
-        <path d="M12 6v6l4 2" />
-      </svg>
-    ),
-    label: 'Антиоксиданти',
-  },
+const BADGES = [
+  { label: 'БЕЗ ДОБАВЕНА ЗАХАР', icon: 'https://bosy.bg/wp-content/uploads/2026/02/bosy-no-added-sugar-512.png' },
+  { label: 'БЕЗ ГЛУТЕН', icon: 'https://bosy.bg/wp-content/uploads/2026/02/bosy-gluten-free-512.png' },
+  { label: 'РАСТИТЕЛНА ОСНОВА', icon: 'https://bosy.bg/wp-content/uploads/2026/02/bosy-natural-origin-512.png' },
+  { label: 'ВИСОК ПРОТЕИН', icon: 'https://bosy.bg/wp-content/uploads/2026/02/bosy-high-protein-512.png' },
+  { label: 'OMEGA-3', icon: 'https://bosy.bg/wp-content/uploads/2026/02/bosy-omega-3-512.png' },
+  { label: 'АНТИОКСИДАНТИ', icon: 'https://bosy.bg/wp-content/uploads/2026/02/bosy-antioxidant-512.png' },
+]
+
+const CATEGORIES = [
+  { name: 'Africa Balls', image: 'https://bosy.bg/wp-content/uploads/2024/11/afrika_455x300-1.webp' },
+  { name: 'Miami', image: 'https://bosy.bg/wp-content/uploads/2024/11/miami_455x300-1.webp' },
+  { name: 'California', image: 'https://bosy.bg/wp-content/uploads/2024/11/california_455x300-1.webp' },
+  { name: 'Moscow', image: 'https://bosy.bg/wp-content/uploads/2024/11/moscow_455x300-1.webp' },
+  { name: 'Turkey', image: 'https://bosy.bg/wp-content/uploads/2024/11/turkey_455x300-1.webp' },
+  { name: 'Dominicana', image: 'https://bosy.bg/wp-content/uploads/2024/11/dominicana_455x300-1.webp' },
 ]
 
 const TESTIMONIALS = [
   {
     name: 'Gala Chalkova',
-    image: 'https://bosy.bg/wp-content/uploads/2024/02/ladyygala-300x300.jpg',
     text: 'Балансирани вкусове, качествени съставки и невероятно удоволствие без излишна захар. BOSY топчетата са моят фаворит за здравословно лакомство!',
   },
   {
     name: 'Svetoslav Todorov',
-    image: 'https://bosy.bg/wp-content/uploads/2020/12/st-300x300.jpg',
     text: 'След тренировка BOSY топчетата са перфектният снак - бърз, вкусен и с качествен протеин. Препоръчвам ги на всеки активен човек!',
   },
   {
     name: 'Katerina Katrandzieva',
-    image: 'https://bosy.bg/wp-content/uploads/2020/12/unnamed-300x268.jpg',
     text: 'Като веган, рядко намирам толкова вкусни десерти на растителна основа. BOSY продуктите са истинско откритие за мен!',
   },
   {
-    name: 'Elena Boyanova',
-    image: 'https://bosy.bg/wp-content/uploads/2021/10/elena-212x300.jpeg',
-    text: 'Нула захар и пълен вкус! Най-накрая мога да се наслаждавам на сладко без угризения. BOSY промениха начина, по който гледам на здравословното хранене.',
+    name: 'Dimitar Petrov',
+    text: 'BOSY протеиновият бар е ежедневният ми спътник. Страхотен вкус, добър протеин и ме държи сит до следващото хранене.',
   },
   {
-    name: 'Victoria Kapitonova',
-    image: 'https://bosy.bg/wp-content/uploads/2023/05/BOSY_SQUARE_1-optimized-300x300.png',
-    text: 'Следя калориите си и BOSY топчетата перфектно се вписват в хранителния ми план. Вкусни, удобни и с ясна хранителна информация!',
+    name: 'Maria Ivanova',
+    text: 'Децата обожават BOSY топчетата! Радвам се, че мога да им дам нещо вкусно без излишна захар.',
   },
   {
-    name: 'Teodora Todorova',
-    image: 'https://bosy.bg/wp-content/uploads/2021/09/4-248x300.jpg',
-    text: 'Здравословното хапване никога не е било толкова лесно и вкусно. BOSY са моят go-to снак за офиса и за вкъщи!',
+    name: 'Nikolay Georgiev',
+    text: 'Пробвах много протеинови барове, но BOSY е различен - истински вкус, не химия. Абонирах се за месечна доставка!',
   },
 ]
 
+const PARTNERS = [
+  'https://bosy.bg/wp-content/uploads/2024/10/10-bosy-logo-4-1.png',
+  'https://bosy.bg/wp-content/uploads/2024/10/10-bosy-logo-2-1.png',
+  'https://bosy.bg/wp-content/uploads/2024/10/partners-logo-01-1.png',
+  'https://bosy.bg/wp-content/uploads/2024/10/partners-logo-03-1.png',
+  'https://bosy.bg/wp-content/uploads/2024/10/partners-logo-08-1.png',
+  'https://bosy.bg/wp-content/uploads/2024/10/partners-logo-11-1.png',
+  'https://bosy.bg/wp-content/uploads/2024/10/partners-logo-12-1.png',
+]
+
 export default async function HomePage() {
-  // Fetch featured products
   let products: Array<{
     id: string
     name: string
@@ -114,64 +75,73 @@ export default async function HomePage() {
       .select('id, name, slug, price, compare_at_price, image_url, is_active')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
-      .limit(8)
+      .limit(9)
     if (data) products = data
   } catch {
     // Products table might not exist yet
   }
 
   return (
-    <>
-      {/* Hero Section */}
-      <section
-        className="relative overflow-hidden"
-        style={{ aspectRatio: '2400 / 1256' }}
-      >
-        <Image
-          src="/hero-banner.jpg"
+    <div style={{ background: '#fdf5f0' }}>
+      {/* ===== 1. Hero Banner ===== */}
+      <section className="relative w-full overflow-hidden" style={{ minHeight: 500 }}>
+        <img
+          src="https://bosy.bg/wp-content/uploads/2026/03/Website_2400x1256-scaled.jpg"
           alt="BOSY - Healthy Kitchen"
-          fill
-          className="object-cover object-center"
-          priority
-        />
-        <Link
-          href="/shop"
-          className="absolute z-10 inline-block rounded-full font-bold text-[15px] uppercase tracking-wider transition-all duration-300 hover:bg-[#333] hover:text-white"
           style={{
-            top: '60%',
-            left: '18%',
-            transform: 'translate(-50%, -50%)',
-            background: '#fff',
-            color: '#333',
-            padding: '14px 44px',
-            border: '2px solid #333',
-            fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center',
+            display: 'block',
+            minHeight: 500,
           }}
+        />
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.15)' }}
         >
-          Пазарувай
-        </Link>
+          <Link
+            href="/shop"
+            className="inline-block rounded-full font-bold text-[15px] uppercase tracking-wider transition-all duration-300 hover:bg-[#4a8a1e]"
+            style={{
+              background: '#61a229',
+              color: '#fff',
+              padding: '16px 52px',
+              fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+              letterSpacing: '0.12em',
+              fontSize: 16,
+            }}
+          >
+            ПАЗАРУВАЙ
+          </Link>
+        </div>
       </section>
 
-      {/* Feature Badges */}
-      <section className="py-16" style={{ background: '#fafafa' }}>
-        <div className="mx-auto px-5" style={{ maxWidth: 1200 }}>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-5 text-center">
-            {BENEFITS.map((b) => (
+      {/* ===== 2. Feature Badges ===== */}
+      <section className="py-14" style={{ background: '#fff' }}>
+        <div className="mx-auto px-5" style={{ maxWidth: 1100 }}>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-6 text-center">
+            {BADGES.map((b) => (
               <div key={b.label} className="flex flex-col items-center gap-3">
                 <div
                   className="flex items-center justify-center rounded-full"
                   style={{
-                    width: 80,
-                    height: 80,
-                    background: '#fff',
+                    width: 90,
+                    height: 90,
+                    background: '#f0f7e8',
                     border: '2px solid #61a229',
                   }}
                 >
-                  {b.icon}
+                  <img
+                    src={b.icon}
+                    alt={b.label}
+                    style={{ width: 48, height: 48, objectFit: 'contain' }}
+                  />
                 </div>
                 <span
-                  className="text-xs font-semibold uppercase tracking-wide"
-                  style={{ color: '#555' }}
+                  className="text-[11px] font-bold uppercase tracking-wide leading-tight"
+                  style={{ color: '#333', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
                 >
                   {b.label}
                 </span>
@@ -181,15 +151,68 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* ===== 3. Product Categories ===== */}
+      <section className="py-16" style={{ background: '#fdf5f0' }}>
+        <div className="mx-auto px-5" style={{ maxWidth: 1200 }}>
+          <h2
+            className="text-center text-3xl md:text-4xl font-extrabold mb-10"
+            style={{ color: '#333', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+          >
+            Нашите продукти
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat.name}
+                href="/shop"
+                className="group block rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.08)' }}
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      display: 'block',
+                      transition: 'transform 0.4s ease',
+                    }}
+                    className="group-hover:scale-105"
+                  />
+                  <div
+                    className="absolute inset-0 flex items-end justify-center pb-5"
+                    style={{
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)',
+                    }}
+                  >
+                    <span
+                      className="text-lg font-bold uppercase tracking-wider"
+                      style={{
+                        color: '#fff',
+                        fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                        textShadow: '0 1px 4px rgba(0,0,0,0.4)',
+                      }}
+                    >
+                      {cat.name}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 4. Featured Products ===== */}
       {products.length > 0 && (
-        <section className="py-16" style={{ background: '#fafafa' }}>
+        <section className="py-16" style={{ background: '#fff' }}>
           <div className="mx-auto px-5" style={{ maxWidth: 1200 }}>
             <h2
-              className="text-center text-4xl font-extrabold mb-10"
-              style={{ color: '#222', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+              className="text-center text-3xl md:text-4xl font-extrabold mb-10"
+              style={{ color: '#333', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
             >
-              Нашите продукти
+              Най-продавани
             </h2>
             <FeaturedProducts products={products} />
             <div className="text-center mt-10">
@@ -210,12 +233,12 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Testimonials */}
+      {/* ===== 5. Testimonials ===== */}
       <section className="py-16" style={{ background: '#f7f9f4' }}>
         <div className="mx-auto px-5" style={{ maxWidth: 1100 }}>
           <h2
-            className="text-center text-4xl font-extrabold mb-12"
-            style={{ color: '#222', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+            className="text-center text-3xl md:text-4xl font-extrabold mb-12"
+            style={{ color: '#333', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
           >
             Какво казват клиентите
           </h2>
@@ -226,14 +249,20 @@ export default async function HomePage() {
                 className="flex flex-col items-center text-center p-6 rounded-2xl"
                 style={{ background: '#fff', boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}
               >
-                <Image
-                  src={t.image}
-                  alt={t.name}
-                  width={90}
-                  height={90}
-                  className="rounded-full object-cover mb-5"
-                  style={{ border: '3px solid #61a229', width: 90, height: 90 }}
-                />
+                {/* Circular placeholder avatar with initials */}
+                <div
+                  className="flex items-center justify-center rounded-full mb-5 text-lg font-bold"
+                  style={{
+                    width: 80,
+                    height: 80,
+                    background: '#e8f5d6',
+                    border: '3px solid #61a229',
+                    color: '#61a229',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                  }}
+                >
+                  {t.name.split(' ').map((n) => n[0]).join('')}
+                </div>
                 <p
                   className="text-[15px] italic leading-relaxed mb-4"
                   style={{ color: '#555' }}
@@ -242,7 +271,7 @@ export default async function HomePage() {
                 </p>
                 <span
                   className="text-[15px] font-bold"
-                  style={{ color: '#222', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+                  style={{ color: '#333', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
                 >
                   {t.name}
                 </span>
@@ -252,12 +281,43 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* BOSY Club CTA */}
+      {/* ===== 6. Partners ===== */}
+      <section className="py-14" style={{ background: '#fff' }}>
+        <div className="mx-auto px-5" style={{ maxWidth: 1100 }}>
+          <h2
+            className="text-center text-3xl md:text-4xl font-extrabold mb-10"
+            style={{ color: '#333', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+          >
+            Нашите партньори
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+            {PARTNERS.map((logo, i) => (
+              <img
+                key={i}
+                src={logo}
+                alt={`Partner ${i + 1}`}
+                style={{
+                  height: 60,
+                  width: 'auto',
+                  objectFit: 'contain',
+                  filter: 'grayscale(100%)',
+                  opacity: 0.7,
+                  transition: 'all 0.3s ease',
+                }}
+                className="hover:opacity-100 hover:grayscale-0"
+                onMouseOver={undefined}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 7. CTA Banner ===== */}
       <section className="py-20" style={{ background: '#fdf5f0' }}>
         <div className="mx-auto px-5 text-center" style={{ maxWidth: 700 }}>
           <h2
-            className="text-4xl font-extrabold mb-4"
-            style={{ color: '#222', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+            className="text-3xl md:text-4xl font-extrabold mb-4"
+            style={{ color: '#333', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
           >
             Стани част от BOSY Club
           </h2>
@@ -278,6 +338,6 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
-    </>
+    </div>
   )
 }

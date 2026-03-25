@@ -18,7 +18,7 @@ export function FeaturedProducts({ products }: { products: Product[] }) {
   const { addToCart } = useCart()
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
       {products.map((p) => (
         <div
           key={p.id}
