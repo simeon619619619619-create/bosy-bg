@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createPublicSupabaseClient } from '@/lib/supabase/public'
 
 export const metadata = {
   title: 'Блог | BOSY Healthy Kitchen',
@@ -42,7 +42,7 @@ export default async function BlogPage() {
   }> = []
 
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createPublicSupabaseClient()
     const { data } = await supabase
       .from('content_blocks')
       .select('id, title, body, image_url')

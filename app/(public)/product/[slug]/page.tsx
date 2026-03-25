@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { AddToCartButton } from '@/components/public/add-to-cart-button'
 import Link from 'next/link'
 
@@ -9,7 +9,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const supabase = await createServerSupabaseClient()
+  const supabase = createPublicSupabaseClient()
   const { data: product } = await supabase
     .from('products')
     .select('name, description')
@@ -32,7 +32,7 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const supabase = await createServerSupabaseClient()
+  const supabase = createPublicSupabaseClient()
 
   const { data: product } = await supabase
     .from('products')

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { FeaturedProducts } from '@/components/public/featured-products'
 
 const BENEFITS = [
@@ -108,7 +108,7 @@ export default async function HomePage() {
   }> = []
 
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createPublicSupabaseClient()
     const { data } = await supabase
       .from('products')
       .select('id, name, slug, price, compare_at_price, image_url, is_active')

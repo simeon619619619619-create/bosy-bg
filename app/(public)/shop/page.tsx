@@ -1,4 +1,5 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createPublicSupabaseClient } from '@/lib/supabase/public'
+
 import { ShopContent } from './shop-content'
 
 export const metadata = {
@@ -16,7 +17,7 @@ export default async function ShopPage({
   const search = typeof sp.search === 'string' ? sp.search : undefined
   const sort = typeof sp.sort === 'string' ? sp.sort : undefined
 
-  const supabase = await createServerSupabaseClient()
+  const supabase = createPublicSupabaseClient()
 
   let query = supabase.from('products').select('*').eq('is_active', true)
 
