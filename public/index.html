@@ -958,7 +958,7 @@ ul { list-style: none; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span style="font-size:10px;margin-left:1px;">&#9660;</span>
       </a>
-      <a href="/cart" class="cart-wrapper">
+      <a href="javascript:void(0)" class="cart-wrapper" onclick="openCartSidebar()">
         <span class="cart-price">&euro;0,00 / 0,00 лв.</span>
         <span class="cart-icon-wrap">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
@@ -1613,6 +1613,9 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
       this.style.background = '';
     }, 1500);
 
+    // Open cart sidebar
+    if (typeof openCartSidebar === 'function') openCartSidebar();
+
     // Update cart count and price in header
     const cartBadge = document.querySelector('.cart-badge');
     const cartPrice = document.querySelector('.cart-price');
@@ -1644,6 +1647,126 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
       cartPrice.textContent = totalPrice.toFixed(2) + ' лв.';
     }
   } catch(e) {}
+})();
+// === CART SIDEBAR ===
+(function() {
+  // Create sidebar HTML
+  const FREE_DELIVERY_THRESHOLD = 80; // лв
+
+  const sidebarHTML = `
+  <div id="cart-sidebar-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:9998;transition:opacity 0.3s;" onclick="closeCartSidebar()"></div>
+  <div id="cart-sidebar" style="display:none;position:fixed;top:0;right:-400px;width:380px;max-width:90vw;height:100vh;background:#fff;z-index:9999;box-shadow:-4px 0 20px rgba(0,0,0,0.15);transition:right 0.3s ease;overflow-y:auto;font-family:Inter,sans-serif;">
+    <div style="padding:20px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="margin:0;font-family:Montserrat,sans-serif;font-size:18px;color:#333;">Количка</h3>
+      <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#666;padding:0 4px;">&times;</button>
+    </div>
+    <div id="cart-sidebar-progress" style="padding:12px 20px;background:#f0fae8;"></div>
+    <div id="cart-sidebar-items" style="padding:20px;"></div>
+    <div id="cart-sidebar-footer" style="padding:20px;border-top:1px solid #eee;position:sticky;bottom:0;background:#fff;"></div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', sidebarHTML);
+
+  window.openCartSidebar = function() {
+    const overlay = document.getElementById('cart-sidebar-overlay');
+    const sidebar = document.getElementById('cart-sidebar');
+    overlay.style.display = 'block';
+    sidebar.style.display = 'block';
+    setTimeout(() => {
+      overlay.style.opacity = '1';
+      sidebar.style.right = '0';
+    }, 10);
+    renderCartSidebar();
+  };
+
+  window.closeCartSidebar = function() {
+    const overlay = document.getElementById('cart-sidebar-overlay');
+    const sidebar = document.getElementById('cart-sidebar');
+    overlay.style.opacity = '0';
+    sidebar.style.right = '-400px';
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      sidebar.style.display = 'none';
+    }, 300);
+  };
+
+  window.removeFromSidebar = function(index) {
+    let cart = JSON.parse(localStorage.getItem('bosy-cart') || '[]');
+    cart.splice(index, 1);
+    localStorage.setItem('bosy-cart', JSON.stringify(cart));
+    renderCartSidebar();
+    updateHeaderCart();
+  };
+
+  window.changeQtySidebar = function(index, delta) {
+    let cart = JSON.parse(localStorage.getItem('bosy-cart') || '[]');
+    cart[index].quantity = Math.max(1, cart[index].quantity + delta);
+    localStorage.setItem('bosy-cart', JSON.stringify(cart));
+    renderCartSidebar();
+    updateHeaderCart();
+  };
+
+  function updateHeaderCart() {
+    const cart = JSON.parse(localStorage.getItem('bosy-cart') || '[]');
+    const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
+    const totalPrice = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+    const badge = document.querySelector('.cart-badge');
+    const price = document.querySelector('.cart-price');
+    if (badge) { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'flex' : 'none'; }
+    if (price) { price.textContent = totalPrice.toFixed(2) + ' лв.'; }
+  }
+
+  window.renderCartSidebar = function() {
+    const cart = JSON.parse(localStorage.getItem('bosy-cart') || '[]');
+    const itemsDiv = document.getElementById('cart-sidebar-items');
+    const progressDiv = document.getElementById('cart-sidebar-progress');
+    const footerDiv = document.getElementById('cart-sidebar-footer');
+    const totalPrice = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+    const remaining = FREE_DELIVERY_THRESHOLD - totalPrice;
+    const progressPct = Math.min(100, (totalPrice / FREE_DELIVERY_THRESHOLD) * 100);
+
+    // Progress bar
+    if (remaining > 0) {
+      progressDiv.innerHTML = '<div style="font-size:13px;color:#333;margin-bottom:8px;">Още <strong>' + remaining.toFixed(2) + ' лв.</strong> до безплатна доставка</div>' +
+        '<div style="background:#e0e0e0;border-radius:10px;height:8px;overflow:hidden;"><div style="background:#61a229;height:100%;width:' + progressPct + '%;border-radius:10px;transition:width 0.3s;"></div></div>';
+    } else {
+      progressDiv.innerHTML = '<div style="font-size:13px;color:#61a229;font-weight:600;">&#10003; Имаш безплатна доставка!</div>';
+    }
+
+    // Items
+    if (cart.length === 0) {
+      itemsDiv.innerHTML = '<p style="text-align:center;color:#999;padding:40px 0;">Количката е празна</p>';
+      footerDiv.style.display = 'none';
+      return;
+    }
+
+    let html = '';
+    cart.forEach((item, i) => {
+      html += '<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;align-items:center;">' +
+        (item.image ? '<img src="' + item.image + '" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;" />' : '<div style="width:60px;height:60px;background:#f0f0f0;border-radius:8px;flex-shrink:0;"></div>') +
+        '<div style="flex:1;min-width:0;">' +
+          '<p style="margin:0;font-size:13px;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + item.name + '</p>' +
+          '<p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#61a229;">' + item.price.toFixed(2) + ' лв.</p>' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-top:6px;">' +
+            '<button onclick="changeQtySidebar(' + i + ',-1)" style="width:26px;height:26px;border:1px solid #ddd;background:#fff;border-radius:4px;cursor:pointer;font-size:14px;">−</button>' +
+            '<span style="font-size:13px;font-weight:600;min-width:20px;text-align:center;">' + item.quantity + '</span>' +
+            '<button onclick="changeQtySidebar(' + i + ',1)" style="width:26px;height:26px;border:1px solid #ddd;background:#fff;border-radius:4px;cursor:pointer;font-size:14px;">+</button>' +
+          '</div>' +
+        '</div>' +
+        '<div style="text-align:right;flex-shrink:0;">' +
+          '<p style="margin:0;font-size:14px;font-weight:600;color:#333;">' + (item.price * item.quantity).toFixed(2) + ' лв.</p>' +
+          '<button onclick="removeFromSidebar(' + i + ')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:18px;margin-top:4px;" title="Премахни">&#128465;</button>' +
+        '</div>' +
+      '</div>';
+    });
+    itemsDiv.innerHTML = html;
+
+    // Footer
+    footerDiv.style.display = 'block';
+    footerDiv.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;color:#333;margin-bottom:12px;"><span>Общо:</span><span>' + totalPrice.toFixed(2) + ' лв.</span></div>' +
+      '<a href="/cart" style="display:block;text-align:center;padding:12px;background:#f5f5f5;color:#333;border-radius:8px;font-weight:600;font-size:14px;margin-bottom:8px;text-decoration:none;">Преглед на количката</a>' +
+      '<a href="/checkout" style="display:block;text-align:center;padding:12px;background:#61a229;color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">Поръчка</a>';
+  };
 })();
 </script>
 
