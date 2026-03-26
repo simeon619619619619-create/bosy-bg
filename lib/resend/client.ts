@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { toEur } from '@/lib/currency'
 
 let resendClient: Resend | null = null
 
@@ -20,7 +21,7 @@ export async function sendNewOrderNotification(
   if (!resend) return null
 
   const itemsHtml = items
-    .map(i => `<tr><td style="padding:8px;border-bottom:1px solid #eee;">${i.name}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${i.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">${(i.price * i.quantity).toFixed(2)} лв.</td></tr>`)
+    .map(i => `<tr><td style="padding:8px;border-bottom:1px solid #eee;">${i.name}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${i.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">${toEur(i.price * i.quantity).toFixed(2)} &euro;</td></tr>`)
     .join('')
 
   const emailHtml = `
@@ -40,7 +41,7 @@ export async function sendNewOrderNotification(
           </tr></thead>
           <tbody>${itemsHtml}</tbody>
         </table>
-        <p style="font-size:18px;font-weight:bold;text-align:right;color:#333;">Общо: ${total.toFixed(2)} лв.</p>
+        <p style="font-size:18px;font-weight:bold;text-align:right;color:#333;">Общо: ${toEur(total).toFixed(2)} &euro;</p>
         <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
         <p style="color:#999;font-size:12px;">BOSY — Healthy Kitchen | bosy.bg</p>
       </div>
@@ -59,7 +60,7 @@ export async function sendNewOrderNotification(
   await resend.emails.send({
     from: 'BOSY <onboarding@resend.dev>',
     to: 'marketing@bosy.bg',
-    subject: `Нова поръчка #${orderNumber} от ${customerName} — ${total.toFixed(2)} лв.`,
+    subject: `Нова поръчка #${orderNumber} от ${customerName} — ${toEur(total).toFixed(2)} \u20AC`,
     html: emailHtml.replace('Благодарим за поръчката!', `Нова поръчка от ${customerName}`).replace(`Здравейте, ${customerName}!`, `Клиент: ${customerName} (${customerEmail})`),
   }).catch(() => {})
 
@@ -79,7 +80,7 @@ export async function sendOrderConfirmation(to: string, orderNumber: number, tot
         <h1 style="color: #FF7820;">BOSY</h1>
         <p>Здравейте,</p>
         <p>Вашата поръчка <strong>#${orderNumber}</strong> е потвърдена.</p>
-        <p>Обща сума: <strong>${total.toFixed(2)} лв.</strong></p>
+        <p>Обща сума: <strong>${toEur(total).toFixed(2)} &euro;</strong></p>
         <p>Ще ви уведомим когато пратката бъде изпратена.</p>
         <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
         <p style="color: #999; font-size: 12px;">BOSY — Healthy Kitchen</p>

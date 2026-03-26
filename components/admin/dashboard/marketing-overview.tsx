@@ -1,3 +1,5 @@
+import { toEur } from '@/lib/currency'
+
 interface MarketingOverviewProps {
   metaSpend: number
   metaImpressions: number
@@ -47,7 +49,7 @@ export function MarketingOverview({
             Meta Ads Харчове
           </p>
           <p className="mt-1.5 font-mono text-xl font-bold text-primary">
-            {metaSpend.toFixed(0)} лв.
+            {toEur(metaSpend).toFixed(0)} &euro;
           </p>
           <p className="mt-1 text-[11px] text-muted-foreground">
             Последни 7 дни

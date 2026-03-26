@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { AddToCartButton } from '@/components/public/add-to-cart-button'
 import Link from 'next/link'
+import { toEur } from '@/lib/currency'
 
 export async function generateMetadata({
   params,
@@ -108,11 +109,11 @@ export default async function ProductPage({
                 className="text-3xl font-bold"
                 style={{ color: '#61a229' }}
               >
-                {product.price.toFixed(2)} лв.
+                {toEur(product.price).toFixed(2)} &euro;
               </span>
               {hasDiscount && (
                 <span className="text-lg text-gray-400 line-through">
-                  {product.compare_price!.toFixed(2)} лв.
+                  {toEur(product.compare_price!).toFixed(2)} &euro;
                 </span>
               )}
               {hasDiscount && (

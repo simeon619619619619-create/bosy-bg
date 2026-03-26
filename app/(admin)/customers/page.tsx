@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { toEur } from '@/lib/currency'
 import { Input } from '@/components/ui/input'
 import {
   Table,
@@ -96,7 +97,7 @@ export default async function CustomersPage({
                   <TableCell>{customer.phone ?? '—'}</TableCell>
                   <TableCell>{customer.total_orders ?? 0}</TableCell>
                   <TableCell className="font-mono">
-                    {Number(customer.total_spent ?? 0).toFixed(2)} лв.
+                    {toEur(Number(customer.total_spent ?? 0)).toFixed(2)} &euro;
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(customer.created_at).toLocaleDateString('bg-BG')}

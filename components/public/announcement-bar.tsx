@@ -15,7 +15,7 @@ export function AnnouncementBar() {
             key={i}
             className="inline-block px-12 text-[13px] font-medium"
           >
-            Безплатна доставка за поръчки над 50 лв. &bull; BOSY Club отстъпки &bull; -5% при плащане с карта
+            Безплатна доставка за поръчки над 25 &euro; &bull; BOSY Club отстъпки &bull; -5% при плащане с карта
           </span>
         ))}
       </div>

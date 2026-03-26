@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { toEur } from '@/lib/currency'
 import {
   Table,
   TableBody,
@@ -169,7 +170,7 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
                     <Link href={orderUrl} className="block">{order.items_count}</Link>
                   </TableCell>
                   <TableCell>
-                    <Link href={orderUrl} className="block font-mono">{order.total.toFixed(2)} лв.</Link>
+                    <Link href={orderUrl} className="block font-mono">{toEur(order.total).toFixed(2)} &euro;</Link>
                   </TableCell>
                   <TableCell>
                     <Link href={orderUrl}>

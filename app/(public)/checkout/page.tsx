@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ShoppingBag, ArrowLeft } from 'lucide-react'
 import { useCart } from '@/components/public/cart-provider'
 import { createOrder } from './actions'
+import { toEur } from '@/lib/currency'
 
 const SHIPPING_THRESHOLD = 50
 const SHIPPING_COST = 5.99
@@ -302,11 +303,11 @@ export default function CheckoutPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.name}</p>
                     <p className="text-xs" style={{ color: '#999' }}>
-                      {item.quantity} x {item.price.toFixed(2)} лв.
+                      {item.quantity} x {toEur(item.price).toFixed(2)} &euro;
                     </p>
                   </div>
                   <span className="text-sm font-medium shrink-0">
-                    {(item.price * item.quantity).toFixed(2)} лв.
+                    {toEur(item.price * item.quantity).toFixed(2)} &euro;
                   </span>
                 </div>
               ))}
@@ -315,12 +316,12 @@ export default function CheckoutPage() {
             <div className="mt-4 space-y-2 text-sm" style={{ borderTop: '1px solid #eee', paddingTop: 12 }}>
               <div className="flex justify-between">
                 <span style={{ color: '#777' }}>Междинна сума</span>
-                <span className="font-medium">{subtotal.toFixed(2)} лв.</span>
+                <span className="font-medium">{toEur(subtotal).toFixed(2)} &euro;</span>
               </div>
               <div className="flex justify-between">
                 <span style={{ color: '#777' }}>Доставка</span>
                 <span className="font-medium">
-                  {shipping === 0 ? 'Безплатна' : `${shipping.toFixed(2)} лв.`}
+                  {shipping === 0 ? 'Безплатна' : `${toEur(shipping).toFixed(2)} \u20AC`}
                 </span>
               </div>
               <div
@@ -328,7 +329,7 @@ export default function CheckoutPage() {
                 style={{ borderTop: '1px solid #eee' }}
               >
                 <span>Общо</span>
-                <span>{total.toFixed(2)} лв.</span>
+                <span>{toEur(total).toFixed(2)} &euro;</span>
               </div>
             </div>
 

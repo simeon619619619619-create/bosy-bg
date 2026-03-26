@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { toEur } from '@/lib/currency'
 
 interface TopProduct {
   name: string
@@ -42,7 +43,7 @@ export function TopProducts({ products }: TopProductsProps) {
               </p>
             </div>
             <span className="shrink-0 font-mono text-sm font-semibold text-green-500">
-              {p.revenue.toFixed(0)} лв.
+              {toEur(p.revenue).toFixed(0)} &euro;
             </span>
           </div>
         ))}

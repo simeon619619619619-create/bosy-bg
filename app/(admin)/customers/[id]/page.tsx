@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { toEur } from '@/lib/currency'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -105,13 +106,13 @@ export default async function CustomerProfilePage({
           <div className="rounded-lg border border-border bg-card p-6 text-center">
             <p className="text-sm text-muted-foreground">Общо похарчени</p>
             <p className="mt-2 text-3xl font-bold font-mono">
-              {totalSpent.toFixed(2)} лв.
+              {toEur(totalSpent).toFixed(2)} &euro;
             </p>
           </div>
           <div className="rounded-lg border border-border bg-card p-6 text-center">
             <p className="text-sm text-muted-foreground">Средна поръчка</p>
             <p className="mt-2 text-3xl font-bold font-mono">
-              {avgOrderValue.toFixed(2)} лв.
+              {toEur(avgOrderValue).toFixed(2)} &euro;
             </p>
           </div>
         </div>
@@ -153,7 +154,7 @@ export default async function CustomerProfilePage({
                       </TableCell>
                       <TableCell>{items.length}</TableCell>
                       <TableCell className="font-mono">
-                        {Number(order.total ?? 0).toFixed(2)} лв.
+                        {toEur(Number(order.total ?? 0)).toFixed(2)} &euro;
                       </TableCell>
                       <TableCell>
                         <OrderStatusBadge status={order.status} />

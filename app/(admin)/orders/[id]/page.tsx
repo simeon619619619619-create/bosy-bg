@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { toEur } from '@/lib/currency'
 import { Button } from '@/components/ui/button'
 import { OrderStatusBadge } from '@/components/admin/orders/order-status-badge'
 import {
@@ -92,11 +93,11 @@ export default async function OrderDetailPage({
                     <div>
                       <p className="font-medium">{item.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {item.quantity} x {Number(item.price).toFixed(2)} лв.
+                        {item.quantity} x {toEur(Number(item.price)).toFixed(2)} &euro;
                       </p>
                     </div>
                     <p className="font-mono">
-                      {(item.quantity * item.price).toFixed(2)} лв.
+                      {toEur(item.quantity * item.price).toFixed(2)} &euro;
                     </p>
                   </div>
                 ))
@@ -107,15 +108,15 @@ export default async function OrderDetailPage({
             <div className="mt-4 space-y-2 border-t border-border pt-4">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Междинна сума</span>
-                <span className="font-mono">{subtotal.toFixed(2)} лв.</span>
+                <span className="font-mono">{toEur(subtotal).toFixed(2)} &euro;</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Доставка</span>
-                <span className="font-mono">{shipping.toFixed(2)} лв.</span>
+                <span className="font-mono">{toEur(shipping).toFixed(2)} &euro;</span>
               </div>
               <div className="flex justify-between font-semibold">
                 <span>Общо</span>
-                <span className="font-mono">{total.toFixed(2)} лв.</span>
+                <span className="font-mono">{toEur(total).toFixed(2)} &euro;</span>
               </div>
             </div>
           </div>

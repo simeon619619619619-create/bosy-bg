@@ -1,3 +1,5 @@
+import { toEur } from '@/lib/currency'
+
 interface RevenueChartProps {
   data: { date: string; total: number }[]
 }
@@ -28,11 +30,11 @@ export function RevenueChart({ data }: RevenueChartProps) {
                   background:
                     'linear-gradient(to top, hsl(var(--primary)), hsl(var(--primary) / 0.3))',
                 }}
-                title={`${d.total.toFixed(0)} лв.`}
+                title={`${toEur(d.total).toFixed(0)} \u20AC`}
               />
               {/* Tooltip */}
               <div className="pointer-events-none absolute -top-7 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded bg-popover px-2 py-1 font-mono text-xs text-popover-foreground shadow group-hover:block">
-                {d.total.toFixed(0)} лв.
+                {toEur(d.total).toFixed(0)} &euro;
               </div>
             </div>
           )

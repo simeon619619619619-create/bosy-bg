@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
 import { useCart } from '@/components/public/cart-provider'
+import { toEur } from '@/lib/currency'
 
 const SHIPPING_THRESHOLD = 50
 const SHIPPING_COST = 5.99
@@ -133,7 +134,7 @@ export default function CartPage() {
 
                   {/* Price */}
                   <span className="text-sm font-bold" style={{ color: '#333' }}>
-                    {(item.price * item.quantity).toFixed(2)} лв.
+                    {toEur(item.price * item.quantity).toFixed(2)} &euro;
                   </span>
                 </div>
               </div>
@@ -157,17 +158,17 @@ export default function CartPage() {
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between">
                 <span style={{ color: '#777' }}>Междинна сума</span>
-                <span className="font-medium">{subtotal.toFixed(2)} лв.</span>
+                <span className="font-medium">{toEur(subtotal).toFixed(2)} &euro;</span>
               </div>
               <div className="flex justify-between">
                 <span style={{ color: '#777' }}>Доставка</span>
                 <span className="font-medium">
-                  {shipping === 0 ? 'Безплатна' : `${shipping.toFixed(2)} лв.`}
+                  {shipping === 0 ? 'Безплатна' : `${toEur(shipping).toFixed(2)} \u20AC`}
                 </span>
               </div>
               {subtotal < SHIPPING_THRESHOLD && subtotal > 0 && (
                 <p className="text-xs" style={{ color: '#61a229' }}>
-                  Още {(SHIPPING_THRESHOLD - subtotal).toFixed(2)} лв. за безплатна доставка!
+                  Още {toEur(SHIPPING_THRESHOLD - subtotal).toFixed(2)} &euro; за безплатна доставка!
                 </p>
               )}
               <div
@@ -175,7 +176,7 @@ export default function CartPage() {
                 style={{ borderTop: '1px solid #eee' }}
               >
                 <span>Общо</span>
-                <span>{total.toFixed(2)} лв.</span>
+                <span>{toEur(total).toFixed(2)} &euro;</span>
               </div>
             </div>
 

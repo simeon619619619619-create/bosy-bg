@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { toEur } from '@/lib/currency'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -169,7 +170,7 @@ export default async function MetaAdsPage({
                       {ctr}%
                     </TableCell>
                     <TableCell className="text-right font-mono">
-                      {c.spend.toFixed(2)} лв.
+                      {toEur(c.spend).toFixed(2)} &euro;
                     </TableCell>
                     <TableCell className="text-right font-mono">
                       {conversions}

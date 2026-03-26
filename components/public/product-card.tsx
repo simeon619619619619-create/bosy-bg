@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useCart } from '@/components/public/cart-provider'
+import { toEur } from '@/lib/currency'
 
 interface Product {
   id: string
@@ -66,11 +67,11 @@ export function ProductCard({ product }: { product: Product }) {
             className="text-base font-bold"
             style={{ color: '#61a229', fontFamily: 'var(--font-sans)' }}
           >
-            {product.price.toFixed(2)} лв.
+            {toEur(product.price).toFixed(2)} &euro;
           </span>
           {product.compare_price != null && product.compare_price > product.price && (
             <span className="text-sm text-gray-400 line-through">
-              {product.compare_price.toFixed(2)} лв.
+              {toEur(product.compare_price).toFixed(2)} &euro;
             </span>
           )}
         </div>

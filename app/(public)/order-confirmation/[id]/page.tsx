@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import { CheckCircle } from 'lucide-react'
+import { toEur } from '@/lib/currency'
 
 interface OrderItem {
   name: string
@@ -93,7 +94,7 @@ export default async function OrderConfirmationPage({
                   {item.name} x{item.quantity}
                 </span>
                 <span className="font-medium">
-                  {(item.price * item.quantity).toFixed(2)} лв.
+                  {toEur(item.price * item.quantity).toFixed(2)} &euro;
                 </span>
               </div>
             ))}
@@ -103,15 +104,15 @@ export default async function OrderConfirmationPage({
           <div className="mt-3 space-y-1 text-sm" style={{ borderTop: '1px solid #eee', paddingTop: 12 }}>
             <div className="flex justify-between">
               <span style={{ color: '#777' }}>Междинна сума</span>
-              <span>{subtotal.toFixed(2)} лв.</span>
+              <span>{toEur(subtotal).toFixed(2)} &euro;</span>
             </div>
             <div className="flex justify-between">
               <span style={{ color: '#777' }}>Доставка</span>
-              <span>{shipping === 0 ? 'Безплатна' : `${shipping.toFixed(2)} лв.`}</span>
+              <span>{shipping === 0 ? 'Безплатна' : `${toEur(shipping).toFixed(2)} \u20AC`}</span>
             </div>
             <div className="flex justify-between font-bold text-base pt-2" style={{ borderTop: '1px solid #eee' }}>
               <span>Общо</span>
-              <span>{total.toFixed(2)} лв.</span>
+              <span>{toEur(total).toFixed(2)} &euro;</span>
             </div>
           </div>
         </div>

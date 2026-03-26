@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { toEur } from '@/lib/currency'
 import { StatCard } from '@/components/admin/dashboard/stat-card'
 import { RevenueChart } from '@/components/admin/dashboard/revenue-chart'
 import { TopProducts } from '@/components/admin/dashboard/top-products'
@@ -237,7 +238,7 @@ export default async function DashboardPage() {
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Приходи днес"
-          value={`${revenueToday.toFixed(0)} лв.`}
+          value={`${toEur(revenueToday).toFixed(0)} \u20AC`}
           changePercent={revChange}
           changeText="спрямо вчера"
           direction={revDirection}

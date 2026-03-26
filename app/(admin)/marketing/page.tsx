@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { toEur } from '@/lib/currency'
 import {
   Card,
   CardContent,
@@ -87,7 +88,7 @@ export default async function MarketingPage() {
   const cards = [
     {
       title: 'Meta Ads Харчове (7 дни)',
-      value: `${totalSpend.toFixed(2)} лв.`,
+      value: `${toEur(totalSpend).toFixed(2)} \u20AC`,
       icon: DollarSign,
     },
     {

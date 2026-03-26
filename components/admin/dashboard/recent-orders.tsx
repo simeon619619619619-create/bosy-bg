@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { toEur } from '@/lib/currency'
 import {
   Table,
   TableBody,
@@ -67,7 +68,7 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
                   <TableCell>{order.customer_name}</TableCell>
                   <TableCell>{order.items_count}</TableCell>
                   <TableCell className="font-mono">
-                    {order.total.toFixed(2)} лв.
+                    {toEur(order.total).toFixed(2)} &euro;
                   </TableCell>
                   <TableCell>
                     <OrderStatusBadge status={order.status} />

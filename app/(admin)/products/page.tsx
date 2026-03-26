@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { toEur } from '@/lib/currency'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -119,7 +120,7 @@ export default async function ProductsPage({
                     )}
                   </TableCell>
                   <TableCell className="font-mono">
-                    {Number(product.price).toFixed(2)} лв.
+                    {toEur(Number(product.price)).toFixed(2)} &euro;
                   </TableCell>
                   <TableCell>
                     {product.stock_quantity != null ? (
