@@ -50,7 +50,7 @@ export async function sendNewOrderNotification(
 
   // Send to customer
   await resend.emails.send({
-    from: 'BOSY <onboarding@resend.dev>',
+    from: 'BOSY <marketing@bosy.bg>',
     to: customerEmail,
     subject: `Поръчка #${orderNumber} — Получена`,
     html: emailHtml,
@@ -58,7 +58,7 @@ export async function sendNewOrderNotification(
 
   // Send to admin
   await resend.emails.send({
-    from: 'BOSY <onboarding@resend.dev>',
+    from: 'BOSY <marketing@bosy.bg>',
     to: 'marketing@bosy.bg',
     subject: `Нова поръчка #${orderNumber} от ${customerName} — ${toEur(total).toFixed(2)} \u20AC`,
     html: emailHtml.replace('Благодарим за поръчката!', `Нова поръчка от ${customerName}`).replace(`Здравейте, ${customerName}!`, `Клиент: ${customerName} (${customerEmail})`),
