@@ -8,7 +8,7 @@ import { useCart } from '@/components/public/cart-provider'
 import { createOrder } from './actions'
 import { toEur } from '@/lib/currency'
 
-const SHIPPING_THRESHOLD = 50
+const SHIPPING_THRESHOLD = 78.15 // ~39.97€
 const SHIPPING_COST = 5.99
 
 export default function CheckoutPage() {
