@@ -60,6 +60,7 @@ export default function CheckoutPage() {
     const notes = form.get('notes') as string
 
     try {
+      // 1. Create order in Supabase
       const result = await createOrder({
         name,
         email,
@@ -77,8 +78,21 @@ export default function CheckoutPage() {
         })),
       })
 
+      // 2. Create Viva payment and redirect
+      const payRes = await fetch('/api/viva/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: result.orderId }),
+      })
+
+      if (!payRes.ok) {
+        const payErr = await payRes.json()
+        throw new Error(payErr.error || 'Грешка при създаване на плащане')
+      }
+
+      const { checkoutUrl } = await payRes.json()
       clearCart()
-      router.push(`/order-confirmation/${result.orderId}`)
+      window.location.href = checkoutUrl
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Възникна грешка. Опитайте отново.')
       setLoading(false)
@@ -339,7 +353,7 @@ export default function CheckoutPage() {
               className="mt-6 flex w-full items-center justify-center rounded-lg py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
               style={{ background: '#61a229' }}
             >
-              {loading ? 'Обработване...' : 'Завърши поръчка'}
+              {loading ? 'Пренасочване към плащане...' : 'Плати с карта'}
             </button>
           </div>
         </div>
