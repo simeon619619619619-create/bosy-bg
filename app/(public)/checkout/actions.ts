@@ -40,8 +40,9 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
   // Calculate totals
   const subtotal = input.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shippingCost = subtotal >= 50 ? 0 : 5.99
+  const codFee = input.paymentMethod === 'cod' ? 0.99 : 0
   const discount = input.cardDiscount ?? 0
-  const total = subtotal + shippingCost - discount
+  const total = subtotal + shippingCost + codFee - discount
 
   // 1. Upsert customer by email
   const { data: existingCustomer } = await supabase

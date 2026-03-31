@@ -20,8 +20,9 @@ export default function CheckoutPage() {
 
   const subtotal = getCartTotal()
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
+  const codFee = paymentMethod === 'cod' ? 0.99 : 0
   const cardDiscount = paymentMethod === 'card' ? subtotal * 0.05 : 0
-  const total = subtotal + shipping - cardDiscount
+  const total = subtotal + shipping + codFee - cardDiscount
 
   if (items.length === 0) {
     return (
@@ -311,7 +312,7 @@ export default function CheckoutPage() {
                 />
                 <div>
                   <span className="text-sm font-semibold">Наложен платеж</span>
-                  <p className="text-xs" style={{ color: '#777' }}>Плащате при получаване на куриера</p>
+                  <p className="text-xs" style={{ color: '#777' }}>Плащате при получаване на куриер Speedy (+0.99 &euro;)</p>
                 </div>
               </label>
               <label
@@ -408,6 +409,12 @@ export default function CheckoutPage() {
                   {shipping === 0 ? 'Безплатна' : `${toEur(shipping).toFixed(2)} \u20AC`}
                 </span>
               </div>
+              {codFee > 0 && (
+                <div className="flex justify-between">
+                  <span style={{ color: '#777' }}>Наложен платеж (Speedy)</span>
+                  <span className="font-medium">+{toEur(codFee).toFixed(2)} &euro;</span>
+                </div>
+              )}
               {cardDiscount > 0 && (
                 <div className="flex justify-between" style={{ color: '#e74c3c' }}>
                   <span>Отстъпка -5% (карта)</span>
