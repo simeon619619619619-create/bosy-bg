@@ -16,10 +16,12 @@ export default function CheckoutPage() {
   const { items, getCartTotal, clearCart } = useCart()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card'>('cod')
 
   const subtotal = getCartTotal()
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-  const total = subtotal + shipping
+  const cardDiscount = paymentMethod === 'card' ? subtotal * 0.05 : 0
+  const total = subtotal + shipping - cardDiscount
 
   if (items.length === 0) {
     return (
@@ -60,7 +62,6 @@ export default function CheckoutPage() {
     const notes = form.get('notes') as string
 
     try {
-      // 1. Create order in Supabase
       const result = await createOrder({
         name,
         email,
@@ -69,6 +70,8 @@ export default function CheckoutPage() {
         address,
         postalCode,
         notes: notes ?? '',
+        paymentMethod,
+        cardDiscount,
         items: items.map((i) => ({
           id: i.id,
           name: i.name,
@@ -78,21 +81,27 @@ export default function CheckoutPage() {
         })),
       })
 
-      // 2. Create Viva payment and redirect
-      const payRes = await fetch('/api/viva/create-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: result.orderId }),
-      })
+      if (paymentMethod === 'card') {
+        const payRes = await fetch('/api/viva/create-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: result.orderId }),
+        })
 
-      if (!payRes.ok) {
-        const payErr = await payRes.json()
-        throw new Error(payErr.error || 'Грешка при създаване на плащане')
+        if (!payRes.ok) {
+          const payErr = await payRes.json()
+          throw new Error(payErr.error || 'Грешка при създаване на плащане')
+        }
+
+        const { checkoutUrl } = await payRes.json()
+        clearCart()
+        window.location.href = checkoutUrl
+        return
       }
 
-      const { checkoutUrl } = await payRes.json()
+      // Cash on delivery — go to confirmation
       clearCart()
-      window.location.href = checkoutUrl
+      router.push(`/order-confirmation/${result.orderId}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Възникна грешка. Опитайте отново.')
       setLoading(false)
@@ -273,6 +282,67 @@ export default function CheckoutPage() {
             </div>
           </div>
 
+          {/* Payment method */}
+          <div
+            className="rounded-xl p-6"
+            style={{ background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
+          >
+            <h2
+              className="text-lg font-bold"
+              style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+            >
+              Метод на плащане
+            </h2>
+            <div className="mt-4 space-y-3">
+              <label
+                className="flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors"
+                style={{
+                  borderColor: paymentMethod === 'cod' ? '#61a229' : '#ddd',
+                  background: paymentMethod === 'cod' ? '#f0fce8' : '#fff',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cod"
+                  checked={paymentMethod === 'cod'}
+                  onChange={() => setPaymentMethod('cod')}
+                  className="accent-[#61a229]"
+                />
+                <div>
+                  <span className="text-sm font-semibold">Наложен платеж</span>
+                  <p className="text-xs" style={{ color: '#777' }}>Плащате при получаване на куриера</p>
+                </div>
+              </label>
+              <label
+                className="flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors"
+                style={{
+                  borderColor: paymentMethod === 'card' ? '#61a229' : '#ddd',
+                  background: paymentMethod === 'card' ? '#f0fce8' : '#fff',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="card"
+                  checked={paymentMethod === 'card'}
+                  onChange={() => setPaymentMethod('card')}
+                  className="accent-[#61a229]"
+                />
+                <div>
+                  <span className="text-sm font-semibold">Банкова карта</span>
+                  <span
+                    className="ml-2 inline-block rounded-full px-2 py-0.5 text-xs font-bold text-white"
+                    style={{ background: '#e74c3c' }}
+                  >
+                    -5% отстъпка
+                  </span>
+                  <p className="text-xs" style={{ color: '#777' }}>Плащате онлайн с дебитна/кредитна карта</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
           {error && (
             <div
               className="rounded-lg p-3 text-sm"
@@ -338,6 +408,12 @@ export default function CheckoutPage() {
                   {shipping === 0 ? 'Безплатна' : `${toEur(shipping).toFixed(2)} \u20AC`}
                 </span>
               </div>
+              {cardDiscount > 0 && (
+                <div className="flex justify-between" style={{ color: '#e74c3c' }}>
+                  <span>Отстъпка -5% (карта)</span>
+                  <span className="font-medium">-{toEur(cardDiscount).toFixed(2)} &euro;</span>
+                </div>
+              )}
               <div
                 className="flex justify-between pt-3 text-base font-bold"
                 style={{ borderTop: '1px solid #eee' }}
@@ -353,7 +429,10 @@ export default function CheckoutPage() {
               className="mt-6 flex w-full items-center justify-center rounded-lg py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
               style={{ background: '#61a229' }}
             >
-              {loading ? 'Пренасочване към плащане...' : 'Плати с карта'}
+              {loading
+                ? (paymentMethod === 'card' ? 'Пренасочване към плащане...' : 'Обработка...')
+                : (paymentMethod === 'card' ? 'Плати с карта (-5%)' : 'Поръчай с наложен платеж')
+              }
             </button>
           </div>
         </div>

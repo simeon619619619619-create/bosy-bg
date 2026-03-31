@@ -19,6 +19,8 @@ interface CreateOrderInput {
   address: string
   postalCode: string
   notes: string
+  paymentMethod: 'cod' | 'card'
+  cardDiscount: number
   items: OrderItem[]
 }
 
@@ -38,7 +40,8 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
   // Calculate totals
   const subtotal = input.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shippingCost = subtotal >= 50 ? 0 : 5.99
-  const total = subtotal + shippingCost
+  const discount = input.cardDiscount ?? 0
+  const total = subtotal + shippingCost - discount
 
   // 1. Upsert customer by email
   const { data: existingCustomer } = await supabase
@@ -108,6 +111,8 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       shipping_cost: shippingCost,
       total,
       status: 'pending',
+      payment_method: input.paymentMethod,
+      discount,
       notes: input.notes || null,
     })
     .select('id, order_number')
