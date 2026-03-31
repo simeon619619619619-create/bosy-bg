@@ -12,13 +12,16 @@ interface Product {
   compare_price?: number | null
   images?: string[] | null
   category?: string | null
+  stock_quantity?: number | null
 }
 
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart()
   const image = product.images?.[0] ?? null
+  const outOfStock = product.stock_quantity != null && product.stock_quantity <= 0
 
   function handleAdd() {
+    if (outOfStock) return
     addToCart({
       id: product.id,
       name: product.name,
@@ -33,7 +36,7 @@ export function ProductCard({ product }: { product: Product }) {
       className="flex flex-col overflow-hidden rounded-xl bg-white transition-transform duration-200 hover:-translate-y-1"
       style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
     >
-      <Link href={`/product/${product.slug}`} className="block">
+      <Link href={`/product/${product.slug}`} className="relative block">
         <div
           className="flex h-60 items-center justify-center p-4"
           style={{ background: '#fafafa' }}
@@ -42,7 +45,7 @@ export function ProductCard({ product }: { product: Product }) {
             <img
               src={image}
               alt={product.name}
-              className="max-h-full object-contain"
+              className={`max-h-full object-contain${outOfStock ? ' opacity-60' : ''}`}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
@@ -50,6 +53,15 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
           )}
         </div>
+        {outOfStock && (
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-2">
+            <span
+              className="rounded-full border border-gray-300 bg-white px-5 py-2 text-sm font-semibold text-gray-700 shadow-sm"
+            >
+              Очаква се скоро!
+            </span>
+          </div>
+        )}
       </Link>
 
       <div className="flex flex-1 flex-col p-4">
@@ -76,15 +88,25 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </div>
 
-        <button
-          onClick={handleAdd}
-          className="mt-auto w-full cursor-pointer rounded-md px-4 py-2.5 text-center text-sm font-bold tracking-wide text-white transition-colors"
-          style={{ background: '#61a229', fontFamily: 'var(--font-sans)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = '#4e8a1f')}
-          onMouseLeave={(e) => (e.currentTarget.style.background = '#61a229')}
-        >
-          Добави в количката
-        </button>
+        {outOfStock ? (
+          <button
+            disabled
+            className="mt-auto w-full cursor-not-allowed rounded-md px-4 py-2.5 text-center text-sm font-bold tracking-wide text-gray-400"
+            style={{ background: '#e5e5e5', fontFamily: 'var(--font-sans)' }}
+          >
+            Очаква се скоро!
+          </button>
+        ) : (
+          <button
+            onClick={handleAdd}
+            className="mt-auto w-full cursor-pointer rounded-md px-4 py-2.5 text-center text-sm font-bold tracking-wide text-white transition-colors"
+            style={{ background: '#61a229', fontFamily: 'var(--font-sans)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#4e8a1f')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = '#61a229')}
+          >
+            Добави в количката
+          </button>
+        )}
       </div>
     </div>
   )

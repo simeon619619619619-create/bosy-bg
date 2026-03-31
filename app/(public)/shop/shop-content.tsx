@@ -12,6 +12,7 @@ interface Product {
   compare_price?: number | null
   images?: string[] | null
   category?: string | null
+  stock_quantity?: number | null
 }
 
 interface Props {
