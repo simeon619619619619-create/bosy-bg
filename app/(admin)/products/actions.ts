@@ -142,6 +142,34 @@ export async function exportProductsCSV() {
   return csvRows.join('\n')
 }
 
+export async function moveProduct(id: string, direction: 'up' | 'down') {
+  const supabase = await createServerSupabaseClient()
+
+  // Get all products in current order
+  const { data: products } = await supabase
+    .from('products')
+    .select('id, created_at')
+    .order('created_at', { ascending: false })
+
+  if (!products) return
+
+  const idx = products.findIndex((p) => p.id === id)
+  if (idx === -1) return
+
+  const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+  if (swapIdx < 0 || swapIdx >= products.length) return
+
+  // Swap created_at timestamps
+  const thisTime = products[idx].created_at
+  const otherTime = products[swapIdx].created_at
+
+  await supabase.from('products').update({ created_at: otherTime }).eq('id', products[idx].id)
+  await supabase.from('products').update({ created_at: thisTime }).eq('id', products[swapIdx].id)
+
+  revalidatePath('/products')
+  revalidatePath('/shop')
+}
+
 export async function toggleProductActive(id: string, isActive: boolean) {
   const supabase = await createServerSupabaseClient()
 

@@ -12,8 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Plus, Search, Package } from 'lucide-react'
+import { Plus, Search, Package, ArrowUp, ArrowDown } from 'lucide-react'
 import { ProductActiveToggle } from '@/components/admin/products/product-active-toggle'
+import { ProductMoveButtons } from '@/components/admin/products/product-move-buttons'
 
 export default async function ProductsPage({
   searchParams,
@@ -84,22 +85,39 @@ export default async function ProductsPage({
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-[70px]">Ред</TableHead>
                 <TableHead className="w-[60px]">Снимка</TableHead>
                 <TableHead>Име</TableHead>
                 <TableHead>Категория</TableHead>
                 <TableHead>Цена</TableHead>
+                <TableHead>Намаление</TableHead>
                 <TableHead>Наличност</TableHead>
                 <TableHead>Активен</TableHead>
                 <TableHead className="w-[100px]">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
+              {products.map((product, index) => {
+                const hasDiscount = product.compare_price && product.compare_price > product.price
+                const discountPct = hasDiscount
+                  ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
+                  : 0
+                const imgSrc = Array.isArray(product.images) && product.images.length > 0
+                  ? product.images[0]
+                  : product.image_url
+                return (
                 <TableRow key={product.id}>
                   <TableCell>
-                    {product.image_url ? (
+                    <ProductMoveButtons
+                      id={product.id}
+                      isFirst={index === 0}
+                      isLast={index === products.length - 1}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {imgSrc ? (
                       <img
-                        src={product.image_url}
+                        src={imgSrc}
                         alt={product.name}
                         className="size-10 rounded-md object-cover"
                       />
@@ -120,7 +138,19 @@ export default async function ProductsPage({
                     )}
                   </TableCell>
                   <TableCell className="font-mono">
-                    {toEur(Number(product.price)).toFixed(2)} &euro;
+                    <span>{toEur(Number(product.price)).toFixed(2)} &euro;</span>
+                    {hasDiscount && (
+                      <span className="ml-1 text-xs text-muted-foreground line-through">
+                        {toEur(Number(product.compare_price)).toFixed(2)} &euro;
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {hasDiscount ? (
+                      <Badge variant="destructive">-{discountPct}%</Badge>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     {product.stock_quantity != null ? (
@@ -147,7 +177,8 @@ export default async function ProductsPage({
                     </Button>
                   </TableCell>
                 </TableRow>
-              ))}
+                )
+              })}
             </TableBody>
           </Table>
         </div>
