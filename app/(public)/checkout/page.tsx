@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ShoppingBag, ArrowLeft } from 'lucide-react'
 import { useCart } from '@/components/public/cart-provider'
-import { createOrder } from './actions'
+import { createOrder, lookupCashback, getCashbackPercent } from './actions'
 import { toEur } from '@/lib/currency'
 
 const SHIPPING_THRESHOLD = 78.15 // ~39.97€
@@ -17,12 +17,39 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card'>('cod')
+  const [cashbackBalance, setCashbackBalance] = useState(0)
+  const [useCashback, setUseCashback] = useState(false)
+  const [cashbackChecked, setCashbackChecked] = useState(false)
+  const [cashbackLoading, setCashbackLoading] = useState(false)
+  const [cashbackPercent, setCashbackPercent] = useState(5)
 
   const subtotal = getCartTotal()
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
   const codFee = paymentMethod === 'cod' ? 0.99 : 0
   const cardDiscount = paymentMethod === 'card' ? subtotal * 0.05 : 0
-  const total = subtotal + shipping + codFee - cardDiscount
+  const maxBeforeCashback = subtotal + shipping + codFee - cardDiscount
+  const cashbackApplied = useCashback ? Math.min(cashbackBalance, maxBeforeCashback) : 0
+  const total = Math.max(0, maxBeforeCashback - cashbackApplied)
+  const cashbackEarned = Math.round(total * cashbackPercent) / 100
+
+  async function handleEmailBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const email = e.target.value.trim()
+    if (!email || cashbackChecked) return
+    setCashbackLoading(true)
+    try {
+      const [{ balance }, pct] = await Promise.all([
+        lookupCashback(email),
+        getCashbackPercent(),
+      ])
+      setCashbackBalance(balance)
+      setCashbackPercent(pct)
+      setCashbackChecked(true)
+    } catch {
+      // ignore lookup errors
+    } finally {
+      setCashbackLoading(false)
+    }
+  }
 
   if (items.length === 0) {
     return (
@@ -73,6 +100,7 @@ export default function CheckoutPage() {
         notes: notes ?? '',
         paymentMethod,
         cardDiscount,
+        cashbackUsed: cashbackApplied,
         items: items.map((i) => ({
           id: i.id,
           name: i.name,
@@ -187,6 +215,7 @@ export default function CheckoutPage() {
                   required
                   placeholder="ivan@example.com"
                   style={inputStyle}
+                  onBlur={handleEmailBlur}
                 />
               </div>
               <div>
@@ -421,6 +450,39 @@ export default function CheckoutPage() {
                   <span className="font-medium">-{toEur(cardDiscount).toFixed(2)} &euro;</span>
                 </div>
               )}
+
+              {/* Cashback section */}
+              {cashbackBalance > 0 && (
+                <div
+                  className="rounded-lg p-3"
+                  style={{ background: '#f0fce8', border: '1px solid #d4edbc' }}
+                >
+                  <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={useCashback}
+                      onChange={(e) => setUseCashback(e.target.checked)}
+                      className="accent-[#61a229]"
+                    />
+                    <span className="text-sm font-medium" style={{ color: '#333' }}>
+                      Използвай кешбак баланс
+                    </span>
+                  </label>
+                  <p className="mt-1 text-xs" style={{ color: '#61a229' }}>
+                    Наличен баланс: {toEur(cashbackBalance).toFixed(2)} &euro;
+                  </p>
+                  {useCashback && cashbackApplied > 0 && (
+                    <div className="mt-1 flex justify-between text-sm font-medium" style={{ color: '#61a229' }}>
+                      <span>Кешбак отстъпка</span>
+                      <span>-{toEur(cashbackApplied).toFixed(2)} &euro;</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              {cashbackLoading && (
+                <p className="text-xs" style={{ color: '#999' }}>Проверка на кешбак баланс...</p>
+              )}
+
               <div
                 className="flex justify-between pt-3 text-base font-bold"
                 style={{ borderTop: '1px solid #eee' }}
@@ -428,6 +490,13 @@ export default function CheckoutPage() {
                 <span>Общо</span>
                 <span>{toEur(total).toFixed(2)} &euro;</span>
               </div>
+
+              {/* Cashback earned info */}
+              {cashbackEarned > 0 && (
+                <p className="text-xs" style={{ color: '#61a229' }}>
+                  С тази поръчка ще спечелите {toEur(cashbackEarned).toFixed(2)} &euro; кешбак!
+                </p>
+              )}
             </div>
 
             <button

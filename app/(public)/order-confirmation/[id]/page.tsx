@@ -24,7 +24,7 @@ export default async function OrderConfirmationPage({
 
   const { data: order } = await supabase
     .from('orders')
-    .select('*, customers(name, email)')
+    .select('*, customers(name, email, address)')
     .eq('id', id)
     .single()
 
@@ -36,7 +36,8 @@ export default async function OrderConfirmationPage({
   const total = Number(order.total ?? 0)
   const shipping = Number(order.shipping_cost ?? 0)
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const customer = order.customers as { name: string; email: string | null } | null
+  const customer = order.customers as { name: string; email: string | null; address: Record<string, unknown> | null } | null
+  const cashbackEarned = Math.round(total * 5) / 100 // 5% cashback
 
   return (
     <div
@@ -116,6 +117,16 @@ export default async function OrderConfirmationPage({
             </div>
           </div>
         </div>
+
+        {/* Cashback earned */}
+        {cashbackEarned > 0 && (
+          <div
+            className="mt-4 rounded-lg p-3 text-sm font-medium"
+            style={{ background: '#f0fce8', color: '#3d7a0a', border: '1px solid #d4edbc' }}
+          >
+            Спечелихте {toEur(cashbackEarned).toFixed(2)} &euro; кешбак за следващата поръчка!
+          </div>
+        )}
 
         {/* CTA */}
         <Link

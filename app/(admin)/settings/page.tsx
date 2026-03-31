@@ -13,6 +13,8 @@ import { Badge } from '@/components/ui/badge'
 import { UserForm } from '@/components/admin/settings/user-form'
 import { DeleteUserButton } from '@/components/admin/settings/delete-user-button'
 import { RoleSelect } from '@/components/admin/settings/role-select'
+import { CashbackSettings } from '@/components/admin/settings/cashback-settings'
+import { getSiteSettings } from '@/lib/settings'
 import { Users } from 'lucide-react'
 
 export default async function SettingsPage() {
@@ -23,10 +25,13 @@ export default async function SettingsPage() {
   }
 
   const supabase = await createServerSupabaseClient()
-  const { data: users } = await supabase
-    .from('users')
-    .select('id, name, email, role, created_at')
-    .order('created_at', { ascending: false })
+  const [{ data: users }, siteSettings] = await Promise.all([
+    supabase
+      .from('users')
+      .select('id, name, email, role, created_at')
+      .order('created_at', { ascending: false }),
+    getSiteSettings(),
+  ])
 
   return (
     <div>
@@ -35,10 +40,15 @@ export default async function SettingsPage() {
         <div>
           <h1 className="text-3xl font-bold">Настройки</h1>
           <p className="mt-1 text-muted-foreground">
-            Управление на потребители
+            Управление на потребители и настройки на магазина
           </p>
         </div>
         <UserForm />
+      </div>
+
+      {/* Cashback settings */}
+      <div className="mt-8">
+        <CashbackSettings currentPercent={siteSettings.cashback_percent} />
       </div>
 
       {/* Table */}

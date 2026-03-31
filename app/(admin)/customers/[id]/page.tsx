@@ -47,6 +47,10 @@ export default async function CustomerProfilePage({
       ? customer.address
       : null
 
+  const cashbackBalance = address
+    ? Number((address as Record<string, unknown>).cashback_balance ?? 0)
+    : 0
+
   return (
     <div>
       {/* Header */}
@@ -98,7 +102,7 @@ export default async function CustomerProfilePage({
         </div>
 
         {/* Stats */}
-        <div className="lg:col-span-2 grid grid-cols-3 gap-4">
+        <div className="lg:col-span-2 grid grid-cols-2 gap-4">
           <div className="rounded-lg border border-border bg-card p-6 text-center">
             <p className="text-sm text-muted-foreground">Общо поръчки</p>
             <p className="mt-2 text-3xl font-bold">{totalOrders}</p>
@@ -113,6 +117,12 @@ export default async function CustomerProfilePage({
             <p className="text-sm text-muted-foreground">Средна поръчка</p>
             <p className="mt-2 text-3xl font-bold font-mono">
               {toEur(avgOrderValue).toFixed(2)} &euro;
+            </p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-6 text-center">
+            <p className="text-sm text-muted-foreground">Кешбак баланс</p>
+            <p className="mt-2 text-3xl font-bold font-mono" style={{ color: cashbackBalance > 0 ? '#61a229' : undefined }}>
+              {toEur(cashbackBalance).toFixed(2)} &euro;
             </p>
           </div>
         </div>

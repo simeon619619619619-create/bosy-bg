@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { updateSiteSettings } from '@/lib/settings'
 
 function getServiceClient() {
   return createClient(
@@ -82,4 +83,9 @@ export async function deleteUser(id: string) {
 
   revalidatePath('/settings')
   redirect('/settings')
+}
+
+export async function updateCashbackPercent(percent: number) {
+  await updateSiteSettings({ cashback_percent: Math.min(30, Math.max(0, percent)) })
+  revalidatePath('/settings')
 }

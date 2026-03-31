@@ -12,6 +12,13 @@ import {
 } from '@/components/ui/table'
 import { Search, Users } from 'lucide-react'
 
+function getCashback(address: unknown): number {
+  if (typeof address === 'object' && address !== null) {
+    return Number((address as Record<string, unknown>).cashback_balance ?? 0)
+  }
+  return 0
+}
+
 export default async function CustomersPage({
   searchParams,
 }: {
@@ -76,6 +83,7 @@ export default async function CustomersPage({
                 <TableHead>Телефон</TableHead>
                 <TableHead>Поръчки</TableHead>
                 <TableHead>Общо похарчени</TableHead>
+                <TableHead>Кешбак</TableHead>
                 <TableHead>Дата</TableHead>
               </TableRow>
             </TableHeader>
@@ -98,6 +106,9 @@ export default async function CustomersPage({
                   <TableCell>{customer.total_orders ?? 0}</TableCell>
                   <TableCell className="font-mono">
                     {toEur(Number(customer.total_spent ?? 0)).toFixed(2)} &euro;
+                  </TableCell>
+                  <TableCell className="font-mono" style={{ color: getCashback(customer.address) > 0 ? '#61a229' : undefined }}>
+                    {toEur(getCashback(customer.address)).toFixed(2)} &euro;
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(customer.created_at).toLocaleDateString('bg-BG')}

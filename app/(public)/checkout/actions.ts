@@ -2,6 +2,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { sendNewOrderNotification } from '@/lib/resend/client'
+import { getSiteSettings } from '@/lib/settings'
 
 interface OrderItem {
   id: string
@@ -21,7 +22,38 @@ interface CreateOrderInput {
   notes: string
   paymentMethod: 'cod' | 'card'
   cardDiscount: number
+  cashbackUsed: number
   items: OrderItem[]
+}
+
+/** Helper: extract cashback_balance from customer address JSON */
+function getCashbackFromAddress(address: unknown): number {
+  if (typeof address === 'object' && address !== null) {
+    return Number((address as Record<string, unknown>).cashback_balance ?? 0)
+  }
+  return 0
+}
+
+/** Lookup cashback balance for a customer email */
+export async function getCashbackPercent(): Promise<number> {
+  const { cashback_percent } = await getSiteSettings()
+  return cashback_percent
+}
+
+export async function lookupCashback(email: string): Promise<{ balance: number }> {
+  if (!email) return { balance: 0 }
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+  const { data } = await supabase
+    .from('customers')
+    .select('address')
+    .eq('email', email.toLowerCase().trim())
+    .single()
+
+  if (!data) return { balance: 0 }
+  return { balance: getCashbackFromAddress(data.address) }
 }
 
 function generateOrderNumber(): string {
@@ -31,7 +63,7 @@ function generateOrderNumber(): string {
   return `B${datePart}-${randomPart}`
 }
 
-export async function createOrder(input: CreateOrderInput): Promise<{ orderId: string; orderNumber: string }> {
+export async function createOrder(input: CreateOrderInput): Promise<{ orderId: string; orderNumber: string; cashbackEarned: number }> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -42,21 +74,29 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
   const shippingCost = subtotal >= 78.15 ? 0 : 5.99
   const codFee = input.paymentMethod === 'cod' ? 0.99 : 0
   const discount = input.cardDiscount ?? 0
-  const total = subtotal + shippingCost + codFee - discount
+  const cashbackUsed = Math.max(0, input.cashbackUsed ?? 0)
+  const total = Math.max(0, subtotal + shippingCost + codFee - discount - cashbackUsed)
 
   // 1. Upsert customer by email
   const { data: existingCustomer } = await supabase
     .from('customers')
-    .select('id, total_orders, total_spent')
+    .select('id, total_orders, total_spent, address')
     .eq('email', input.email)
     .single()
 
   let customerId: string
+  let currentCashback = 0
 
   if (existingCustomer) {
     customerId = existingCustomer.id
+    currentCashback = getCashbackFromAddress(existingCustomer.address)
 
-    // Update customer info (name/phone/address might change)
+    // Validate: cashbackUsed cannot exceed actual balance
+    if (cashbackUsed > currentCashback + 0.01) {
+      throw new Error('Недостатъчен кешбак баланс')
+    }
+
+    // Update customer info (preserve cashback_balance — will update below)
     await supabase
       .from('customers')
       .update({
@@ -66,6 +106,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
           city: input.city,
           street: input.address,
           zip: input.postalCode,
+          cashback_balance: currentCashback, // preserve for now, updated below
         },
         updated_at: new Date().toISOString(),
       })
@@ -81,6 +122,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
           city: input.city,
           street: input.address,
           zip: input.postalCode,
+          cashback_balance: 0,
         },
         total_orders: 0,
         total_spent: 0,
@@ -123,7 +165,12 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     throw new Error(orderError?.message ?? 'Failed to create order')
   }
 
-  // 3. Update customer aggregates
+  // 3. Calculate cashback earned (5% of total paid)
+  const { cashback_percent } = await getSiteSettings()
+  const cashbackEarned = Math.round(total * cashback_percent) / 100
+  const newCashback = Math.round((currentCashback - cashbackUsed + cashbackEarned) * 100) / 100
+
+  // 4. Update customer aggregates + cashback balance
   const prevOrders = existingCustomer?.total_orders ?? 0
   const prevSpent = Number(existingCustomer?.total_spent ?? 0)
 
@@ -132,11 +179,17 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     .update({
       total_orders: prevOrders + 1,
       total_spent: prevSpent + total,
+      address: {
+        city: input.city,
+        street: input.address,
+        zip: input.postalCode,
+        cashback_balance: newCashback,
+      },
       updated_at: new Date().toISOString(),
     })
     .eq('id', customerId)
 
-  // 4. Send email notifications (customer + admin)
+  // 5. Send email notifications (customer + admin)
   const orderNum = String(order.order_number)
   await sendNewOrderNotification(
     input.email,
@@ -146,5 +199,5 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     input.items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }))
   ).catch(() => {})
 
-  return { orderId: order.id, orderNumber: orderNum }
+  return { orderId: order.id, orderNumber: orderNum, cashbackEarned }
 }
