@@ -59,7 +59,7 @@ const BENEFITS = [
     ),
     title: 'Общност',
     text: 'Стани част от общността на BOSY и се свържи с хора, които споделят твоите ценности. Присъедини се към BOSY обществото във Founder Club!',
-    link: 'https://founderclub.bg',
+    link: 'https://www.founderclub.bg/community/bosy-club',
   },
 ]
 
