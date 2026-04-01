@@ -154,9 +154,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       shipping_cost: shippingCost,
       total,
       status: 'pending',
-      payment_method: input.paymentMethod,
-      discount,
-      notes: input.notes || null,
+      notes: input.notes ? `[${input.paymentMethod.toUpperCase()}] ${input.notes}` : `[${input.paymentMethod.toUpperCase()}]`,
     })
     .select('id, order_number')
     .single()
