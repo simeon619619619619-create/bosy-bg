@@ -1512,10 +1512,13 @@ setTimeout(function() {
   document.getElementById('cookieBar').classList.add('show');
 }, 2000);
 
-// Show Easter popup after 3 seconds
-setTimeout(function() {
-  document.getElementById('easterPopup').style.display = 'flex';
-}, 3000);
+// Show Easter popup once per session
+if (!sessionStorage.getItem('easter-popup-seen')) {
+  setTimeout(function() {
+    document.getElementById('easterPopup').style.display = 'flex';
+    sessionStorage.setItem('easter-popup-seen', '1');
+  }, 3000);
+}
 
 // Nutritional overlays for product cards
 const nutriData = {
