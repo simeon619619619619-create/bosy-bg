@@ -26,11 +26,13 @@ const FOUNDERS = [
     name: 'Саня Ганчева',
     role: 'Мениджър търговия',
     bio: 'Завършила УНСС, специалност маркетинг. Отговаря за търговското развитие на BOSY и изграждането на партньорската мрежа.',
+    image: '/team/sanya.png',
   },
   {
     name: 'Бояна Генова',
     role: 'Маркетинг мениджър',
     bio: 'Икономист, сертифициран диетолог, създател на концепцията и рецептите на BOSY. Движещата сила зад всеки продукт.',
+    image: '/team/boyana.jpg',
   },
 ]
 
@@ -171,25 +173,18 @@ export default function AboutPage() {
                 style={{ background: '#fdf5f0', boxShadow: '0 4px 20px rgba(0,0,0,.06)' }}
               >
                 <div
-                  className="flex items-center justify-center"
+                  className="flex items-center justify-center overflow-hidden"
                   style={{
-                    height: 160,
+                    height: 220,
                     background: 'linear-gradient(135deg, rgba(167,139,250,.12), rgba(244,114,182,.06))',
                   }}
                 >
-                  <div
-                    className="flex items-center justify-center rounded-full text-3xl font-bold"
-                    style={{
-                      width: 100,
-                      height: 100,
-                      background: '#fff',
-                      color: '#a78bfa',
-                      border: '4px solid #a78bfa',
-                      fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-                    }}
-                  >
-                    {f.name.charAt(0)}
-                  </div>
+                  <img
+                    src={f.image}
+                    alt={f.name}
+                    className="object-cover object-top"
+                    style={{ width: '100%', height: '100%' }}
+                  />
                 </div>
                 <div style={{ padding: '28px 24px 32px' }}>
                   <h3
