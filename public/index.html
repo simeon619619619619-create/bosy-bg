@@ -1557,12 +1557,13 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
 
     const name = card.querySelector('h3').textContent.trim();
     const img = card.querySelector('.product-img img');
-    const priceBgn = card.querySelector('.price-bgn');
+    const priceEl = card.querySelector('.price-current');
 
-    // Parse BGN price
+    // Parse EUR price and convert to BGN for cart storage
     let price = 0;
-    if (priceBgn) {
-      price = parseFloat(priceBgn.textContent.replace(/[^\d.,]/g, '').replace(',', '.'));
+    if (priceEl) {
+      const eur = parseFloat(priceEl.textContent.replace(/[^\d.,]/g, '').replace(',', '.'));
+      price = Math.round(eur * 1.95583 * 100) / 100;
     }
 
     const slug = name.toLowerCase()
@@ -1618,7 +1619,7 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
       cartBadge.style.display = totalItems > 0 ? 'flex' : 'none';
     }
     if (cartPrice) {
-      cartPrice.textContent = totalPrice.toFixed(2) + ' \u20ac';
+      cartPrice.textContent = (totalPrice / 1.95583).toFixed(2) + ' \u20ac';
     }
   });
 });
@@ -1636,7 +1637,7 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
       if (totalItems > 0) cartBadge.style.display = 'flex';
     }
     if (cartPrice) {
-      cartPrice.textContent = totalPrice.toFixed(2) + ' \u20ac';
+      cartPrice.textContent = (totalPrice / 1.95583).toFixed(2) + ' \u20ac';
     }
   } catch(e) {}
 })();
@@ -1705,7 +1706,7 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
     const badge = document.querySelector('.cart-badge');
     const price = document.querySelector('.cart-price');
     if (badge) { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'flex' : 'none'; }
-    if (price) { price.textContent = totalPrice.toFixed(2) + ' \u20ac'; }
+    if (price) { price.textContent = (totalPrice / 1.95583).toFixed(2) + ' \u20ac'; }
   }
 
   window.renderCartSidebar = function() {
@@ -1713,13 +1714,14 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
     const itemsDiv = document.getElementById('cart-sidebar-items');
     const progressDiv = document.getElementById('cart-sidebar-progress');
     const footerDiv = document.getElementById('cart-sidebar-footer');
+    var toEur = function(bgn) { return bgn / 1.95583; };
     const totalPrice = cart.reduce((s, i) => s + i.price * i.quantity, 0);
     const remaining = FREE_DELIVERY_THRESHOLD - totalPrice;
     const progressPct = Math.min(100, (totalPrice / FREE_DELIVERY_THRESHOLD) * 100);
 
     // Progress bar
     if (remaining > 0) {
-      progressDiv.innerHTML = '<div style="font-size:13px;color:#333;margin-bottom:8px;">Още <strong>' + remaining.toFixed(2) + ' \u20ac</strong> до безплатна доставка</div>' +
+      progressDiv.innerHTML = '<div style="font-size:13px;color:#333;margin-bottom:8px;">Още <strong>' + toEur(remaining).toFixed(2) + ' \u20ac</strong> до безплатна доставка</div>' +
         '<div style="background:#e0e0e0;border-radius:10px;height:8px;overflow:hidden;"><div style="background:#61a229;height:100%;width:' + progressPct + '%;border-radius:10px;transition:width 0.3s;"></div></div>';
     } else {
       progressDiv.innerHTML = '<div style="font-size:13px;color:#61a229;font-weight:600;">&#10003; Имаш безплатна доставка!</div>';
@@ -1738,7 +1740,7 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
         (item.image ? '<img src="' + item.image + '" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;" />' : '<div style="width:60px;height:60px;background:#f0f0f0;border-radius:8px;flex-shrink:0;"></div>') +
         '<div style="flex:1;min-width:0;">' +
           '<p style="margin:0;font-size:13px;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + item.name + '</p>' +
-          '<p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#61a229;">' + item.price.toFixed(2) + ' \u20ac</p>' +
+          '<p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#61a229;">' + toEur(item.price).toFixed(2) + ' \u20ac</p>' +
           '<div style="display:flex;align-items:center;gap:8px;margin-top:6px;">' +
             '<button onclick="changeQtySidebar(' + i + ',-1)" style="width:26px;height:26px;border:1px solid #ddd;background:#fff;border-radius:4px;cursor:pointer;font-size:14px;">−</button>' +
             '<span style="font-size:13px;font-weight:600;min-width:20px;text-align:center;">' + item.quantity + '</span>' +
@@ -1746,7 +1748,7 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
           '</div>' +
         '</div>' +
         '<div style="text-align:right;flex-shrink:0;">' +
-          '<p style="margin:0;font-size:14px;font-weight:600;color:#333;">' + (item.price * item.quantity).toFixed(2) + ' \u20ac</p>' +
+          '<p style="margin:0;font-size:14px;font-weight:600;color:#333;">' + toEur(item.price * item.quantity).toFixed(2) + ' \u20ac</p>' +
           '<button onclick="removeFromSidebar(' + i + ')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:18px;margin-top:4px;" title="Премахни">&#128465;</button>' +
         '</div>' +
       '</div>';
@@ -1755,7 +1757,7 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
 
     // Footer
     footerDiv.style.display = 'block';
-    footerDiv.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;color:#333;margin-bottom:12px;"><span>Общо:</span><span>' + totalPrice.toFixed(2) + ' \u20ac</span></div>' +
+    footerDiv.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;color:#333;margin-bottom:12px;"><span>Общо:</span><span>' + toEur(totalPrice).toFixed(2) + ' \u20ac</span></div>' +
       '<a href="/cart" style="display:block;text-align:center;padding:12px;background:#f5f5f5;color:#333;border-radius:8px;font-weight:600;font-size:14px;margin-bottom:8px;text-decoration:none;">Преглед на количката</a>' +
       '<a href="/checkout" style="display:block;text-align:center;padding:12px;background:#61a229;color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">Поръчка</a>';
   };

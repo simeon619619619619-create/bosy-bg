@@ -10,7 +10,7 @@ export default function ContactsPage() {
       <section
         className="relative overflow-hidden text-center"
         style={{
-          background: 'linear-gradient(135deg, #61a229 0%, #4a8a1e 100%)',
+          background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)',
           color: '#fff',
           padding: '60px 30px',
         }}
