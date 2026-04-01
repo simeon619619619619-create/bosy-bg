@@ -58,7 +58,8 @@ const BENEFITS = [
       </svg>
     ),
     title: 'Общност',
-    text: 'Стани част от общността на BOSY и се свържи с хора, които споделят твоите ценности.',
+    text: 'Стани част от общността на BOSY и се свържи с хора, които споделят твоите ценности. Присъедини се към BOSY обществото във Founder Club!',
+    link: 'https://founderclub.bg',
   },
 ]
 
@@ -135,6 +136,22 @@ export default function BosyClubPage() {
                 {b.title}
               </h3>
               <p style={{ color: '#666', fontSize: '14.5px', lineHeight: 1.7 }}>{b.text}</p>
+              {b.link && (
+                <a
+                  href={b.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-4 rounded-full text-xs font-bold uppercase tracking-wide transition-all hover:opacity-90"
+                  style={{
+                    background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)',
+                    color: '#fff',
+                    padding: '10px 24px',
+                    fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+                  }}
+                >
+                  Founder Club &rarr;
+                </a>
+              )}
             </div>
           ))}
         </div>
