@@ -198,7 +198,7 @@ export default async function ProductPage({
             {/* Shelf life */}
             {variants.shelf_life && (
               <p className="mt-5 text-xs leading-relaxed" style={{ color: '#999' }}>
-                Срок на годност: {variants.shelf_life}
+                {variants.shelf_life}
               </p>
             )}
           </div>
