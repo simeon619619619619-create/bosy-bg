@@ -37,13 +37,8 @@ export function Header() {
       >
         <div className="flex items-center justify-between mx-auto px-5" style={{ maxWidth: 1400, padding: '12px 20px' }}>
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <span
-              className="text-2xl font-extrabold tracking-widest"
-              style={{ color: '#61a229', fontFamily: 'Montserrat, sans-serif' }}
-            >
-              BOSY
-            </span>
+          <Link href="/" className="flex items-center">
+            <img src="/bosy-logo.jpg" alt="BOSY" style={{ height: 32 }} />
           </Link>
 
           {/* Desktop Nav */}
