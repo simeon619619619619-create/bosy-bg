@@ -35,7 +35,7 @@ export default function CustomerLoginPage() {
       return
     }
 
-    router.push('/account')
+    router.push('/')
     router.refresh()
   }
 
