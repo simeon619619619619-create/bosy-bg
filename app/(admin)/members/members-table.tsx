@@ -206,81 +206,115 @@ function ActionButton({
 
 // ── User Actions Dropdown ────────────────────────────────────
 function UserActions({ user }: { user: RegisteredUser }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
-        <MoreHorizontal className="size-4" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" side="bottom">
-        <DropdownMenuItem
-          onSelect={(e) => e.preventDefault()}
-          render={<div />}
-        >
-          <ActionButton
-            user={user}
-            action={() => resetUserPassword(user.id, user.email)}
-            label="Нулиране на парола"
-            pendingLabel="Изпращане..."
-            icon={KeyRound}
-          />
-        </DropdownMenuItem>
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [delPending, startDelTransition] = useTransition()
 
-        {!user.email_verified && (
+  function handleDelete() {
+    startDelTransition(async () => {
+      try {
+        await deleteAuthUser(user.id)
+        setDeleteOpen(false)
+      } catch (e) {
+        alert((e as Error).message)
+      }
+    })
+  }
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+          <MoreHorizontal className="size-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" side="bottom">
           <DropdownMenuItem
             onSelect={(e) => e.preventDefault()}
             render={<div />}
           >
             <ActionButton
               user={user}
-              action={() => verifyUserEmail(user.id)}
-              label="Потвърди имейл"
-              pendingLabel="Потвърждаване..."
-              icon={ShieldCheck}
+              action={() => resetUserPassword(user.id, user.email)}
+              label="Нулиране на парола"
+              pendingLabel="Изпращане..."
+              icon={KeyRound}
             />
           </DropdownMenuItem>
-        )}
 
-        <DropdownMenuItem
-          onSelect={(e) => e.preventDefault()}
-          render={<div />}
-        >
-          <CashbackDialog user={user} />
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem
-          onSelect={(e) => e.preventDefault()}
-          render={<div />}
-        >
-          {user.banned ? (
-            <ActionButton
-              user={user}
-              action={() => unbanUser(user.id)}
-              label="Разблокирай"
-              pendingLabel="Разблокиране..."
-              icon={ShieldOff}
-            />
-          ) : (
-            <ActionButton
-              user={user}
-              action={() => banUser(user.id)}
-              label="Блокирай"
-              pendingLabel="Блокиране..."
-              icon={Ban}
-              variant="destructive"
-            />
+          {!user.email_verified && (
+            <DropdownMenuItem
+              onSelect={(e) => e.preventDefault()}
+              render={<div />}
+            >
+              <ActionButton
+                user={user}
+                action={() => verifyUserEmail(user.id)}
+                label="Потвърди имейл"
+                pendingLabel="Потвърждаване..."
+                icon={ShieldCheck}
+              />
+            </DropdownMenuItem>
           )}
-        </DropdownMenuItem>
 
-        <DropdownMenuItem
-          onSelect={(e) => e.preventDefault()}
-          render={<div />}
-        >
-          <DeleteDialog user={user} />
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <DropdownMenuItem
+            onSelect={(e) => e.preventDefault()}
+            render={<div />}
+          >
+            <CashbackDialog user={user} />
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onSelect={(e) => e.preventDefault()}
+            render={<div />}
+          >
+            {user.banned ? (
+              <ActionButton
+                user={user}
+                action={() => unbanUser(user.id)}
+                label="Разблокирай"
+                pendingLabel="Разблокиране..."
+                icon={ShieldOff}
+              />
+            ) : (
+              <ActionButton
+                user={user}
+                action={() => banUser(user.id)}
+                label="Блокирай"
+                pendingLabel="Блокиране..."
+                icon={Ban}
+                variant="destructive"
+              />
+            )}
+          </DropdownMenuItem>
+
+          <DropdownMenuItem onSelect={() => setDeleteOpen(true)}>
+            <Trash2 className="size-4 text-destructive" />
+            <span className="text-destructive">Изтрий</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Изтриване на потребител</DialogTitle>
+            <DialogDescription>
+              Сигурни ли сте, че искате да изтриете {user.name ?? user.email}?
+              Това действие е необратимо.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline" />}>
+              Отказ
+            </DialogClose>
+            <Button variant="destructive" onClick={handleDelete} disabled={delPending}>
+              {delPending ? 'Изтриване...' : 'Изтрий'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
