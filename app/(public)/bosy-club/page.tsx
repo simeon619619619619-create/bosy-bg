@@ -184,7 +184,7 @@ export default function BosyClubPage() {
           Регистрирай се безплатно и започни да се възползваш от всички предимства на BOSY Club.
         </p>
         <Link
-          href="/login"
+          href="/register"
           className="inline-block rounded-full font-bold text-[15px] uppercase tracking-wider transition-all duration-300 hover:opacity-90"
           style={{
             background: '#61a229',

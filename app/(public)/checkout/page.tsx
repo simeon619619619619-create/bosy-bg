@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ShoppingBag, ArrowLeft } from 'lucide-react'
@@ -10,6 +10,16 @@ import { toEur } from '@/lib/currency'
 
 const SHIPPING_THRESHOLD = 78.15 // ~39.97€
 const SHIPPING_COST = 5.99
+
+interface CustomerProfile {
+  name: string
+  email: string
+  phone: string | null
+  city: string
+  street: string
+  zip: string
+  cashback_balance: number
+}
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -22,6 +32,24 @@ export default function CheckoutPage() {
   const [cashbackChecked, setCashbackChecked] = useState(false)
   const [cashbackLoading, setCashbackLoading] = useState(false)
   const [cashbackPercent, setCashbackPercent] = useState(5)
+  const [prefilled, setPrefilled] = useState<CustomerProfile | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  // Auto-fill from logged-in customer
+  useEffect(() => {
+    fetch('/api/customer/profile')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.customer) {
+          const c = data.customer as CustomerProfile
+          setPrefilled(c)
+          setCashbackBalance(c.cashback_balance)
+          if (c.cashback_balance > 0) setCashbackChecked(true)
+          getCashbackPercent().then((pct) => setCashbackPercent(pct)).catch(() => {})
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const subtotal = getCartTotal()
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
@@ -176,7 +204,7 @@ export default function CheckoutPage() {
         Поръчка
       </h1>
 
-      <form onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-3">
+      <form ref={formRef} onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-3">
         {/* Left: Form */}
         <div className="lg:col-span-2 space-y-6">
           {/* Customer info */}
@@ -202,6 +230,8 @@ export default function CheckoutPage() {
                   required
                   placeholder="Иван Иванов"
                   style={inputStyle}
+                  defaultValue={prefilled?.name ?? ''}
+                  key={`name-${prefilled?.name ?? ''}`}
                 />
               </div>
               <div>
@@ -216,6 +246,8 @@ export default function CheckoutPage() {
                   placeholder="ivan@example.com"
                   style={inputStyle}
                   onBlur={handleEmailBlur}
+                  defaultValue={prefilled?.email ?? ''}
+                  key={`email-${prefilled?.email ?? ''}`}
                 />
               </div>
               <div>
@@ -229,6 +261,8 @@ export default function CheckoutPage() {
                   required
                   placeholder="0888 123 456"
                   style={inputStyle}
+                  defaultValue={prefilled?.phone ?? ''}
+                  key={`phone-${prefilled?.phone ?? ''}`}
                 />
               </div>
             </div>
@@ -256,6 +290,8 @@ export default function CheckoutPage() {
                   type="text"
                   placeholder="София"
                   style={inputStyle}
+                  defaultValue={prefilled?.city ?? ''}
+                  key={`city-${prefilled?.city ?? ''}`}
                 />
               </div>
               <div>
@@ -268,6 +304,8 @@ export default function CheckoutPage() {
                   type="text"
                   placeholder="1000"
                   style={inputStyle}
+                  defaultValue={prefilled?.zip ?? ''}
+                  key={`zip-${prefilled?.zip ?? ''}`}
                 />
               </div>
               <div className="sm:col-span-2">
@@ -280,6 +318,8 @@ export default function CheckoutPage() {
                   type="text"
                   placeholder="ул. Витоша 15, ет. 3"
                   style={inputStyle}
+                  defaultValue={prefilled?.street ?? ''}
+                  key={`street-${prefilled?.street ?? ''}`}
                 />
               </div>
             </div>

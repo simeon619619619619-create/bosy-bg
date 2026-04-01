@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { ShoppingCart, User, Menu, X } from 'lucide-react'
 import { useCart } from './cart-provider'
+import { createClient } from '@/lib/supabase/client'
 
 const NAV_LINKS = [
   { href: '/', label: 'Начало' },
@@ -18,6 +19,7 @@ export function Header() {
   const { getCartCount } = useCart()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [customerName, setCustomerName] = useState<string | null>(null)
   const cartCount = getCartCount()
 
   useEffect(() => {
@@ -25,6 +27,26 @@ export function Header() {
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
   }, [])
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        const name = user.user_metadata?.full_name || user.email?.split('@')[0] || null
+        setCustomerName(name)
+      }
+    })
+  }, [])
+
+  const userHref = customerName ? '/account' : '/account/login'
+  const initials = customerName
+    ? customerName
+        .split(' ')
+        .map((w: string) => w[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : null
 
   return (
     <>
@@ -57,8 +79,22 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <Link href="/bosy-club" className="hidden sm:flex" title="Моят акаунт">
-              <User size={22} color="#333" />
+            <Link href={userHref} className="hidden sm:flex items-center gap-2" title={customerName ? 'Моят акаунт' : 'Вход'}>
+              {initials ? (
+                <span
+                  className="flex items-center justify-center rounded-full text-[11px] font-bold text-white"
+                  style={{ width: 28, height: 28, background: '#61a229' }}
+                >
+                  {initials}
+                </span>
+              ) : (
+                <User size={22} color="#333" />
+              )}
+              {customerName && (
+                <span className="text-xs font-medium hidden lg:inline" style={{ color: '#555', maxWidth: 100 }}>
+                  {customerName.split(' ')[0]}
+                </span>
+              )}
             </Link>
             <Link href="/cart" className="relative flex items-center gap-1">
               <ShoppingCart size={22} color="#333" />
@@ -106,6 +142,14 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+          <Link
+            href={userHref}
+            onClick={() => setMobileOpen(false)}
+            className="text-xl font-bold"
+            style={{ color: '#61a229', fontFamily: 'Montserrat, sans-serif' }}
+          >
+            {customerName ? 'Моят акаунт' : 'Вход'}
+          </Link>
         </div>
       )}
     </>
