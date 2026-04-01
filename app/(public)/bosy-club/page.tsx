@@ -149,7 +149,7 @@ export default function BosyClubPage() {
                     fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                   }}
                 >
-                  Founder Club &rarr;
+                  БОСИ КЛУБ &rarr;
                 </a>
               )}
             </div>
