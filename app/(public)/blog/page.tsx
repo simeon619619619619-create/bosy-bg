@@ -11,25 +11,25 @@ const FALLBACK_POSTS = [
     id: '1',
     title: 'BOSY - Здравословни и красиви',
     body: 'Здравословното хранене е ключът към красивата кожа, блестящата коса и доброто самочувствие. Научете как натуралните съставки в продуктите на BOSY подпомагат вашата красота отвътре навън, без компромис с вкуса.',
-    image_url: 'https://bosy.bg/wp-content/uploads/2020/11/BOSY-blog-1.jpg',
+    image_url: '/blog/blog-1.jpg',
   },
   {
     id: '2',
     title: 'Hunger for sweet? No more worried!',
     body: 'Желанието за сладко е напълно естествено, но не е нужно да се притеснявате. С BOSY можете да задоволите апетита си за сладко без добавена захар и без излишни калории. Открийте здравословните алтернативи.',
-    image_url: 'https://bosy.bg/wp-content/uploads/2020/11/BOSY-blog-2.jpg',
+    image_url: '/blog/blog-2.jpg',
   },
   {
     id: '3',
     title: 'Hollywood and Healthy Eating',
     body: 'Холивудските звезди отдавна са открили тайната на здравословното хранене. Вижте какви диети следват любимите ви знаменитости и как можете да приложите техните навици в ежедневието си с помощта на BOSY.',
-    image_url: 'https://bosy.bg/wp-content/uploads/2020/11/BOSY-blog-3.jpg',
+    image_url: '/blog/blog-3.jpg',
   },
   {
     id: '4',
     title: 'С BOSY храната е здраве',
     body: 'Храната е най-мощното лекарство, което имаме. С BOSY вярваме, че всяка хапка трябва да носи полза за тялото. Разберете как нашите продукти съчетават вкус и хранителна стойност за вашето здраве.',
-    image_url: 'https://bosy.bg/wp-content/uploads/2020/11/BOSY-blog-4.jpg',
+    image_url: '/blog/blog-4.jpg',
   },
 ]
 
@@ -114,7 +114,9 @@ export default async function BlogPage() {
                   <span
                     className="text-xs font-bold"
                     style={{
-                      color: '#61a229',
+                      background: 'linear-gradient(135deg, #a78bfa, #f472b6, #60a5fa)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
                       fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                     }}
                   >
