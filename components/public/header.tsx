@@ -83,7 +83,7 @@ export function Header() {
               {initials ? (
                 <span
                   className="flex items-center justify-center rounded-full text-[11px] font-bold text-white"
-                  style={{ width: 28, height: 28, background: '#61a229' }}
+                  style={{ width: 28, height: 28, background: '#a78bfa' }}
                 >
                   {initials}
                 </span>
@@ -101,7 +101,7 @@ export function Header() {
               {cartCount > 0 && (
                 <span
                   className="absolute -top-1.5 -right-2 flex items-center justify-center rounded-full text-[10px] font-bold text-white"
-                  style={{ background: '#61a229', width: 18, height: 18 }}
+                  style={{ background: '#a78bfa', width: 18, height: 18 }}
                 >
                   {cartCount}
                 </span>
@@ -146,7 +146,7 @@ export function Header() {
             href={userHref}
             onClick={() => setMobileOpen(false)}
             className="text-xl font-bold"
-            style={{ color: '#61a229', fontFamily: 'Montserrat, sans-serif' }}
+            style={{ color: '#a78bfa', fontFamily: 'Montserrat, sans-serif' }}
           >
             {customerName ? 'Моят акаунт' : 'Вход'}
           </Link>

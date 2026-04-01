@@ -107,7 +107,7 @@ export default async function CustomersPage({
                   <TableCell className="font-mono">
                     {toEur(Number(customer.total_spent ?? 0)).toFixed(2)} &euro;
                   </TableCell>
-                  <TableCell className="font-mono" style={{ color: getCashback(customer.address) > 0 ? '#61a229' : undefined }}>
+                  <TableCell className="font-mono" style={{ color: getCashback(customer.address) > 0 ? '#a78bfa' : undefined }}>
                     {toEur(getCashback(customer.address)).toFixed(2)} &euro;
                   </TableCell>
                   <TableCell className="text-muted-foreground">

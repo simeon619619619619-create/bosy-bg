@@ -73,13 +73,13 @@ export function ShopContent({
               color: '#333',
               background: '#fdf5f0',
               // @ts-expect-error CSS custom property
-              '--tw-ring-color': '#61a229',
+              '--tw-ring-color': '#a78bfa',
             }}
           />
           <button
             type="submit"
             className="h-10 cursor-pointer rounded-md px-4 text-sm font-semibold text-white transition-colors"
-            style={{ background: '#61a229' }}
+            style={{ background: '#a78bfa' }}
           >
             Търси
           </button>
@@ -135,7 +135,7 @@ export function ShopContent({
 
       {/* Loading indicator */}
       {isPending && (
-        <div className="mb-4 text-center text-sm" style={{ color: '#61a229' }}>
+        <div className="mb-4 text-center text-sm" style={{ color: '#a78bfa' }}>
           Зареждане...
         </div>
       )}

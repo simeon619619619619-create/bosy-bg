@@ -26,13 +26,13 @@ export async function sendNewOrderNotification(
 
   const emailHtml = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;">
-      <div style="background:#61a229;padding:24px;text-align:center;">
+      <div style="background:#a78bfa;padding:24px;text-align:center;">
         <h1 style="color:#fff;margin:0;font-size:28px;letter-spacing:3px;">BOSY</h1>
       </div>
       <div style="padding:32px;">
         <h2 style="color:#333;margin:0 0 8px;">Благодарим за поръчката!</h2>
         <p style="color:#666;">Здравейте, ${customerName}!</p>
-        <p style="color:#666;">Вашата поръчка <strong style="color:#61a229;">#${orderNumber}</strong> е получена и ще бъде обработена скоро.</p>
+        <p style="color:#666;">Вашата поръчка <strong style="color:#a78bfa;">#${orderNumber}</strong> е получена и ще бъде обработена скоро.</p>
         <table style="width:100%;border-collapse:collapse;margin:24px 0;">
           <thead><tr style="background:#f5f5f5;">
             <th style="padding:8px;text-align:left;">Продукт</th>

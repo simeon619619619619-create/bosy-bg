@@ -10,7 +10,7 @@ export function Footer() {
           <div>
             <span
               className="inline-block text-2xl font-extrabold tracking-widest mb-4"
-              style={{ color: '#61a229', fontFamily: 'Montserrat, sans-serif' }}
+              style={{ color: '#a78bfa', fontFamily: 'Montserrat, sans-serif' }}
             >
               BOSY
             </span>
@@ -68,10 +68,10 @@ export function Footer() {
               Страници
             </h4>
             <div className="flex flex-col gap-2.5">
-              <Link href="/about" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>За нас</Link>
-              <Link href="/contacts" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>Контакти</Link>
-              <Link href="/shop" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>Магазин</Link>
-              <Link href="/bosy-club" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>BOSY Club</Link>
+              <Link href="/about" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>За нас</Link>
+              <Link href="/contacts" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>Контакти</Link>
+              <Link href="/shop" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>Магазин</Link>
+              <Link href="/bosy-club" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>BOSY Club</Link>
             </div>
           </div>
 
@@ -84,9 +84,9 @@ export function Footer() {
               Информация
             </h4>
             <div className="flex flex-col gap-2.5">
-              <Link href="/privacy-policy" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>Условия за ползване</Link>
-              <Link href="/cookies" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>Cookie Policy</Link>
-              <Link href="/blog" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>Блог</Link>
+              <Link href="/privacy-policy" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>Условия за ползване</Link>
+              <Link href="/cookies" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>Cookie Policy</Link>
+              <Link href="/blog" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>Блог</Link>
             </div>
           </div>
 
@@ -99,9 +99,9 @@ export function Footer() {
               Контакти
             </h4>
             <div className="flex flex-col gap-2.5">
-              <a href="tel:+359887808808" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>+359 887 808 808</a>
-              <a href="tel:+359879898988" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>+359 879 898 988</a>
-              <a href="mailto:info@bosy.bg" className="text-[13px] transition-colors duration-200 hover:text-[#61a229]" style={{ color: '#aaa' }}>info@bosy.bg</a>
+              <a href="tel:+359887808808" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>+359 887 808 808</a>
+              <a href="tel:+359879898988" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>+359 879 898 988</a>
+              <a href="mailto:info@bosy.bg" className="text-[13px] transition-colors duration-200 hover:text-[#a78bfa]" style={{ color: '#aaa' }}>info@bosy.bg</a>
             </div>
           </div>
         </div>

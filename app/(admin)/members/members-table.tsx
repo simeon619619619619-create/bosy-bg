@@ -348,7 +348,7 @@ export function MembersTable({ users }: { users: RegisteredUser[] }) {
             <TableCell
               className="font-mono"
               style={{
-                color: user.cashback_balance > 0 ? '#61a229' : undefined,
+                color: user.cashback_balance > 0 ? '#a78bfa' : undefined,
               }}
             >
               {toEur(user.cashback_balance).toFixed(2)} &euro;

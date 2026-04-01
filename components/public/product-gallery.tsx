@@ -56,7 +56,7 @@ export function ProductGallery({ images, name }: Props) {
               style={{
                 width: '72px',
                 height: '72px',
-                border: i === active ? '2px solid #61a229' : '2px solid #e5e5e5',
+                border: i === active ? '2px solid #a78bfa' : '2px solid #e5e5e5',
                 opacity: i === active ? 1 : 0.7,
                 background: '#fff',
               }}

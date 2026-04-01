@@ -77,7 +77,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span
             className="text-base font-bold"
-            style={{ color: '#61a229', fontFamily: 'var(--font-sans)' }}
+            style={{ color: '#a78bfa', fontFamily: 'var(--font-sans)' }}
           >
             {toEur(product.price).toFixed(2)} &euro;
           </span>
@@ -100,9 +100,9 @@ export function ProductCard({ product }: { product: Product }) {
           <button
             onClick={handleAdd}
             className="mt-auto w-full cursor-pointer rounded-md px-4 py-2.5 text-center text-sm font-bold tracking-wide text-white transition-colors"
-            style={{ background: '#61a229', fontFamily: 'var(--font-sans)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = '#4e8a1f')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = '#61a229')}
+            style={{ background: '#a78bfa', fontFamily: 'var(--font-sans)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#8b5cf6')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = '#a78bfa')}
           >
             Добави в количката
           </button>

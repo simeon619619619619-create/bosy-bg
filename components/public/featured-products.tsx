@@ -99,7 +99,7 @@ export function FeaturedProducts({ products }: { products: Product[] }) {
               }
               className="block w-full rounded-lg text-[13px] font-bold uppercase tracking-wide transition-colors duration-300 cursor-pointer"
               style={{
-                background: '#61a229',
+                background: '#a78bfa',
                 color: '#fff',
                 padding: '10px',
                 border: 'none',

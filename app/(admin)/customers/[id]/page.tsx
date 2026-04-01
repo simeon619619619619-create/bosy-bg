@@ -121,7 +121,7 @@ export default async function CustomerProfilePage({
           </div>
           <div className="rounded-lg border border-border bg-card p-6 text-center">
             <p className="text-sm text-muted-foreground">Кешбак баланс</p>
-            <p className="mt-2 text-3xl font-bold font-mono" style={{ color: cashbackBalance > 0 ? '#61a229' : undefined }}>
+            <p className="mt-2 text-3xl font-bold font-mono" style={{ color: cashbackBalance > 0 ? '#a78bfa' : undefined }}>
               {toEur(cashbackBalance).toFixed(2)} &euro;
             </p>
           </div>
