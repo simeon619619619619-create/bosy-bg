@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { updateUserRole } from '@/app/(admin)/settings/actions'
+import { updateUserRole } from '@/app/admin/settings/actions'
 
 export function RoleSelect({
   userId,

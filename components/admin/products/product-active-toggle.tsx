@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react'
 import { Switch } from '@/components/ui/switch'
-import { toggleProductActive } from '@/app/(admin)/products/actions'
+import { toggleProductActive } from '@/app/admin/products/actions'
 
 export function ProductActiveToggle({
   id,

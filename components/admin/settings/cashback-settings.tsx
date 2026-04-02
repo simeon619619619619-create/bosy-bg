@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { updateCashbackPercent } from '@/app/(admin)/settings/actions'
+import { updateCashbackPercent } from '@/app/admin/settings/actions'
 
 export function CashbackSettings({ currentPercent }: { currentPercent: number }) {
   const [percent, setPercent] = useState(currentPercent)

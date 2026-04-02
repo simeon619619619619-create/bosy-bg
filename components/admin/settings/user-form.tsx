@@ -22,7 +22,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import { Plus } from 'lucide-react'
-import { createUser } from '@/app/(admin)/settings/actions'
+import { createUser } from '@/app/admin/settings/actions'
 
 export function UserForm() {
   const [open, setOpen] = useState(false)

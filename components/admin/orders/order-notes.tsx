@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
-import { updateOrderNotes } from '@/app/(admin)/orders/actions'
+import { updateOrderNotes } from '@/app/admin/orders/actions'
 
 export function OrderNotes({ orderId, initialNotes }: { orderId: string; initialNotes: string }) {
   const [notes, setNotes] = useState(initialNotes)

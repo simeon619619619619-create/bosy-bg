@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
-import { confirmOrder, cancelOrder } from '@/app/(admin)/orders/actions'
+import { confirmOrder, cancelOrder } from '@/app/admin/orders/actions'
 
 export function ConfirmOrderButton({ orderId }: { orderId: string }) {
   const [isPending, startTransition] = useTransition()

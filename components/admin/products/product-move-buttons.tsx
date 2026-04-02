@@ -3,7 +3,7 @@
 import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { ArrowUp, ArrowDown } from 'lucide-react'
-import { moveProduct } from '@/app/(admin)/products/actions'
+import { moveProduct } from '@/app/admin/products/actions'
 
 export function ProductMoveButtons({
   id,

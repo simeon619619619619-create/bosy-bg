@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { createContent, updateContent } from '@/app/(admin)/content/actions'
+import { createContent, updateContent } from '@/app/admin/content/actions'
 
 interface ContentBlock {
   id: string

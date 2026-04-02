@@ -13,7 +13,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import { Trash2 } from 'lucide-react'
-import { deleteUser } from '@/app/(admin)/settings/actions'
+import { deleteUser } from '@/app/admin/settings/actions'
 
 export function DeleteUserButton({
   id,

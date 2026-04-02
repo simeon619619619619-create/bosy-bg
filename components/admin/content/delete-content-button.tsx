@@ -13,7 +13,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import { Trash2 } from 'lucide-react'
-import { deleteContent } from '@/app/(admin)/content/actions'
+import { deleteContent } from '@/app/admin/content/actions'
 
 export function DeleteContentButton({
   id,

@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { OrderStatusBadge } from '@/components/admin/orders/order-status-badge'
-import { bulkConfirmOrders, bulkCancelOrders } from '@/app/(admin)/orders/actions'
+import { bulkConfirmOrders, bulkCancelOrders } from '@/app/admin/orders/actions'
 import { Search } from 'lucide-react'
 
 interface Order {

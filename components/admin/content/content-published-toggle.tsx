@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react'
 import { Switch } from '@/components/ui/switch'
-import { togglePublished } from '@/app/(admin)/content/actions'
+import { togglePublished } from '@/app/admin/content/actions'
 
 export function ContentPublishedToggle({
   id,
