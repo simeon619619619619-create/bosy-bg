@@ -53,7 +53,7 @@ export default function CheckoutPage() {
 
   const subtotal = getCartTotal()
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-  const codFee = paymentMethod === 'cod' ? 0.99 : 0
+  const codFee = paymentMethod === 'cod' ? 0.99 * 1.95583 : 0 // 0.99 EUR in BGN
   const cardDiscount = paymentMethod === 'card' ? subtotal * 0.05 : 0
   const maxBeforeCashback = subtotal + shipping + codFee - cardDiscount
   const cashbackApplied = useCashback ? Math.min(cashbackBalance, maxBeforeCashback) : 0
