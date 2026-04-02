@@ -54,7 +54,12 @@ export async function deletePromoCode(id: string) {
 }
 
 /** Validate a promo code for checkout */
-export async function validatePromoCode(code: string, subtotalBgn: number): Promise<{
+export async function validatePromoCode(
+  code: string,
+  subtotalBgn: number,
+  customerEmail?: string,
+  hasSaleItems?: boolean
+): Promise<{
   valid: boolean
   error?: string
   discount_type?: string
@@ -62,6 +67,10 @@ export async function validatePromoCode(code: string, subtotalBgn: number): Prom
   code?: string
 }> {
   if (!code) return { valid: false, error: 'Въведете промо код' }
+
+  if (hasSaleItems) {
+    return { valid: false, error: 'Промо кодът не важи за намалени продукти' }
+  }
 
   const supabase = getSupabase()
   const { data: promo } = await supabase
@@ -83,6 +92,59 @@ export async function validatePromoCode(code: string, subtotalBgn: number): Prom
 
   if (promo.min_order_amount && subtotalBgn < Number(promo.min_order_amount)) {
     return { valid: false, error: `Минимална поръчка: ${(Number(promo.min_order_amount) / 1.95583).toFixed(2)} €` }
+  }
+
+  // Check one-time use per customer email
+  if (customerEmail) {
+    const promoTag = `[PROMO:${promo.code}]`
+    const { data: usedOrders } = await supabase
+      .from('orders')
+      .select('id')
+      .ilike('notes', `%${promoTag}%`)
+      .limit(1)
+
+    // Also check by customer email via customer_id
+    if (usedOrders && usedOrders.length === 0) {
+      // Check by joining customer email
+      const { data: customer } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('email', customerEmail.toLowerCase().trim())
+        .single()
+
+      if (customer) {
+        const { data: customerOrders } = await supabase
+          .from('orders')
+          .select('id, notes')
+          .eq('customer_id', customer.id)
+          .ilike('notes', `%${promoTag}%`)
+          .limit(1)
+
+        if (customerOrders && customerOrders.length > 0) {
+          return { valid: false, error: 'Вече сте използвали този промо код' }
+        }
+      }
+    } else if (usedOrders && usedOrders.length > 0) {
+      // Generic check — found order with this promo for this email context
+      const { data: customer } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('email', customerEmail.toLowerCase().trim())
+        .single()
+
+      if (customer) {
+        const { data: customerOrders } = await supabase
+          .from('orders')
+          .select('id, notes')
+          .eq('customer_id', customer.id)
+          .ilike('notes', `%${promoTag}%`)
+          .limit(1)
+
+        if (customerOrders && customerOrders.length > 0) {
+          return { valid: false, error: 'Вече сте използвали този промо код' }
+        }
+      }
+    }
   }
 
   return {

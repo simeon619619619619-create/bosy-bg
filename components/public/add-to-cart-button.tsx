@@ -9,6 +9,7 @@ interface Props {
     name: string
     slug: string
     price: number
+    compare_at_price?: number | null
     images?: string[] | null
     stock?: number | null
   }
@@ -29,6 +30,7 @@ export function AddToCartButton({ product }: Props) {
         name: product.name,
         slug: product.slug,
         price: product.price,
+        compare_at_price: product.compare_at_price,
         image,
       },
       quantity

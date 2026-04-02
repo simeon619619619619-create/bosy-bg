@@ -59,8 +59,11 @@ export default function CheckoutPage() {
   const subtotal = getCartTotal()
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
   const codFee = paymentMethod === 'cod' ? 0.99 * 1.95583 : 0 // 0.99 EUR in BGN
-  const cardDiscount = paymentMethod === 'card' ? subtotal * 0.05 : 0
-  const promoDiscount = promoApplied
+  // Promo code and card discount cannot be combined
+  const hasPromo = !!promoApplied
+  const cardDiscount = (paymentMethod === 'card' && !hasPromo) ? subtotal * 0.05 : 0
+  const hasSaleItems = items.some(i => i.compare_at_price && i.compare_at_price > i.price)
+  const promoDiscount = (promoApplied && !hasSaleItems)
     ? promoApplied.discount_type === 'percent'
       ? subtotal * (promoApplied.discount_value / 100)
       : promoApplied.discount_value
@@ -75,7 +78,9 @@ export default function CheckoutPage() {
     setPromoLoading(true)
     setPromoError(null)
     try {
-      const result = await validatePromoCode(promoCode, subtotal)
+      const emailEl = formRef.current?.querySelector<HTMLInputElement>('input[name="email"]')
+      const customerEmail = emailEl?.value?.trim() || prefilled?.email || ''
+      const result = await validatePromoCode(promoCode, subtotal, customerEmail, hasSaleItems)
       if (result.valid) {
         setPromoApplied({
           code: result.code!,
@@ -443,7 +448,10 @@ export default function CheckoutPage() {
                   >
                     -5% отстъпка
                   </span>
-                  <p className="text-xs" style={{ color: '#777' }}>Плащате онлайн с дебитна/кредитна карта</p>
+                  <p className="text-xs" style={{ color: '#777' }}>
+                    Плащате онлайн с дебитна/кредитна карта
+                    {hasPromo && ' (не се комбинира с промо код)'}
+                  </p>
                 </div>
               </label>
             </div>
