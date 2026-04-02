@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/table'
 import { OrderStatusBadge } from '@/components/admin/orders/order-status-badge'
 import { ArrowLeft } from 'lucide-react'
+import { SalesProcess } from '@/components/admin/customers/sales-process'
 
 export default async function CustomerProfilePage({
   params,
@@ -50,6 +51,10 @@ export default async function CustomerProfilePage({
   const cashbackBalance = address
     ? Number((address as Record<string, unknown>).cashback_balance ?? 0)
     : 0
+
+  const salesStep = address
+    ? ((address as Record<string, unknown>).sales_step as string | null) ?? null
+    : null
 
   return (
     <div>
@@ -126,6 +131,11 @@ export default async function CustomerProfilePage({
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Sales Process */}
+      <div className="mt-6">
+        <SalesProcess customerId={id} currentStep={salesStep} />
       </div>
 
       {/* Order history */}
