@@ -527,13 +527,13 @@ export default function CheckoutPage() {
                   </button>
                 </div>
               ) : (
-                <div className="flex gap-2">
+                <div className="flex gap-2 min-w-0">
                   <input
                     type="text"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                     placeholder="Промо код"
-                    className="flex-1 rounded-md border px-3 py-1.5 text-sm font-mono uppercase"
+                    className="min-w-0 flex-1 rounded-md border px-3 py-1.5 text-sm font-mono uppercase"
                     style={{ borderColor: promoError ? '#e74c3c' : '#ddd' }}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleApplyPromo() } }}
                   />
@@ -541,7 +541,7 @@ export default function CheckoutPage() {
                     type="button"
                     onClick={handleApplyPromo}
                     disabled={promoLoading || !promoCode.trim()}
-                    className="rounded-md px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                    className="shrink-0 rounded-md px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                     style={{ background: '#a78bfa' }}
                   >
                     {promoLoading ? '...' : 'Приложи'}
