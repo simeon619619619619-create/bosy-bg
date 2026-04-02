@@ -93,7 +93,7 @@ export default function BosyClubPage() {
             boxShadow: '0 4px 20px rgba(97, 162, 41, 0.3)',
           }}
         >
-          Стани член на <strong>BOSY Club</strong> и получи достъп до ексклузивни намаления, подаръци и безплатна доставка при всяка поръчка.
+          Стани член на <strong>BOSY Club</strong> и получи достъп до ексклузивни намаления и подаръци.
           <a
             href="https://www.founderclub.bg/community/bosy-club"
             target="_blank"
