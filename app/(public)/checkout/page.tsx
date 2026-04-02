@@ -9,8 +9,8 @@ import { createOrder, lookupCashback, getCashbackPercent } from './actions'
 import { validatePromoCode } from '@/app/admin/promo-codes/actions'
 import { toEur } from '@/lib/currency'
 
-const SHIPPING_THRESHOLD = 78.15 // ~39.97€
-const SHIPPING_COST = 5.99
+const SHIPPING_THRESHOLD = 69.99 * 1.95583 // 69.99€ in BGN
+const SHIPPING_COST = 3.99 * 1.95583 // 3.99€ in BGN
 
 interface CustomerProfile {
   name: string

@@ -74,7 +74,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
 
   // Calculate totals
   const subtotal = input.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shippingCost = subtotal >= 78.15 ? 0 : 5.99
+  const shippingCost = subtotal >= 69.99 * 1.95583 ? 0 : 3.99 * 1.95583
   const codFee = input.paymentMethod === 'cod' ? 0.99 * 1.95583 : 0 // 0.99 EUR in BGN
   const discount = input.cardDiscount ?? 0
   const promoDiscount = input.promoDiscount ?? 0
