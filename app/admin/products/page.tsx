@@ -42,7 +42,7 @@ export default async function ProductsPage({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Продукти</h1>
-        <Button render={<Link href="/products/new" />}>
+        <Button render={<Link href="/admin/products/new" />}>
           <Plus data-icon="inline-start" />
           Нов продукт
         </Button>
@@ -74,7 +74,7 @@ export default async function ProductsPage({
               : 'Добави първия си продукт'}
           </p>
           {!searchQuery && (
-            <Button className="mt-4" render={<Link href="/products/new" />}>
+            <Button className="mt-4" render={<Link href="/admin/products/new" />}>
               <Plus data-icon="inline-start" />
               Нов продукт
             </Button>
@@ -172,7 +172,7 @@ export default async function ProductsPage({
                     />
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm" render={<Link href={`/products/${product.id}`} />}>
+                    <Button variant="ghost" size="sm" render={<Link href={`/admin/products/${product.id}`} />}>
                       Редактирай
                     </Button>
                   </TableCell>

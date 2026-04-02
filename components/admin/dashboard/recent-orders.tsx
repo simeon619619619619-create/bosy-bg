@@ -31,7 +31,7 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
       <div className="mb-5 flex items-center justify-between">
         <h3 className="text-base font-semibold">Последни поръчки</h3>
         <Link
-          href="/orders"
+          href="/admin/orders"
           className="text-sm text-primary hover:underline"
         >
           Виж всички &rarr;
@@ -59,7 +59,7 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
                 <TableRow key={order.id}>
                   <TableCell>
                     <Link
-                      href={`/orders/${order.id}`}
+                      href={`/admin/orders/${order.id}`}
                       className="font-mono text-primary hover:underline"
                     >
                       {order.order_number ?? order.id.slice(0, 8)}

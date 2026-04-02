@@ -95,7 +95,7 @@ export default async function CustomersPage({
                 >
                   <TableCell className="font-medium">
                     <Link
-                      href={`/customers/${customer.id}`}
+                      href={`/admin/customers/${customer.id}`}
                       className="hover:underline"
                     >
                       {customer.name ?? '—'}

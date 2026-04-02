@@ -60,7 +60,7 @@ export default async function CustomerProfilePage({
     <div>
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" render={<Link href="/customers" />}>
+        <Button variant="ghost" size="icon" render={<Link href="/admin/customers" />}>
           <ArrowLeft />
         </Button>
         <h1 className="text-3xl font-bold">{customer.name ?? 'Клиент'}</h1>
@@ -166,7 +166,7 @@ export default async function CustomerProfilePage({
                     <TableRow key={order.id}>
                       <TableCell>
                         <Link
-                          href={`/orders/${order.id}`}
+                          href={`/admin/orders/${order.id}`}
                           className="font-mono text-primary hover:underline"
                         >
                           {order.order_number ?? order.id.slice(0, 8)}

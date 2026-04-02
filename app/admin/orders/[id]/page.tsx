@@ -53,7 +53,7 @@ export default async function OrderDetailPage({
     <div>
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" render={<Link href="/orders" />}>
+        <Button variant="ghost" size="icon" render={<Link href="/admin/orders" />}>
           <ArrowLeft />
         </Button>
         <div className="flex-1">

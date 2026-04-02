@@ -170,7 +170,7 @@ export function ProductForm({
         <Button type="submit">
           {isEdit ? 'Запази промените' : 'Създай продукт'}
         </Button>
-        <Button type="button" variant="outline" render={<a href="/products" />}>
+        <Button type="button" variant="outline" render={<a href="/admin/products" />}>
           Отказ
         </Button>
       </div>

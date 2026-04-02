@@ -17,7 +17,7 @@ export function TopProducts({ products }: TopProductsProps) {
       <div className="mb-5 flex items-center justify-between">
         <h3 className="text-base font-semibold">Топ продукти</h3>
         <Link
-          href="/products"
+          href="/admin/products"
           className="text-sm text-primary hover:underline"
         >
           Виж всички &rarr;

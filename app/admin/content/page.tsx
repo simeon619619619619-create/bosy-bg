@@ -55,7 +55,7 @@ export default async function ContentPage({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Съдържание</h1>
-        <Button render={<Link href="/content/new" />}>
+        <Button render={<Link href="/admin/content/new" />}>
           <Plus data-icon="inline-start" />
           Ново съдържание
         </Button>
@@ -65,13 +65,13 @@ export default async function ContentPage({
       <div className="mt-6">
         <Tabs value={activeTab}>
           <TabsList>
-            <TabsTrigger value="banners" render={<Link href="/content?tab=banners" />}>
+            <TabsTrigger value="banners" render={<Link href="/admin/content?tab=banners" />}>
               Банери
             </TabsTrigger>
-            <TabsTrigger value="blog" render={<Link href="/content?tab=blog" />}>
+            <TabsTrigger value="blog" render={<Link href="/admin/content?tab=blog" />}>
               Блог
             </TabsTrigger>
-            <TabsTrigger value="reviews" render={<Link href="/content?tab=reviews" />}>
+            <TabsTrigger value="reviews" render={<Link href="/admin/content?tab=reviews" />}>
               Ревюта
             </TabsTrigger>
           </TabsList>
@@ -86,7 +86,7 @@ export default async function ContentPage({
                 <p className="mt-1 text-sm text-muted-foreground">
                   Добави първото си съдържание от този тип
                 </p>
-                <Button className="mt-4" render={<Link href="/content/new" />}>
+                <Button className="mt-4" render={<Link href="/admin/content/new" />}>
                   <Plus data-icon="inline-start" />
                   Ново съдържание
                 </Button>
@@ -127,7 +127,7 @@ export default async function ContentPage({
                         {new Date(item.created_at).toLocaleDateString('bg-BG')}
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm" render={<Link href={`/content/${item.id}`} />}>
+                        <Button variant="ghost" size="sm" render={<Link href={`/admin/content/${item.id}`} />}>
                           Редактирай
                         </Button>
                       </TableCell>

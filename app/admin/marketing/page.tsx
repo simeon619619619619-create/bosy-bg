@@ -140,14 +140,14 @@ export default async function MarketingPage() {
       {/* Links */}
       <div className="mt-8 flex gap-4">
         <Link
-          href="/marketing/meta-ads"
+          href="/admin/marketing/meta-ads"
           className="flex items-center gap-2 rounded-md bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
         >
           <BarChart3 className="size-4" />
           Meta Ads детайли
         </Link>
         <Link
-          href="/marketing/klaviyo"
+          href="/admin/marketing/klaviyo"
           className="flex items-center gap-2 rounded-md bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition-colors"
         >
           <Mail className="size-4" />

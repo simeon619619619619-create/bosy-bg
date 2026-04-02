@@ -147,7 +147,7 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
           </TableHeader>
           <TableBody>
             {filtered.map((order) => {
-              const orderUrl = `/orders/${order.id}`
+              const orderUrl = `/admin/orders/${order.id}`
               return (
                 <TableRow key={order.id}>
                   <TableCell>

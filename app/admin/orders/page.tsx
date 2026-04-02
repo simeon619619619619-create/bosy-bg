@@ -62,8 +62,8 @@ export default async function OrdersPage({
               <Link
                 href={
                   tab.key === 'all'
-                    ? '/orders'
-                    : `/orders?status=${tab.key}`
+                    ? '/admin/orders'
+                    : `/admin/orders?status=${tab.key}`
                 }
               />
             }

@@ -127,7 +127,7 @@ export function ContentForm({
         <Button type="submit">
           {isEdit ? 'Запази промените' : 'Създай'}
         </Button>
-        <Button type="button" variant="outline" render={<a href="/content" />}>
+        <Button type="button" variant="outline" render={<a href="/admin/content" />}>
           Отказ
         </Button>
       </div>

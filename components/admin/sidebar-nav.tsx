@@ -32,41 +32,41 @@ interface NavSection {
 const navSections: NavSection[] = [
   {
     title: 'Главно',
-    items: [{ label: 'Dashboard', href: '/dashboard', icon: LayoutGrid }],
+    items: [{ label: 'Dashboard', href: '/admin/dashboard', icon: LayoutGrid }],
     roles: ['staff', 'manager', 'admin'],
   },
   {
     title: 'Управление',
     items: [
-      { label: 'Продукти', href: '/products', icon: Tag },
-      { label: 'Поръчки', href: '/orders', icon: ShoppingBag },
-      { label: 'Клиенти', href: '/customers', icon: Users },
-      { label: 'Членове', href: '/members', icon: UserCheck },
+      { label: 'Продукти', href: '/admin/products', icon: Tag },
+      { label: 'Поръчки', href: '/admin/orders', icon: ShoppingBag },
+      { label: 'Клиенти', href: '/admin/customers', icon: Users },
+      { label: 'Членове', href: '/admin/members', icon: UserCheck },
     ],
     roles: ['staff', 'manager', 'admin'],
   },
   {
     title: 'Маркетинг',
     items: [
-      { label: 'Маркетинг', href: '/marketing', icon: BarChart3 },
-      { label: 'Meta Ads', href: '/marketing/meta-ads', icon: BarChart3 },
-      { label: 'Klaviyo', href: '/marketing/klaviyo', icon: Mail },
+      { label: 'Маркетинг', href: '/admin/marketing', icon: BarChart3 },
+      { label: 'Meta Ads', href: '/admin/marketing/meta-ads', icon: BarChart3 },
+      { label: 'Klaviyo', href: '/admin/marketing/klaviyo', icon: Mail },
     ],
     roles: ['manager', 'admin'],
   },
   {
     title: 'Съдържание',
-    items: [{ label: 'Банери & Блог', href: '/content', icon: Image }],
+    items: [{ label: 'Банери & Блог', href: '/admin/content', icon: Image }],
     roles: ['manager', 'admin'],
   },
   {
     title: 'Доставки',
-    items: [{ label: 'Speedy', href: '/speedy', icon: Truck }],
+    items: [{ label: 'Speedy', href: '/admin/speedy', icon: Truck }],
     roles: ['staff', 'manager', 'admin'],
   },
   {
     title: 'Настройки',
-    items: [{ label: 'Настройки', href: '/settings', icon: Settings }],
+    items: [{ label: 'Настройки', href: '/admin/settings', icon: Settings }],
     roles: ['admin'],
   },
 ]
