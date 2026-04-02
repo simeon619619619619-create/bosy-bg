@@ -34,17 +34,22 @@ export default async function OrdersPage({
   const { data: orders } = await query
 
   // Map orders for the client component
-  const mappedOrders = (orders ?? []).map((order) => ({
-    id: order.id,
-    order_number: order.order_number,
-    customer_name:
-      (order.customers as { name: string } | null)?.name ?? '—',
-    items_count: Array.isArray(order.items) ? order.items.length : 0,
-    total: Number(order.total ?? 0),
-    status: order.status,
-    speedy_tracking_number: order.speedy_tracking_number,
-    created_at: order.created_at,
-  }))
+  const mappedOrders = (orders ?? []).map((order) => {
+    const notes = (order.notes as string) ?? ''
+    const payment_method = notes.includes('[CARD]') ? 'card' : 'cod'
+    return {
+      id: order.id,
+      order_number: order.order_number,
+      customer_name:
+        (order.customers as { name: string } | null)?.name ?? '—',
+      items_count: Array.isArray(order.items) ? order.items.length : 0,
+      total: Number(order.total ?? 0),
+      status: order.status,
+      payment_method,
+      speedy_tracking_number: order.speedy_tracking_number,
+      created_at: order.created_at,
+    }
+  })
 
   return (
     <div>

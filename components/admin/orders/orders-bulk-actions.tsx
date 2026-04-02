@@ -25,6 +25,7 @@ interface Order {
   items_count: number
   total: number
   status: string
+  payment_method: string | null
   speedy_tracking_number: string | null
   created_at: string
 }
@@ -140,6 +141,7 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
               <TableHead>Клиент</TableHead>
               <TableHead>Артикули</TableHead>
               <TableHead>Общо</TableHead>
+              <TableHead>Плащане</TableHead>
               <TableHead>Статус</TableHead>
               <TableHead>Speedy</TableHead>
               <TableHead>Дата</TableHead>
@@ -171,6 +173,15 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
                   </TableCell>
                   <TableCell>
                     <Link href={orderUrl} className="block font-mono">{toEur(order.total).toFixed(2)} &euro;</Link>
+                  </TableCell>
+                  <TableCell>
+                    <Link href={orderUrl} className="block">
+                      {order.payment_method === 'card' ? (
+                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">Карта</span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Наложен</span>
+                      )}
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <Link href={orderUrl}>

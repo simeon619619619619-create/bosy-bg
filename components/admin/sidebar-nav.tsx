@@ -21,6 +21,7 @@ interface NavItem {
   label: string
   href: string
   icon: LucideIcon
+  badgeKey?: 'orders'
 }
 
 interface NavSection {
@@ -39,7 +40,7 @@ const navSections: NavSection[] = [
     title: 'Управление',
     items: [
       { label: 'Продукти', href: '/admin/products', icon: Tag },
-      { label: 'Поръчки', href: '/admin/orders', icon: ShoppingBag },
+      { label: 'Нови поръчки', href: '/admin/orders', icon: ShoppingBag, badgeKey: 'orders' as const },
       { label: 'Клиенти', href: '/admin/customers', icon: Users },
       { label: 'Членове', href: '/admin/members', icon: UserCheck },
     ],
@@ -76,7 +77,7 @@ const navSections: NavSection[] = [
   },
 ]
 
-export function SidebarNav({ role }: { role: string }) {
+export function SidebarNav({ role, pendingOrders = 0 }: { role: string; pendingOrders?: number }) {
   const pathname = usePathname()
 
   const visibleSections = navSections.filter((section) =>
@@ -106,6 +107,11 @@ export function SidebarNav({ role }: { role: string }) {
                 >
                   <item.icon className="h-4 w-4" />
                   {item.label}
+                  {item.badgeKey === 'orders' && pendingOrders > 0 && (
+                    <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1.5 text-xs font-bold text-white">
+                      {pendingOrders}
+                    </span>
+                  )}
                 </Link>
               )
             })}

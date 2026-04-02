@@ -1,5 +1,6 @@
 import { Separator } from '@/components/ui/separator'
 import { SidebarNav } from './sidebar-nav'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 interface SidebarProps {
   user: {
@@ -24,7 +25,13 @@ function UserInitials({ name }: { name: string }) {
   )
 }
 
-export function Sidebar({ user }: SidebarProps) {
+export async function Sidebar({ user }: SidebarProps) {
+  const supabase = await createServerSupabaseClient()
+  const { count: pendingCount } = await supabase
+    .from('orders')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'pending')
+
   return (
     <aside className="fixed left-0 top-0 z-30 flex h-dvh w-[260px] flex-col border-r border-border bg-card">
       {/* Logo */}
@@ -38,7 +45,7 @@ export function Sidebar({ user }: SidebarProps) {
       <Separator />
 
       {/* Navigation */}
-      <SidebarNav role={user.role} />
+      <SidebarNav role={user.role} pendingOrders={pendingCount ?? 0} />
 
       {/* User info */}
       <div className="border-t border-border px-4 py-4">
