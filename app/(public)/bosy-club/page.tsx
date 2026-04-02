@@ -94,6 +94,20 @@ export default function BosyClubPage() {
           }}
         >
           Стани член на <strong>BOSY Club</strong> и получи достъп до ексклузивни намаления, подаръци и безплатна доставка при всяка поръчка.
+          <a
+            href="https://www.founderclub.bg/community/bosy-club"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-4 rounded-full text-sm font-bold uppercase tracking-wide transition-all hover:opacity-90"
+            style={{
+              background: '#fff',
+              color: '#8b5cf6',
+              padding: '12px 32px',
+              fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+            }}
+          >
+            ПРИСЪЕДИНИ СЕ &rarr;
+          </a>
         </div>
       </section>
 
