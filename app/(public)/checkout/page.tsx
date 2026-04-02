@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ShoppingBag, ArrowLeft } from 'lucide-react'
 import { useCart } from '@/components/public/cart-provider'
 import { createOrder, lookupCashback, getCashbackPercent } from './actions'
+import { validatePromoCode } from '@/app/admin/promo-codes/actions'
 import { toEur } from '@/lib/currency'
 
 const SHIPPING_THRESHOLD = 78.15 // ~39.97€
@@ -33,6 +34,10 @@ export default function CheckoutPage() {
   const [cashbackLoading, setCashbackLoading] = useState(false)
   const [cashbackPercent, setCashbackPercent] = useState(5)
   const [prefilled, setPrefilled] = useState<CustomerProfile | null>(null)
+  const [promoCode, setPromoCode] = useState('')
+  const [promoApplied, setPromoApplied] = useState<{ code: string; discount_type: string; discount_value: number } | null>(null)
+  const [promoError, setPromoError] = useState<string | null>(null)
+  const [promoLoading, setPromoLoading] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
 
   // Auto-fill from logged-in customer
@@ -55,10 +60,39 @@ export default function CheckoutPage() {
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
   const codFee = paymentMethod === 'cod' ? 0.99 * 1.95583 : 0 // 0.99 EUR in BGN
   const cardDiscount = paymentMethod === 'card' ? subtotal * 0.05 : 0
-  const maxBeforeCashback = subtotal + shipping + codFee - cardDiscount
+  const promoDiscount = promoApplied
+    ? promoApplied.discount_type === 'percent'
+      ? subtotal * (promoApplied.discount_value / 100)
+      : promoApplied.discount_value
+    : 0
+  const maxBeforeCashback = subtotal + shipping + codFee - cardDiscount - promoDiscount
   const cashbackApplied = useCashback ? Math.min(cashbackBalance, maxBeforeCashback) : 0
   const total = Math.max(0, maxBeforeCashback - cashbackApplied)
   const cashbackEarned = Math.round(total * cashbackPercent) / 100
+
+  async function handleApplyPromo() {
+    if (!promoCode.trim()) return
+    setPromoLoading(true)
+    setPromoError(null)
+    try {
+      const result = await validatePromoCode(promoCode, subtotal)
+      if (result.valid) {
+        setPromoApplied({
+          code: result.code!,
+          discount_type: result.discount_type!,
+          discount_value: result.discount_value!,
+        })
+        setPromoError(null)
+      } else {
+        setPromoError(result.error || 'Невалиден код')
+        setPromoApplied(null)
+      }
+    } catch {
+      setPromoError('Грешка при проверка')
+    } finally {
+      setPromoLoading(false)
+    }
+  }
 
   async function handleEmailBlur(e: React.FocusEvent<HTMLInputElement>) {
     const email = e.target.value.trim()
@@ -128,6 +162,8 @@ export default function CheckoutPage() {
         notes: notes ?? '',
         paymentMethod,
         cardDiscount,
+        promoCode: promoApplied?.code || null,
+        promoDiscount,
         cashbackUsed: cashbackApplied,
         items: items.map((i) => ({
           id: i.id,
@@ -467,6 +503,46 @@ export default function CheckoutPage() {
               ))}
             </div>
 
+            {/* Promo code */}
+            <div className="mt-4 pt-4" style={{ borderTop: '1px solid #eee' }}>
+              {promoApplied ? (
+                <div className="flex items-center justify-between rounded-lg p-2" style={{ background: '#f0fce8', border: '1px solid #d4edbc' }}>
+                  <span className="text-sm font-medium" style={{ color: '#16a34a' }}>
+                    Промо код: <span className="font-mono font-bold">{promoApplied.code}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => { setPromoApplied(null); setPromoCode('') }}
+                    className="text-xs text-red-500 hover:text-red-700 font-medium"
+                  >
+                    Премахни
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                    placeholder="Промо код"
+                    className="flex-1 rounded-md border px-3 py-1.5 text-sm font-mono uppercase"
+                    style={{ borderColor: promoError ? '#e74c3c' : '#ddd' }}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleApplyPromo() } }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyPromo}
+                    disabled={promoLoading || !promoCode.trim()}
+                    className="rounded-md px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                    style={{ background: '#a78bfa' }}
+                  >
+                    {promoLoading ? '...' : 'Приложи'}
+                  </button>
+                </div>
+              )}
+              {promoError && <p className="mt-1 text-xs" style={{ color: '#e74c3c' }}>{promoError}</p>}
+            </div>
+
             <div className="mt-4 space-y-2 text-sm" style={{ borderTop: '1px solid #eee', paddingTop: 12 }}>
               <div className="flex justify-between">
                 <span style={{ color: '#777' }}>Междинна сума</span>
@@ -488,6 +564,12 @@ export default function CheckoutPage() {
                 <div className="flex justify-between" style={{ color: '#e74c3c' }}>
                   <span>Отстъпка -5% (карта)</span>
                   <span className="font-medium">-{toEur(cardDiscount).toFixed(2)} &euro;</span>
+                </div>
+              )}
+              {promoDiscount > 0 && (
+                <div className="flex justify-between" style={{ color: '#16a34a' }}>
+                  <span>Промо код ({promoApplied!.code})</span>
+                  <span className="font-medium">-{toEur(promoDiscount).toFixed(2)} &euro;</span>
                 </div>
               )}
 

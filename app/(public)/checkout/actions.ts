@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { sendNewOrderNotification } from '@/lib/resend/client'
 import { getSiteSettings } from '@/lib/settings'
+import { usePromoCode } from '@/app/admin/promo-codes/actions'
 
 interface OrderItem {
   id: string
@@ -22,6 +23,8 @@ interface CreateOrderInput {
   notes: string
   paymentMethod: 'cod' | 'card'
   cardDiscount: number
+  promoCode: string | null
+  promoDiscount: number
   cashbackUsed: number
   items: OrderItem[]
 }
@@ -74,8 +77,9 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
   const shippingCost = subtotal >= 78.15 ? 0 : 5.99
   const codFee = input.paymentMethod === 'cod' ? 0.99 * 1.95583 : 0 // 0.99 EUR in BGN
   const discount = input.cardDiscount ?? 0
+  const promoDiscount = input.promoDiscount ?? 0
   const cashbackUsed = Math.max(0, input.cashbackUsed ?? 0)
-  const total = Math.max(0, subtotal + shippingCost + codFee - discount - cashbackUsed)
+  const total = Math.max(0, subtotal + shippingCost + codFee - discount - promoDiscount - cashbackUsed)
 
   // 1. Upsert customer by email
   const { data: existingCustomer } = await supabase
@@ -154,7 +158,9 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       shipping_cost: shippingCost,
       total,
       status: 'pending',
-      notes: input.notes ? `[${input.paymentMethod.toUpperCase()}] ${input.notes}` : `[${input.paymentMethod.toUpperCase()}]`,
+      notes: input.notes
+        ? `[${input.paymentMethod.toUpperCase()}]${input.promoCode ? ` [PROMO:${input.promoCode}]` : ''} ${input.notes}`
+        : `[${input.paymentMethod.toUpperCase()}]${input.promoCode ? ` [PROMO:${input.promoCode}]` : ''}`,
     })
     .select('id, order_number')
     .single()
@@ -187,7 +193,12 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     })
     .eq('id', customerId)
 
-  // 5. Send email notifications (customer + admin)
+  // 5. Increment promo code usage
+  if (input.promoCode) {
+    await usePromoCode(input.promoCode).catch(() => {})
+  }
+
+  // 6. Send email notifications (customer + admin)
   const orderNum = String(order.order_number)
   await sendNewOrderNotification(
     input.email,

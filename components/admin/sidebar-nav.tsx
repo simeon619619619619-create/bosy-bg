@@ -65,6 +65,11 @@ const navSections: NavSection[] = [
     roles: ['staff', 'manager', 'admin'],
   },
   {
+    title: 'Промо',
+    items: [{ label: 'Промо кодове', href: '/admin/promo-codes', icon: Tag }],
+    roles: ['manager', 'admin'],
+  },
+  {
     title: 'Настройки',
     items: [{ label: 'Настройки', href: '/admin/settings', icon: Settings }],
     roles: ['admin'],
