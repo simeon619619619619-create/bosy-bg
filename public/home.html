@@ -1438,6 +1438,17 @@ ul { list-style: none; }
 }
 </style>
 
+<!-- Bojo AI God Popup -->
+<div id="bojoAIGodPopup" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:18px;max-width:420px;width:92%;text-align:center;padding:34px 26px 26px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.25);animation:popupScale 0.35s ease;">
+    <button onclick="closeBojoPopup()" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:22px;cursor:pointer;color:#999;">&times;</button>
+    <div style="font-size:44px;margin-bottom:10px;">🤖</div>
+    <h2 style="font-family:Montserrat,sans-serif;font-size:22px;font-weight:800;color:#111;margin:0 0 10px;">Bojo is an AI god</h2>
+    <p style="font-size:14px;color:#666;margin:0 0 18px;line-height:1.6;">(home-only popup)</p>
+    <button onclick="closeBojoPopup()" style="display:inline-block;background:#111;color:#fff;padding:12px 28px;border-radius:28px;font-family:Montserrat,sans-serif;font-weight:700;font-size:14px;letter-spacing:0.6px;text-transform:uppercase;border:none;cursor:pointer;">OK</button>
+  </div>
+</div>
+
 <!-- Cookie Consent Bar -->
 <div class="cookie-bar" id="cookieBar">
   <p>Този сайт използва бисквитки. Можете винаги да откажете, ако желаете. <a href="/cookies">Научете повече</a></p>
@@ -1502,6 +1513,19 @@ if (!sessionStorage.getItem('easter-popup-seen')) {
     document.getElementById('easterPopup').style.display = 'flex';
     sessionStorage.setItem('easter-popup-seen', '1');
   }, 3000);
+}
+
+// Bojo AI God popup (home page) — show once per browser (localStorage)
+function closeBojoPopup() {
+  const el = document.getElementById('bojoAIGodPopup');
+  if (el) el.style.display = 'none';
+  try { localStorage.setItem('bojo-ai-god-popup-seen', '1'); } catch (e) {}
+}
+if (!localStorage.getItem('bojo-ai-god-popup-seen')) {
+  setTimeout(function() {
+    const el = document.getElementById('bojoAIGodPopup');
+    if (el) el.style.display = 'flex';
+  }, 1200);
 }
 
 // Nutritional overlays for product cards
