@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
-import { sendNewOrderNotification } from '@/lib/resend/client'
+import { sendNewOrderNotification, sendEasterPromoEmail } from '@/lib/resend/client'
 import { getSiteSettings } from '@/lib/settings'
 import { usePromoCode } from '@/app/admin/promo-codes/actions'
 
@@ -207,6 +207,20 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     total,
     input.items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }))
   ).catch(() => {})
+
+  // 7. Send Easter promo code email + track in promo_sends
+  const EASTER_PROMO = 'VELIKDEN20'
+  const now = new Date()
+  const easterEnd = new Date('2026-04-30T23:59:59Z')
+  if (now < easterEnd) {
+    await sendEasterPromoEmail(input.email, input.name, EASTER_PROMO).catch(() => {})
+    await supabase.from('promo_sends').insert({
+      customer_email: input.email,
+      customer_name: input.name,
+      promo_code: EASTER_PROMO,
+      order_id: order.id,
+    }).catch(() => {})
+  }
 
   return { orderId: order.id, orderNumber: orderNum, cashbackEarned }
 }

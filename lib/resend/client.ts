@@ -111,6 +111,86 @@ export async function sendShippingNotification(to: string, orderNumber: number, 
   })
 }
 
+export async function sendEasterPromoEmail(
+  to: string,
+  customerName: string,
+  promoCode: string = 'VELIKDEN20'
+) {
+  const resend = getResendClient()
+  if (!resend) return null
+
+  return resend.emails.send({
+    from: 'BOSY <marketing@bosy.bg>',
+    to,
+    subject: 'Весел Великден! Ето твоят подарък от BOSY — 20% отстъпка',
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#a78bfa,#7c3aed);padding:40px 24px;text-align:center;">
+          <div style="font-size:48px;margin-bottom:8px;">🐣🌷</div>
+          <h1 style="color:#fff;margin:0;font-size:28px;letter-spacing:3px;">BOSY</h1>
+          <p style="color:#e8daff;margin:8px 0 0;font-size:14px;">Healthy Kitchen</p>
+        </div>
+        <div style="padding:32px;">
+          <h2 style="color:#333;margin:0 0 16px;font-size:22px;">Весел Великден, ${customerName}!</h2>
+          <p style="color:#555;line-height:1.6;">Благодарим ти за поръчката! По случай Великден имаме специален подарък за теб:</p>
+          <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:2px dashed #a78bfa;border-radius:12px;padding:24px;text-align:center;margin:24px 0;">
+            <p style="color:#7c3aed;font-size:14px;margin:0 0 8px;text-transform:uppercase;letter-spacing:2px;">Твоят промо код</p>
+            <p style="color:#7c3aed;font-size:32px;font-weight:bold;margin:0;letter-spacing:4px;">${promoCode}</p>
+            <p style="color:#6d28d9;font-size:18px;margin:8px 0 0;font-weight:600;">20% отстъпка за следващата поръчка</p>
+          </div>
+          <p style="color:#555;line-height:1.6;">Използвай кода при следващата си поръчка на <a href="https://bosy.bg/shop" style="color:#7c3aed;font-weight:600;">bosy.bg</a> и се възползвай от великденската отстъпка.</p>
+          <div style="text-align:center;margin:28px 0;">
+            <a href="https://bosy.bg/shop" style="display:inline-block;background:#7c3aed;color:#fff;text-decoration:none;padding:14px 40px;border-radius:8px;font-size:16px;font-weight:600;">Пазарувай с 20% отстъпка</a>
+          </div>
+          <p style="color:#999;font-size:13px;margin-top:24px;">Кодът е валиден до 30 април 2026 г.</p>
+          <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
+          <p style="color:#999;font-size:12px;text-align:center;">BOSY — Healthy Kitchen | bosy.bg</p>
+        </div>
+      </div>
+    `,
+  })
+}
+
+export async function sendEasterPromoReminder(
+  to: string,
+  customerName: string,
+  promoCode: string = 'VELIKDEN20'
+) {
+  const resend = getResendClient()
+  if (!resend) return null
+
+  return resend.emails.send({
+    from: 'BOSY <marketing@bosy.bg>',
+    to,
+    subject: `${customerName}, не забравяй 20% отстъпка с код ${promoCode}!`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#a78bfa,#7c3aed);padding:32px 24px;text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:28px;letter-spacing:3px;">BOSY</h1>
+        </div>
+        <div style="padding:32px;">
+          <h2 style="color:#333;margin:0 0 16px;font-size:22px;">Напомняме ти за великденския подарък!</h2>
+          <p style="color:#555;line-height:1.6;">Здравей, ${customerName}! Преди няколко дни ти изпратихме специален промо код с <strong>20% отстъпка</strong>, но забелязахме, че все още не си го използвал/а.</p>
+          <div style="background:#fef3c7;border-left:4px solid #f59e0b;border-radius:4px;padding:16px;margin:24px 0;">
+            <p style="color:#92400e;margin:0;font-size:14px;">Промо кодът ти изтича скоро! Не пропускай отстъпката.</p>
+          </div>
+          <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:2px dashed #a78bfa;border-radius:12px;padding:24px;text-align:center;margin:24px 0;">
+            <p style="color:#7c3aed;font-size:14px;margin:0 0 8px;text-transform:uppercase;letter-spacing:2px;">Твоят промо код</p>
+            <p style="color:#7c3aed;font-size:32px;font-weight:bold;margin:0;letter-spacing:4px;">${promoCode}</p>
+            <p style="color:#6d28d9;font-size:18px;margin:8px 0 0;font-weight:600;">20% отстъпка</p>
+          </div>
+          <div style="text-align:center;margin:28px 0;">
+            <a href="https://bosy.bg/shop" style="display:inline-block;background:#7c3aed;color:#fff;text-decoration:none;padding:14px 40px;border-radius:8px;font-size:16px;font-weight:600;">Пазарувай сега</a>
+          </div>
+          <p style="color:#999;font-size:13px;">Кодът е валиден до 30 април 2026 г.</p>
+          <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
+          <p style="color:#999;font-size:12px;text-align:center;">BOSY — Healthy Kitchen | bosy.bg</p>
+        </div>
+      </div>
+    `,
+  })
+}
+
 export async function sendDeliveryConfirmation(to: string, orderNumber: number) {
   const resend = getResendClient()
   if (!resend) return null
