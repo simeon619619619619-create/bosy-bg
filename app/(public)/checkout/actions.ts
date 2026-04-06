@@ -219,7 +219,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       customer_name: input.name,
       promo_code: EASTER_PROMO,
       order_id: order.id,
-    }).catch(() => {})
+    })
   }
 
   return { orderId: order.id, orderNumber: orderNum, cashbackEarned }
