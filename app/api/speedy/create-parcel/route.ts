@@ -1,7 +1,35 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { getSpeedyClient } from '@/lib/speedy/client'
 import { sendShippingNotification } from '@/lib/resend/client'
+
+const SPEEDY_BASE = 'https://api.speedy.bg/v1'
+
+// Look up Speedy siteId for a city name
+async function findSiteId(city: string): Promise<number | null> {
+  const res = await fetch(`${SPEEDY_BASE}/location/site`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userName: process.env.SPEEDY_USERNAME,
+      password: process.env.SPEEDY_PASSWORD,
+      language: 'BG',
+      countryId: 100,
+      name: city.toUpperCase(),
+    }),
+  })
+  if (!res.ok) return null
+  const data = await res.json()
+  const exact = (data.sites || []).find(
+    (s: { name: string }) => s.name === city.toUpperCase()
+  )
+  return exact?.id ?? data.sites?.[0]?.id ?? null
+}
+
+interface CustomerAddress {
+  city?: string
+  street?: string
+  zip?: string
+}
 
 export async function POST(request: Request) {
   try {
@@ -34,7 +62,7 @@ export async function POST(request: Request) {
       name: string
       email: string | null
       phone: string | null
-      address: string | null
+      address: CustomerAddress | string | null
     } | null
 
     if (!customer?.phone) {
@@ -44,47 +72,111 @@ export async function POST(request: Request) {
       )
     }
 
-    const speedy = getSpeedyClient()
+    // Parse customer address
+    let addr: CustomerAddress = {}
+    if (typeof customer.address === 'object' && customer.address !== null) {
+      addr = customer.address
+    } else if (typeof customer.address === 'string') {
+      // fallback: parse "1000, София, Бул.България 111"
+      const parts = customer.address.split(',').map((s) => s.trim())
+      addr = { zip: parts[0], city: parts[1], street: parts[2] }
+    }
 
+    if (!addr.city || !addr.street) {
+      return NextResponse.json(
+        { error: 'Адресът на клиента е непълен (липсва град или улица)' },
+        { status: 400 }
+      )
+    }
+
+    // Find Speedy siteId for the city
+    const siteId = await findSiteId(addr.city)
+    if (!siteId) {
+      return NextResponse.json(
+        { error: `Не е намерен град "${addr.city}" в Speedy системата` },
+        { status: 400 }
+      )
+    }
+
+    // Parse street: "Бул.България 111" → name="Бул.България", no="111"
+    const streetMatch = addr.street.match(/^(.+?)\s+(\S+)$/)
+    const streetName = streetMatch?.[1] ?? addr.street
+    const streetNo = streetMatch?.[2] ?? '1'
+
+    // Build contents description from items
     const items = Array.isArray(order.items) ? order.items : []
-    const contents = items
-      .map((i: { name: string }) => i.name)
-      .join(', ')
-      .slice(0, 100)
+    const contents =
+      items
+        .map((i: { name: string }) => i.name)
+        .join(', ')
+        .slice(0, 100) || 'Стоки'
 
-    const shipment = await speedy.createShipment({
-      service: {
-        serviceId: 505, // Speedy standard
-        autoAdjustPickupDate: true,
-      },
+    // Determine if COD payment
+    const notes = (order.notes as string) ?? ''
+    const isCod = notes.includes('[COD]')
+
+    // Build Speedy shipment payload
+    const payload: Record<string, unknown> = {
+      userName: process.env.SPEEDY_USERNAME,
+      password: process.env.SPEEDY_PASSWORD,
+      language: 'BG',
+      service: { serviceId: 505, autoAdjustPickupDate: true },
       content: {
         parcelsCount: 1,
         totalWeight: 1,
-        contents: contents || 'Стоки',
+        contents,
         package: 'BOX',
       },
       payment: {
-        courierServicePayer: 'SENDER',
+        courierServicePayer: 'RECIPIENT',
+        ...(isCod && {
+          cod: {
+            amount: Number(order.total ?? 0),
+            processingType: 'CASH',
+          },
+        }),
         declaredValueAmount: Number(order.total ?? 0),
         declaredValueCurrency: 'BGN',
       },
       sender: {
-        phone1: { number: process.env.SPEEDY_SENDER_PHONE ?? '' },
+        phone1: { number: process.env.SPEEDY_SENDER_PHONE ?? '0888000000' },
         contactName: process.env.SPEEDY_SENDER_NAME ?? 'BOSY',
-        email: process.env.SPEEDY_SENDER_EMAIL,
+        ...(process.env.SPEEDY_SENDER_EMAIL && {
+          email: process.env.SPEEDY_SENDER_EMAIL,
+        }),
       },
       recipient: {
         phone1: { number: customer.phone },
         clientName: customer.name,
-        email: customer.email ?? undefined,
+        ...(customer.email && { email: customer.email }),
         privatePerson: true,
+        address: {
+          siteId,
+          streetName,
+          streetNo,
+        },
       },
-      ref1: order.order_number ?? order.id,
+      ref1: String(order.order_number ?? order.id),
+    }
+
+    // Call Speedy API
+    const speedyRes = await fetch(`${SPEEDY_BASE}/shipment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     })
 
-    const parcelId = shipment.parcels?.[0]?.id ?? shipment.id
-    const trackingNumber =
-      shipment.parcels?.[0]?.externalCarrierParcelNumber ?? parcelId
+    const shipmentData = await speedyRes.json()
+
+    // Validate response — Speedy returns errors with HTTP 200 sometimes
+    if (shipmentData.error || !shipmentData.id) {
+      const errMsg = shipmentData.error?.message || 'Speedy API върна непълен отговор'
+      console.error('Speedy createShipment failed:', shipmentData)
+      return NextResponse.json({ error: errMsg }, { status: 400 })
+    }
+
+    const parcelId: string = shipmentData.id
+    const trackingNumber: string = shipmentData.parcels?.[0]?.id ?? parcelId
 
     // Create shipment record
     await supabase.from('shipments').insert({
