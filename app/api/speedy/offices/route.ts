@@ -7,11 +7,18 @@ const SPEEDY_BASE = 'https://api.speedy.bg/v1'
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const city = searchParams.get('city')
+    const rawQuery = searchParams.get('city') ?? ''
+    const trimmed = rawQuery.trim()
 
-    if (!city || city.trim().length < 2) {
+    if (trimmed.length < 2) {
       return NextResponse.json({ sites: [], offices: [] })
     }
+
+    // Split into city + optional filter text
+    // e.g. "софия младост" → cityName="софия", filterText="младост"
+    const parts = trimmed.split(/\s+/)
+    const cityName = parts[0]
+    const filterText = parts.slice(1).join(' ').toLowerCase()
 
     const userName = process.env.SPEEDY_USERNAME
     const password = process.env.SPEEDY_PASSWORD
@@ -32,7 +39,7 @@ export async function GET(request: Request) {
         password,
         language: 'BG',
         countryId: 100,
-        name: city.toUpperCase(),
+        name: cityName.toUpperCase(),
       }),
     })
 
@@ -66,7 +73,7 @@ export async function GET(request: Request) {
         debug: {
           stage: 'no-sites',
           rawResponse: siteData,
-          searchedFor: city.toUpperCase(),
+          searchedFor: cityName.toUpperCase(),
         },
       })
     }
@@ -86,7 +93,7 @@ export async function GET(request: Request) {
     })
 
     const officeData = await officeRes.json()
-    const offices = (officeData.offices || []).map((o: {
+    let offices = (officeData.offices || []).map((o: {
       id: number
       name: string
       nameEn?: string
@@ -110,7 +117,22 @@ export async function GET(request: Request) {
       siteId: o.siteId,
     }))
 
-    return NextResponse.json({ sites, offices, selectedSiteId: firstSite.id })
+    // Filter by extra text (e.g. "софия младост" → filter by "младост")
+    if (filterText) {
+      const needle = filterText.toLowerCase()
+      offices = offices.filter(
+        (o: { name: string; address: string }) =>
+          o.name.toLowerCase().includes(needle) ||
+          o.address.toLowerCase().includes(needle)
+      )
+    }
+
+    return NextResponse.json({
+      sites,
+      offices,
+      selectedSiteId: firstSite.id,
+      filterApplied: filterText || null,
+    })
   } catch (error) {
     console.error('Offices API error:', error)
     return NextResponse.json(

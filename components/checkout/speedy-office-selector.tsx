@@ -64,7 +64,7 @@ export function SpeedyOfficeSelector({
         className="mb-1.5 block text-xs font-medium"
         style={{ color: '#4a3728' }}
       >
-        Търсене на град <span style={{ color: '#dc2626' }}>*</span>
+        Търсене на град / квартал <span style={{ color: '#dc2626' }}>*</span>
       </label>
       <div className="relative">
         <Search
@@ -75,7 +75,7 @@ export function SpeedyOfficeSelector({
           type="text"
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          placeholder="напр. София, Варна, Пловдив..."
+          placeholder="напр. софия, или софия младост"
           className="w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm outline-none transition-colors focus:border-[#61a229]"
           style={{
             backgroundColor: '#f5f5f5',
@@ -84,6 +84,9 @@ export function SpeedyOfficeSelector({
           }}
         />
       </div>
+      <p className="mt-1 text-[11px]" style={{ color: '#9ca3af' }}>
+        Първо градът, после може да добавите квартал или ключова дума
+      </p>
 
       {/* Results */}
       <div className="mt-3">
