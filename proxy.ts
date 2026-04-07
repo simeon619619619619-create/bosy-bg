@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function proxy(request: NextRequest) {
-  let response = NextResponse.next({ request })
+  let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,10 +13,13 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
-            response.cookies.set(name, value, options)
-          })
+          )
+          supabaseResponse = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
         },
       },
     }
@@ -26,10 +29,19 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Helper: create redirect that preserves auth cookies
+  const redirectWithCookies = (url: URL) => {
+    const redirect = NextResponse.redirect(url)
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirect.cookies.set(cookie.name, cookie.value, cookie)
+    })
+    return redirect
+  }
+
   // Protect admin routes
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (!user) {
-      return NextResponse.redirect(new URL('/login', request.url))
+      return redirectWithCookies(new URL('/login', request.url))
     }
     // Check role for settings
     if (request.nextUrl.pathname.startsWith('/admin/settings')) {
@@ -39,17 +51,17 @@ export async function proxy(request: NextRequest) {
         .eq('id', user.id)
         .single()
       if (profile?.role !== 'admin') {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+        return redirectWithCookies(new URL('/admin/dashboard', request.url))
       }
     }
   }
 
   // Redirect logged-in users away from login
   if (request.nextUrl.pathname === '/login' && user) {
-    return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+    return redirectWithCookies(new URL('/admin/dashboard', request.url))
   }
 
-  return response
+  return supabaseResponse
 }
 
 export const config = {
