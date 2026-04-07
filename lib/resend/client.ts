@@ -155,21 +155,19 @@ export async function sendEasterPromoEmail(
 
   const plainText = `Здравейте, ${customerName},
 
-Благодарим Ви, че пазарувахте от BOSY.
+Благодаря Ви, че избрахте BOSY за Вашата покупка. За нас е важно всеки клиент да си тръгне доволен.
 
-Като знак на благодарност, прикачваме персонален код за следващата Ви поръчка:
+Като малък знак на признателност, прикачих личен код към Вашия акаунт, който да използвате при следваща Ви визита при нас:
 
-Код: ${promoCode}
-Стойност: 20% за следваща поръчка
-Валиден до: 30 април 2026 г.
+${promoCode}
 
-Кодът е автоматично прикрепен към Вашия акаунт. При следващото пазаруване на bosy.bg може да го въведете в полето за промо код.
+Кодът е валиден до 30 април 2026 г. и ще се появи автоматично при следващо пазаруване на bosy.bg.
 
-Ако имате въпроси, моля отговорете на този имейл.
+Ако нещо не е наред с поръчката Ви или имате въпрос - просто отговорете на този имейл, ще получите личен отговор.
 
-Поздрави,
-Екипът на BOSY
-bosy.bg`
+Топли поздрави,
+Симеон
+BOSY`
 
   const html = `<!DOCTYPE html>
 <html>
@@ -178,43 +176,32 @@ bosy.bg`
   <table style="max-width:560px;margin:0 auto;" cellpadding="0" cellspacing="0">
     <tr><td>
       <p style="margin:0 0 16px;font-size:15px;">Здравейте, ${customerName},</p>
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.5;">Благодарим Ви, че пазарувахте от BOSY.</p>
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.5;">Като знак на благодарност, прикачваме персонален код за следващата Ви поръчка:</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Благодаря Ви, че избрахте BOSY за Вашата покупка. За нас е важно всеки клиент да си тръгне доволен.</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Като малък знак на признателност, прикачих личен код към Вашия акаунт, който да използвате при следваща Ви визита при нас:</p>
 
-      <table style="width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:14px;" cellpadding="0" cellspacing="0">
-        <tr>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;width:160px;">Код:</td>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;font-family:'Courier New',monospace;font-weight:bold;">${promoCode}</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;">Стойност:</td>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;">20% за следваща поръчка</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;">Валиден до:</td>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;">30 април 2026 г.</td>
-        </tr>
-      </table>
+      <p style="margin:20px 0;font-size:15px;line-height:1.6;">
+        Код: <span style="font-family:'Courier New',monospace;font-weight:bold;">${promoCode}</span>
+      </p>
 
-      <p style="margin:16px 0;font-size:15px;line-height:1.5;">Кодът е автоматично прикрепен към Вашия акаунт. При следващото пазаруване на <a href="https://bosy.bg" style="color:#222;">bosy.bg</a> може да го въведете в полето за промо код.</p>
-      <p style="margin:16px 0;font-size:15px;line-height:1.5;">Ако имате въпроси, моля отговорете на този имейл.</p>
-      <p style="margin:24px 0 4px;font-size:15px;">Поздрави,</p>
-      <p style="margin:0;font-size:15px;">Екипът на BOSY</p>
-      <p style="margin:4px 0 0;font-size:13px;color:#888;">bosy.bg</p>
+      <p style="margin:16px 0;font-size:15px;line-height:1.6;">Кодът е валиден до 30 април 2026 г. и ще се появи автоматично при следващо пазаруване на <a href="https://bosy.bg" style="color:#222;">bosy.bg</a>.</p>
+      <p style="margin:16px 0;font-size:15px;line-height:1.6;">Ако нещо не е наред с поръчката Ви или имате въпрос - просто отговорете на този имейл, ще получите личен отговор.</p>
+      <p style="margin:24px 0 4px;font-size:15px;">Топли поздрави,</p>
+      <p style="margin:0;font-size:15px;">Симеон</p>
+      <p style="margin:4px 0 0;font-size:13px;color:#888;">BOSY</p>
     </td></tr>
   </table>
 </body>
 </html>`
 
   return resend.emails.send({
-    from: 'BOSY <orders@bosy.bg>',
+    from: 'Симеон от BOSY <orders@bosy.bg>',
     replyTo: 'marketing@bosy.bg',
     to,
-    subject: `Благодарим за поръчката - персонален код за ${customerName}`,
+    subject: `Лично от мен, ${customerName}`,
     text: plainText,
     html,
     headers: {
-      'X-Entity-Ref-ID': `promo-${promoCode}-${Date.now()}`,
+      'X-Entity-Ref-ID': `thank-you-${Date.now()}`,
       'X-Priority': '1',
     },
   })
@@ -230,19 +217,17 @@ export async function sendEasterPromoReminder(
 
   const plainText = `Здравейте, ${customerName},
 
-Напомняме Ви, че Вашият персонален код от BOSY все още не е използван.
+Преди няколко дни Ви изпратих личен код към акаунта Ви, но виждам, че още не сте го използвали. Може да съм го пропуснал в спам папката Ви - случва се с нови имейли.
 
-Код: ${promoCode}
-Стойност: 20% за следваща поръчка
-Валиден до: 30 април 2026 г.
+Кодът Ви е: ${promoCode}
 
-При следващото пазаруване на bosy.bg може да го въведете в полето за промо код.
+Валиден до 30 април 2026 г. Прикрепен е автоматично към акаунта Ви - просто пазарувайте на bosy.bg, ще се появи сам.
 
-Ако имате въпроси, моля отговорете на този имейл.
+Ако имате въпрос или нещо не работи, отговорете на този имейл - ще получите личен отговор.
 
-Поздрави,
-Екипът на BOSY
-bosy.bg`
+Топли поздрави,
+Симеон
+BOSY`
 
   const html = `<!DOCTYPE html>
 <html>
@@ -251,42 +236,31 @@ bosy.bg`
   <table style="max-width:560px;margin:0 auto;" cellpadding="0" cellspacing="0">
     <tr><td>
       <p style="margin:0 0 16px;font-size:15px;">Здравейте, ${customerName},</p>
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.5;">Напомняме Ви, че Вашият персонален код от BOSY все още не е използван.</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Преди няколко дни Ви изпратих личен код към акаунта Ви, но виждам, че още не сте го използвали. Може да съм го пропуснал в спам папката Ви - случва се с нови имейли.</p>
 
-      <table style="width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:14px;" cellpadding="0" cellspacing="0">
-        <tr>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;width:160px;">Код:</td>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;font-family:'Courier New',monospace;font-weight:bold;">${promoCode}</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;">Стойност:</td>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;">20% за следваща поръчка</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;">Валиден до:</td>
-          <td style="padding:8px 0;border-bottom:1px solid #ddd;">30 април 2026 г.</td>
-        </tr>
-      </table>
+      <p style="margin:20px 0;font-size:15px;line-height:1.6;">
+        Кодът Ви е: <span style="font-family:'Courier New',monospace;font-weight:bold;">${promoCode}</span>
+      </p>
 
-      <p style="margin:16px 0;font-size:15px;line-height:1.5;">При следващото пазаруване на <a href="https://bosy.bg" style="color:#222;">bosy.bg</a> може да го въведете в полето за промо код.</p>
-      <p style="margin:16px 0;font-size:15px;line-height:1.5;">Ако имате въпроси, моля отговорете на този имейл.</p>
-      <p style="margin:24px 0 4px;font-size:15px;">Поздрави,</p>
-      <p style="margin:0;font-size:15px;">Екипът на BOSY</p>
-      <p style="margin:4px 0 0;font-size:13px;color:#888;">bosy.bg</p>
+      <p style="margin:16px 0;font-size:15px;line-height:1.6;">Валиден до 30 април 2026 г. Прикрепен е автоматично към акаунта Ви - просто пазарувайте на <a href="https://bosy.bg" style="color:#222;">bosy.bg</a>, ще се появи сам.</p>
+      <p style="margin:16px 0;font-size:15px;line-height:1.6;">Ако имате въпрос или нещо не работи, отговорете на този имейл - ще получите личен отговор.</p>
+      <p style="margin:24px 0 4px;font-size:15px;">Топли поздрави,</p>
+      <p style="margin:0;font-size:15px;">Симеон</p>
+      <p style="margin:4px 0 0;font-size:13px;color:#888;">BOSY</p>
     </td></tr>
   </table>
 </body>
 </html>`
 
   return resend.emails.send({
-    from: 'BOSY <orders@bosy.bg>',
+    from: 'Симеон от BOSY <orders@bosy.bg>',
     replyTo: 'marketing@bosy.bg',
     to,
-    subject: `Напомняне - Вашият код от BOSY (${promoCode})`,
+    subject: `Напомняне за Вас, ${customerName}`,
     text: plainText,
     html,
     headers: {
-      'X-Entity-Ref-ID': `promo-reminder-${promoCode}-${Date.now()}`,
+      'X-Entity-Ref-ID': `reminder-${Date.now()}`,
       'X-Priority': '1',
     },
   })
