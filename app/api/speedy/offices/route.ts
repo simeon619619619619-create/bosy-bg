@@ -37,6 +37,16 @@ export async function GET(request: Request) {
     })
 
     const siteData = await siteRes.json()
+
+    // Debug: if Speedy returned an error, surface it
+    if (siteData.error) {
+      return NextResponse.json({
+        sites: [],
+        offices: [],
+        debug: { stage: 'site-search', speedyError: siteData.error },
+      })
+    }
+
     const sites = (siteData.sites || []).slice(0, 10).map((s: {
       id: number
       name: string
@@ -50,7 +60,15 @@ export async function GET(request: Request) {
     }))
 
     if (sites.length === 0) {
-      return NextResponse.json({ sites: [], offices: [] })
+      return NextResponse.json({
+        sites: [],
+        offices: [],
+        debug: {
+          stage: 'no-sites',
+          rawResponse: siteData,
+          searchedFor: city.toUpperCase(),
+        },
+      })
     }
 
     // 2. Get offices for the first matching site
