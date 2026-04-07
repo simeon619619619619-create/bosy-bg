@@ -3,11 +3,18 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ShoppingBag, ArrowLeft } from 'lucide-react'
+import { ShoppingBag, ArrowLeft, Home, Building2 } from 'lucide-react'
 import { useCart } from '@/components/public/cart-provider'
 import { createOrder, lookupCashback, getCashbackPercent } from './actions'
 import { validatePromoCode } from '@/app/admin/promo-codes/actions'
 import { toEur } from '@/lib/currency'
+import { SpeedyOfficeSelector } from '@/components/checkout/speedy-office-selector'
+
+interface SelectedOffice {
+  id: number
+  name: string
+  address: string
+}
 
 const SHIPPING_THRESHOLD = 69.99 * 1.95583 // 69.99€ in BGN
 const SHIPPING_COST = 3.99 * 1.95583 // 3.99€ in BGN
@@ -38,6 +45,8 @@ export default function CheckoutPage() {
   const [promoApplied, setPromoApplied] = useState<{ code: string; discount_type: string; discount_value: number } | null>(null)
   const [promoError, setPromoError] = useState<string | null>(null)
   const [promoLoading, setPromoLoading] = useState(false)
+  const [deliveryType, setDeliveryType] = useState<'address' | 'office'>('address')
+  const [selectedOffice, setSelectedOffice] = useState<SelectedOffice | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
   // Auto-fill from logged-in customer
@@ -151,10 +160,33 @@ export default function CheckoutPage() {
     const name = form.get('name') as string
     const email = form.get('email') as string
     const phone = form.get('phone') as string
-    const city = form.get('city') as string
-    const address = form.get('address') as string
-    const postalCode = form.get('postalCode') as string
     const notes = form.get('notes') as string
+
+    // Validate delivery method
+    let city = ''
+    let address = ''
+    let postalCode = ''
+    let officeId: number | null = null
+
+    if (deliveryType === 'address') {
+      city = (form.get('city') as string) ?? ''
+      address = (form.get('address') as string) ?? ''
+      postalCode = (form.get('postalCode') as string) ?? ''
+      if (!city || !address) {
+        setError('Моля, попълнете град и адрес за доставка')
+        setLoading(false)
+        return
+      }
+    } else {
+      if (!selectedOffice) {
+        setError('Моля, изберете офис на Speedy за доставка')
+        setLoading(false)
+        return
+      }
+      officeId = selectedOffice.id
+      city = `Speedy офис: ${selectedOffice.name}`
+      address = selectedOffice.address
+    }
 
     try {
       const result = await createOrder({
@@ -170,6 +202,8 @@ export default function CheckoutPage() {
         promoCode: promoApplied?.code || null,
         promoDiscount,
         cashbackUsed: cashbackApplied,
+        deliveryType,
+        speedyOfficeId: officeId,
         items: items.map((i) => ({
           id: i.id,
           name: i.name,
@@ -309,7 +343,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Address */}
+          {/* Delivery method + address */}
           <div
             className="rounded-xl p-6"
             style={{ background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
@@ -318,52 +352,132 @@ export default function CheckoutPage() {
               className="text-lg font-bold"
               style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
             >
-              Адрес за доставка
+              Доставка
             </h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div>
-                <label style={labelStyle} htmlFor="city">
-                  Град
-                </label>
-                <input
-                  id="city"
-                  name="city"
-                  type="text"
-                  placeholder="София"
-                  style={inputStyle}
-                  defaultValue={prefilled?.city ?? ''}
-                  key={`city-${prefilled?.city ?? ''}`}
+
+            {/* Delivery type radio */}
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => setDeliveryType('address')}
+                className="flex items-center gap-3 rounded-lg border-2 p-4 text-left transition-all"
+                style={{
+                  borderColor: deliveryType === 'address' ? '#61a229' : '#e5e7eb',
+                  backgroundColor: deliveryType === 'address' ? '#f0fdf4' : '#fff',
+                }}
+              >
+                <Home
+                  className="h-5 w-5 shrink-0"
+                  style={{ color: deliveryType === 'address' ? '#61a229' : '#9ca3af' }}
                 />
-              </div>
-              <div>
-                <label style={labelStyle} htmlFor="postalCode">
-                  Пощенски код
-                </label>
-                <input
-                  id="postalCode"
-                  name="postalCode"
-                  type="text"
-                  placeholder="1000"
-                  style={inputStyle}
-                  defaultValue={prefilled?.zip ?? ''}
-                  key={`zip-${prefilled?.zip ?? ''}`}
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: '#111' }}>
+                    До адрес
+                  </p>
+                  <p className="text-xs" style={{ color: '#6b7280' }}>
+                    Доставка от куриер
+                  </p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setDeliveryType('office')}
+                className="flex items-center gap-3 rounded-lg border-2 p-4 text-left transition-all"
+                style={{
+                  borderColor: deliveryType === 'office' ? '#61a229' : '#e5e7eb',
+                  backgroundColor: deliveryType === 'office' ? '#f0fdf4' : '#fff',
+                }}
+              >
+                <Building2
+                  className="h-5 w-5 shrink-0"
+                  style={{ color: deliveryType === 'office' ? '#61a229' : '#9ca3af' }}
                 />
-              </div>
-              <div className="sm:col-span-2">
-                <label style={labelStyle} htmlFor="address">
-                  Улица / адрес
-                </label>
-                <input
-                  id="address"
-                  name="address"
-                  type="text"
-                  placeholder="ул. Витоша 15, ет. 3"
-                  style={inputStyle}
-                  defaultValue={prefilled?.street ?? ''}
-                  key={`street-${prefilled?.street ?? ''}`}
-                />
-              </div>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: '#111' }}>
+                    До офис на Speedy
+                  </p>
+                  <p className="text-xs" style={{ color: '#6b7280' }}>
+                    Вземане от офис
+                  </p>
+                </div>
+              </button>
             </div>
+
+            {/* Address fields OR office selector */}
+            {deliveryType === 'address' ? (
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label style={labelStyle} htmlFor="city">
+                    Град
+                  </label>
+                  <input
+                    id="city"
+                    name="city"
+                    type="text"
+                    placeholder="София"
+                    style={inputStyle}
+                    defaultValue={prefilled?.city ?? ''}
+                    key={`city-${prefilled?.city ?? ''}`}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle} htmlFor="postalCode">
+                    Пощенски код
+                  </label>
+                  <input
+                    id="postalCode"
+                    name="postalCode"
+                    type="text"
+                    placeholder="1000"
+                    style={inputStyle}
+                    defaultValue={prefilled?.zip ?? ''}
+                    key={`zip-${prefilled?.zip ?? ''}`}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label style={labelStyle} htmlFor="address">
+                    Улица / адрес
+                  </label>
+                  <input
+                    id="address"
+                    name="address"
+                    type="text"
+                    placeholder="ул. Витоша 15, ет. 3"
+                    style={inputStyle}
+                    defaultValue={prefilled?.street ?? ''}
+                    key={`street-${prefilled?.street ?? ''}`}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="mt-5">
+                <SpeedyOfficeSelector
+                  initialCity={prefilled?.city ?? ''}
+                  selectedOfficeId={selectedOffice?.id ?? null}
+                  onSelect={(office) =>
+                    setSelectedOffice({
+                      id: office.id,
+                      name: office.name,
+                      address: office.address,
+                    })
+                  }
+                />
+                {selectedOffice && (
+                  <div
+                    className="mt-3 rounded-lg border p-3 text-xs"
+                    style={{
+                      borderColor: '#61a229',
+                      backgroundColor: '#f0fdf4',
+                      color: '#166534',
+                    }}
+                  >
+                    Избран офис: <strong>{selectedOffice.name}</strong>
+                    {selectedOffice.address && ` — ${selectedOffice.address}`}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Notes */}

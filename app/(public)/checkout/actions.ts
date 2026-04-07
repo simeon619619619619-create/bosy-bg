@@ -26,6 +26,8 @@ interface CreateOrderInput {
   promoCode: string | null
   promoDiscount: number
   cashbackUsed: number
+  deliveryType?: 'address' | 'office'
+  speedyOfficeId?: number | null
   items: OrderItem[]
 }
 
@@ -149,6 +151,16 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     quantity: item.quantity,
   }))
 
+  // Build notes with delivery and payment metadata tags
+  const noteTags = [`[${input.paymentMethod.toUpperCase()}]`]
+  if (input.promoCode) noteTags.push(`[PROMO:${input.promoCode}]`)
+  if (input.deliveryType === 'office' && input.speedyOfficeId) {
+    noteTags.push(`[OFFICE:${input.speedyOfficeId}]`)
+  }
+  const fullNotes = input.notes
+    ? `${noteTags.join(' ')} ${input.notes}`
+    : noteTags.join(' ')
+
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
@@ -158,9 +170,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       shipping_cost: shippingCost,
       total,
       status: 'pending',
-      notes: input.notes
-        ? `[${input.paymentMethod.toUpperCase()}]${input.promoCode ? ` [PROMO:${input.promoCode}]` : ''} ${input.notes}`
-        : `[${input.paymentMethod.toUpperCase()}]${input.promoCode ? ` [PROMO:${input.promoCode}]` : ''}`,
+      notes: fullNotes,
     })
     .select('id, order_number')
     .single()

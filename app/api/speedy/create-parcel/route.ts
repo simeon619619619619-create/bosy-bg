@@ -72,36 +72,52 @@ export async function POST(request: Request) {
       )
     }
 
-    // Parse customer address
-    let addr: CustomerAddress = {}
-    if (typeof customer.address === 'object' && customer.address !== null) {
-      addr = customer.address
-    } else if (typeof customer.address === 'string') {
-      // fallback: parse "1000, София, Бул.България 111"
-      const parts = customer.address.split(',').map((s) => s.trim())
-      addr = { zip: parts[0], city: parts[1], street: parts[2] }
-    }
+    // Determine delivery type from notes ([OFFICE:X] tag)
+    const notes = (order.notes as string) ?? ''
+    const isCod = notes.includes('[COD]')
+    const officeMatch = notes.match(/\[OFFICE:(\d+)\]/)
+    const deliveryToOffice = !!officeMatch
+    const pickupOfficeId = officeMatch ? Number(officeMatch[1]) : null
 
-    if (!addr.city || !addr.street) {
-      return NextResponse.json(
-        { error: 'Адресът на клиента е непълен (липсва град или улица)' },
-        { status: 400 }
-      )
-    }
+    // Build recipient block based on delivery type
+    let recipientLocation: Record<string, unknown>
 
-    // Find Speedy siteId for the city
-    const siteId = await findSiteId(addr.city)
-    if (!siteId) {
-      return NextResponse.json(
-        { error: `Не е намерен град "${addr.city}" в Speedy системата` },
-        { status: 400 }
-      )
-    }
+    if (deliveryToOffice && pickupOfficeId) {
+      // Delivery to Speedy office — only need pickupOfficeId
+      recipientLocation = { pickupOfficeId }
+    } else {
+      // Delivery to address — need full street info
+      let addr: CustomerAddress = {}
+      if (typeof customer.address === 'object' && customer.address !== null) {
+        addr = customer.address
+      } else if (typeof customer.address === 'string') {
+        const parts = customer.address.split(',').map((s) => s.trim())
+        addr = { zip: parts[0], city: parts[1], street: parts[2] }
+      }
 
-    // Parse street: "Бул.България 111" → name="Бул.България", no="111"
-    const streetMatch = addr.street.match(/^(.+?)\s+(\S+)$/)
-    const streetName = streetMatch?.[1] ?? addr.street
-    const streetNo = streetMatch?.[2] ?? '1'
+      if (!addr.city || !addr.street) {
+        return NextResponse.json(
+          { error: 'Адресът на клиента е непълен (липсва град или улица)' },
+          { status: 400 }
+        )
+      }
+
+      const siteId = await findSiteId(addr.city)
+      if (!siteId) {
+        return NextResponse.json(
+          { error: `Не е намерен град "${addr.city}" в Speedy системата` },
+          { status: 400 }
+        )
+      }
+
+      const streetMatch = addr.street.match(/^(.+?)\s+(\S+)$/)
+      const streetName = streetMatch?.[1] ?? addr.street
+      const streetNo = streetMatch?.[2] ?? '1'
+
+      recipientLocation = {
+        address: { siteId, streetName, streetNo },
+      }
+    }
 
     // Build contents description from items
     const items = Array.isArray(order.items) ? order.items : []
@@ -110,10 +126,6 @@ export async function POST(request: Request) {
         .map((i: { name: string }) => i.name)
         .join(', ')
         .slice(0, 100) || 'Стоки'
-
-    // Determine if COD payment
-    const notes = (order.notes as string) ?? ''
-    const isCod = notes.includes('[COD]')
 
     // Build Speedy shipment payload
     const payload: Record<string, unknown> = {
@@ -150,11 +162,7 @@ export async function POST(request: Request) {
         clientName: customer.name,
         ...(customer.email && { email: customer.email }),
         privatePerson: true,
-        address: {
-          siteId,
-          streetName,
-          streetNo,
-        },
+        ...recipientLocation,
       },
       ref1: String(order.order_number ?? order.id),
     }
