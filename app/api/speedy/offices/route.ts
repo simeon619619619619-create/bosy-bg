@@ -1,9 +1,73 @@
 import { NextResponse } from 'next/server'
 
 const SPEEDY_BASE = 'https://api.speedy.bg/v1'
+const DEFAULT_CITY = 'СОФИЯ'
 
-// GET /api/speedy/offices?city=София
-// Returns: { sites: [{id, name}], offices: [{id, name, address, workingTime}] }
+interface SpeedySite {
+  id: number
+  name: string
+  postCode?: string
+  type?: string
+}
+
+interface SpeedyOffice {
+  id: number
+  name: string
+  nameEn?: string
+  address?: {
+    fullAddressString?: string
+    localAddressString?: string
+  }
+  workingTimeFrom?: string
+  workingTimeTo?: string
+  type?: string
+  siteId?: number
+}
+
+async function searchSites(
+  userName: string,
+  password: string,
+  name: string
+): Promise<SpeedySite[]> {
+  const res = await fetch(`${SPEEDY_BASE}/location/site`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userName,
+      password,
+      language: 'BG',
+      countryId: 100,
+      name: name.toUpperCase(),
+    }),
+  })
+  const data = await res.json()
+  if (data.error) return []
+  return (data.sites || []) as SpeedySite[]
+}
+
+async function fetchOffices(
+  userName: string,
+  password: string,
+  siteId: number
+): Promise<SpeedyOffice[]> {
+  const res = await fetch(`${SPEEDY_BASE}/location/office`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userName,
+      password,
+      language: 'BG',
+      countryId: 100,
+      siteId,
+    }),
+  })
+  const data = await res.json()
+  if (data.error) return []
+  return (data.offices || []) as SpeedyOffice[]
+}
+
+// GET /api/speedy/offices?city=софия младост
+// Returns: { sites: [...], offices: [...] }
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -13,12 +77,6 @@ export async function GET(request: Request) {
     if (trimmed.length < 2) {
       return NextResponse.json({ sites: [], offices: [] })
     }
-
-    // Split into city + optional filter text
-    // e.g. "софия младост" → cityName="софия", filterText="младост"
-    const parts = trimmed.split(/\s+/)
-    const cityName = parts[0]
-    const filterText = parts.slice(1).join(' ').toLowerCase()
 
     const userName = process.env.SPEEDY_USERNAME
     const password = process.env.SPEEDY_PASSWORD
@@ -30,85 +88,36 @@ export async function GET(request: Request) {
       )
     }
 
-    // 1. Find site (city) by name
-    const siteRes = await fetch(`${SPEEDY_BASE}/location/site`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userName,
-        password,
-        language: 'BG',
-        countryId: 100,
-        name: cityName.toUpperCase(),
-      }),
-    })
+    // Split into city + optional filter text
+    // e.g. "софия младост" → cityName="софия", filterText="младост"
+    const parts = trimmed.split(/\s+/)
+    let cityName = parts[0]
+    let filterText = parts.slice(1).join(' ').toLowerCase()
 
-    const siteData = await siteRes.json()
+    // Try to find sites for the first word
+    let sites = await searchSites(userName, password, cityName)
 
-    // Debug: if Speedy returned an error, surface it
-    if (siteData.error) {
-      return NextResponse.json({
-        sites: [],
-        offices: [],
-        debug: { stage: 'site-search', speedyError: siteData.error },
-      })
+    // Fallback: if first word isn't a known city, default to София and treat
+    // the entire input as filter text (e.g. user types just "младост")
+    if (sites.length === 0) {
+      cityName = DEFAULT_CITY
+      filterText = trimmed.toLowerCase()
+      sites = await searchSites(userName, password, cityName)
     }
-
-    const sites = (siteData.sites || []).slice(0, 10).map((s: {
-      id: number
-      name: string
-      postCode?: string
-      type?: string
-    }) => ({
-      id: s.id,
-      name: s.name,
-      postCode: s.postCode,
-      type: s.type,
-    }))
 
     if (sites.length === 0) {
-      return NextResponse.json({
-        sites: [],
-        offices: [],
-        debug: {
-          stage: 'no-sites',
-          rawResponse: siteData,
-          searchedFor: cityName.toUpperCase(),
-        },
-      })
+      return NextResponse.json({ sites: [], offices: [] })
     }
 
-    // 2. Get offices for the first matching site
+    // Get offices for the first matching site
     const firstSite = sites[0]
-    const officeRes = await fetch(`${SPEEDY_BASE}/location/office`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userName,
-        password,
-        language: 'BG',
-        countryId: 100,
-        siteId: firstSite.id,
-      }),
-    })
+    const rawOffices = await fetchOffices(userName, password, firstSite.id)
 
-    const officeData = await officeRes.json()
-    let offices = (officeData.offices || []).map((o: {
-      id: number
-      name: string
-      nameEn?: string
-      address?: {
-        fullAddressString?: string
-        localAddressString?: string
-      }
-      workingTimeFrom?: string
-      workingTimeTo?: string
-      type?: string
-      siteId?: number
-    }) => ({
+    let offices = rawOffices.map((o) => ({
       id: o.id,
       name: o.name,
-      address: o.address?.localAddressString || o.address?.fullAddressString || '',
+      address:
+        o.address?.localAddressString || o.address?.fullAddressString || '',
       workingTime:
         o.workingTimeFrom && o.workingTimeTo
           ? `${o.workingTimeFrom} - ${o.workingTimeTo}`
@@ -121,14 +130,19 @@ export async function GET(request: Request) {
     if (filterText) {
       const needle = filterText.toLowerCase()
       offices = offices.filter(
-        (o: { name: string; address: string }) =>
+        (o) =>
           o.name.toLowerCase().includes(needle) ||
           o.address.toLowerCase().includes(needle)
       )
     }
 
     return NextResponse.json({
-      sites,
+      sites: sites.slice(0, 10).map((s) => ({
+        id: s.id,
+        name: s.name,
+        postCode: s.postCode,
+        type: s.type,
+      })),
       offices,
       selectedSiteId: firstSite.id,
       filterApplied: filterText || null,
