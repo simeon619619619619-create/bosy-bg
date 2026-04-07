@@ -155,9 +155,9 @@ export async function sendEasterPromoEmail(
 
   const plainText = `Здравейте, ${customerName},
 
-Благодаря Ви, че избрахте BOSY за Вашата покупка. За нас е важно всеки клиент да си тръгне доволен.
+Благодарим Ви, че избрахте BOSY за Вашата покупка. За нас е важно всеки клиент да си тръгне доволен.
 
-Като малък знак на признателност, прикачих личен код към Вашия акаунт, който да използвате при следваща Ви визита при нас:
+Като малък знак на признателност, прикачихме личен код към Вашия акаунт, който да използвате при следваща Ви визита при нас:
 
 ${promoCode}
 
@@ -166,7 +166,7 @@ ${promoCode}
 Ако нещо не е наред с поръчката Ви или имате въпрос - просто отговорете на този имейл, ще получите личен отговор.
 
 Топли поздрави,
-Симеон
+Саня и Бояна
 BOSY`
 
   const html = `<!DOCTYPE html>
@@ -176,8 +176,8 @@ BOSY`
   <table style="max-width:560px;margin:0 auto;" cellpadding="0" cellspacing="0">
     <tr><td>
       <p style="margin:0 0 16px;font-size:15px;">Здравейте, ${customerName},</p>
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Благодаря Ви, че избрахте BOSY за Вашата покупка. За нас е важно всеки клиент да си тръгне доволен.</p>
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Като малък знак на признателност, прикачих личен код към Вашия акаунт, който да използвате при следваща Ви визита при нас:</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Благодарим Ви, че избрахте BOSY за Вашата покупка. За нас е важно всеки клиент да си тръгне доволен.</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Като малък знак на признателност, прикачихме личен код към Вашия акаунт, който да използвате при следваща Ви визита при нас:</p>
 
       <p style="margin:20px 0;font-size:15px;line-height:1.6;">
         Код: <span style="font-family:'Courier New',monospace;font-weight:bold;">${promoCode}</span>
@@ -186,7 +186,7 @@ BOSY`
       <p style="margin:16px 0;font-size:15px;line-height:1.6;">Кодът е валиден до 30 април 2026 г. и ще се появи автоматично при следващо пазаруване на <a href="https://bosy.bg" style="color:#222;">bosy.bg</a>.</p>
       <p style="margin:16px 0;font-size:15px;line-height:1.6;">Ако нещо не е наред с поръчката Ви или имате въпрос - просто отговорете на този имейл, ще получите личен отговор.</p>
       <p style="margin:24px 0 4px;font-size:15px;">Топли поздрави,</p>
-      <p style="margin:0;font-size:15px;">Симеон</p>
+      <p style="margin:0;font-size:15px;">Саня и Бояна</p>
       <p style="margin:4px 0 0;font-size:13px;color:#888;">BOSY</p>
     </td></tr>
   </table>
@@ -194,10 +194,10 @@ BOSY`
 </html>`
 
   return resend.emails.send({
-    from: 'Симеон от BOSY <orders@bosy.bg>',
+    from: 'Саня и Бояна от BOSY <orders@bosy.bg>',
     replyTo: 'marketing@bosy.bg',
     to,
-    subject: `Лично от мен, ${customerName}`,
+    subject: `Лично от нас, ${customerName}`,
     text: plainText,
     html,
     headers: {
@@ -217,7 +217,7 @@ export async function sendEasterPromoReminder(
 
   const plainText = `Здравейте, ${customerName},
 
-Преди няколко дни Ви изпратих личен код към акаунта Ви, но виждам, че още не сте го използвали. Може да съм го пропуснал в спам папката Ви - случва се с нови имейли.
+Преди няколко дни Ви изпратихме личен код към акаунта Ви, но виждаме, че още не сте го използвали. Може да сме го пропуснали в спам папката Ви - случва се с нови имейли.
 
 Кодът Ви е: ${promoCode}
 
@@ -226,7 +226,7 @@ export async function sendEasterPromoReminder(
 Ако имате въпрос или нещо не работи, отговорете на този имейл - ще получите личен отговор.
 
 Топли поздрави,
-Симеон
+Саня и Бояна
 BOSY`
 
   const html = `<!DOCTYPE html>
@@ -236,7 +236,7 @@ BOSY`
   <table style="max-width:560px;margin:0 auto;" cellpadding="0" cellspacing="0">
     <tr><td>
       <p style="margin:0 0 16px;font-size:15px;">Здравейте, ${customerName},</p>
-      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Преди няколко дни Ви изпратих личен код към акаунта Ви, но виждам, че още не сте го използвали. Може да съм го пропуснал в спам папката Ви - случва се с нови имейли.</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Преди няколко дни Ви изпратихме личен код към акаунта Ви, но виждаме, че още не сте го използвали. Може да сме го пропуснали в спам папката Ви - случва се с нови имейли.</p>
 
       <p style="margin:20px 0;font-size:15px;line-height:1.6;">
         Кодът Ви е: <span style="font-family:'Courier New',monospace;font-weight:bold;">${promoCode}</span>
@@ -245,7 +245,7 @@ BOSY`
       <p style="margin:16px 0;font-size:15px;line-height:1.6;">Валиден до 30 април 2026 г. Прикрепен е автоматично към акаунта Ви - просто пазарувайте на <a href="https://bosy.bg" style="color:#222;">bosy.bg</a>, ще се появи сам.</p>
       <p style="margin:16px 0;font-size:15px;line-height:1.6;">Ако имате въпрос или нещо не работи, отговорете на този имейл - ще получите личен отговор.</p>
       <p style="margin:24px 0 4px;font-size:15px;">Топли поздрави,</p>
-      <p style="margin:0;font-size:15px;">Симеон</p>
+      <p style="margin:0;font-size:15px;">Саня и Бояна</p>
       <p style="margin:4px 0 0;font-size:13px;color:#888;">BOSY</p>
     </td></tr>
   </table>
@@ -253,7 +253,7 @@ BOSY`
 </html>`
 
   return resend.emails.send({
-    from: 'Симеон от BOSY <orders@bosy.bg>',
+    from: 'Саня и Бояна от BOSY <orders@bosy.bg>',
     replyTo: 'marketing@bosy.bg',
     to,
     subject: `Напомняне за Вас, ${customerName}`,
