@@ -20,48 +20,82 @@ export async function sendNewOrderNotification(
   const resend = getResendClient()
   if (!resend) return null
 
+  const itemsText = items
+    .map(i => `  - ${i.name} × ${i.quantity} — ${toEur(i.price * i.quantity).toFixed(2)} EUR`)
+    .join('\n')
+
   const itemsHtml = items
-    .map(i => `<tr><td style="padding:8px;border-bottom:1px solid #eee;">${i.name}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${i.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">${toEur(i.price * i.quantity).toFixed(2)} &euro;</td></tr>`)
+    .map(i => `<tr><td style="padding:10px 0;border-bottom:1px solid #eee;font-family:Georgia,serif;">${i.name}</td><td style="padding:10px 0;border-bottom:1px solid #eee;text-align:center;font-family:Georgia,serif;">${i.quantity}</td><td style="padding:10px 0;border-bottom:1px solid #eee;text-align:right;font-family:Georgia,serif;">${toEur(i.price * i.quantity).toFixed(2)} EUR</td></tr>`)
     .join('')
 
-  const emailHtml = `
-    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;">
-      <div style="background:#a78bfa;padding:24px;text-align:center;">
-        <h1 style="color:#fff;margin:0;font-size:28px;letter-spacing:3px;">BOSY</h1>
-      </div>
-      <div style="padding:32px;">
-        <h2 style="color:#333;margin:0 0 8px;">Благодарим за поръчката!</h2>
-        <p style="color:#666;">Здравейте, ${customerName}!</p>
-        <p style="color:#666;">Вашата поръчка <strong style="color:#a78bfa;">#${orderNumber}</strong> е получена и ще бъде обработена скоро.</p>
-        <table style="width:100%;border-collapse:collapse;margin:24px 0;">
-          <thead><tr style="background:#f5f5f5;">
-            <th style="padding:8px;text-align:left;">Продукт</th>
-            <th style="padding:8px;text-align:center;">Кол.</th>
-            <th style="padding:8px;text-align:right;">Сума</th>
-          </tr></thead>
-          <tbody>${itemsHtml}</tbody>
-        </table>
-        <p style="font-size:18px;font-weight:bold;text-align:right;color:#333;">Общо: ${toEur(total).toFixed(2)} &euro;</p>
-        <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
-        <p style="color:#999;font-size:12px;">BOSY — Healthy Kitchen | bosy.bg</p>
-      </div>
-    </div>
-  `
+  const plainText = `Здравейте, ${customerName},
 
-  // Send to customer
+Получихме Вашата поръчка №${orderNumber}.
+
+Детайли на поръчката:
+${itemsText}
+
+Обща сума: ${toEur(total).toFixed(2)} EUR
+
+Ще Ви уведомим, когато пратката бъде изпратена.
+
+Ако имате въпроси, моля отговорете на този имейл.
+
+Поздрави,
+Екипът на BOSY
+bosy.bg`
+
+  const customerHtml = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:20px;font-family:Georgia,'Times New Roman',serif;color:#222;background:#fff;">
+  <table style="max-width:560px;margin:0 auto;" cellpadding="0" cellspacing="0">
+    <tr><td>
+      <p style="margin:0 0 16px;font-size:15px;">Здравейте, ${customerName},</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.5;">Получихме Вашата поръчка №${orderNumber}.</p>
+      <p style="margin:0 0 8px;font-size:15px;">Детайли на поръчката:</p>
+      <table style="width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:14px;" cellpadding="0" cellspacing="0">
+        <tr>
+          <th style="text-align:left;padding:8px 0;border-bottom:2px solid #222;">Продукт</th>
+          <th style="text-align:center;padding:8px 0;border-bottom:2px solid #222;">Бр.</th>
+          <th style="text-align:right;padding:8px 0;border-bottom:2px solid #222;">Сума</th>
+        </tr>
+        ${itemsHtml}
+        <tr>
+          <td colspan="2" style="padding:12px 0;font-weight:bold;font-size:15px;">Обща сума</td>
+          <td style="padding:12px 0;text-align:right;font-weight:bold;font-size:15px;">${toEur(total).toFixed(2)} EUR</td>
+        </tr>
+      </table>
+      <p style="margin:16px 0;font-size:15px;line-height:1.5;">Ще Ви уведомим, когато пратката бъде изпратена.</p>
+      <p style="margin:16px 0;font-size:15px;line-height:1.5;">Ако имате въпроси, моля отговорете на този имейл.</p>
+      <p style="margin:24px 0 4px;font-size:15px;">Поздрави,</p>
+      <p style="margin:0;font-size:15px;">Екипът на BOSY</p>
+      <p style="margin:4px 0 0;font-size:13px;color:#888;">bosy.bg</p>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+  // Send to customer — transactional style
   await resend.emails.send({
-    from: 'BOSY <marketing@bosy.bg>',
+    from: 'BOSY <orders@bosy.bg>',
+    replyTo: 'marketing@bosy.bg',
     to: customerEmail,
-    subject: `Поръчка #${orderNumber} — Получена`,
-    html: emailHtml,
+    subject: `Потвърждение за поръчка №${orderNumber}`,
+    text: plainText,
+    html: customerHtml,
+    headers: {
+      'X-Entity-Ref-ID': `order-${orderNumber}`,
+      'X-Priority': '1',
+    },
   }).catch(() => {})
 
-  // Send to admin
+  // Send to admin (simpler)
   await resend.emails.send({
-    from: 'BOSY <marketing@bosy.bg>',
+    from: 'BOSY <orders@bosy.bg>',
     to: 'marketing@bosy.bg',
-    subject: `Нова поръчка #${orderNumber} от ${customerName} — ${toEur(total).toFixed(2)} \u20AC`,
-    html: emailHtml.replace('Благодарим за поръчката!', `Нова поръчка от ${customerName}`).replace(`Здравейте, ${customerName}!`, `Клиент: ${customerName} (${customerEmail})`),
+    subject: `Нова поръчка №${orderNumber} — ${customerName} — ${toEur(total).toFixed(2)} EUR`,
+    text: `Нова поръчка №${orderNumber}\n\nКлиент: ${customerName} (${customerEmail})\n\n${itemsText}\n\nОбща сума: ${toEur(total).toFixed(2)} EUR`,
   }).catch(() => {})
 
   return true
