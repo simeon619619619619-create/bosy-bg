@@ -17,6 +17,24 @@ interface ProductVariants {
   related_slugs?: string[]
 }
 
+// Truncate at word boundary, not mid-word
+function truncateAtWord(text: string, maxLen: number): string {
+  if (!text) return ''
+  if (text.length <= maxLen) return text
+  const sliced = text.slice(0, maxLen)
+  const lastSpace = sliced.lastIndexOf(' ')
+  const cut = lastSpace > maxLen * 0.6 ? sliced.slice(0, lastSpace) : sliced
+  return cut.replace(/[,;:.!?\s]+$/, '') + '…'
+}
+
+// Make image URLs absolute for schema.org / Google Rich Results
+function absoluteUrl(url: string): string {
+  if (!url) return ''
+  if (url.startsWith('http://') || url.startsWith('https://')) return url
+  if (url.startsWith('//')) return `https:${url}`
+  return `https://bosy.bg${url.startsWith('/') ? '' : '/'}${url}`
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -35,10 +53,10 @@ export async function generateMetadata({
   }
 
   const url = `https://bosy.bg/product/${slug}`
-  const img = product.images?.[0]
+  const img = product.images?.[0] ? absoluteUrl(product.images[0]) : null
   const descBase = product.description?.replace(/\s+/g, ' ').trim() ?? ''
   const description = descBase
-    ? descBase.slice(0, 155) + (descBase.length > 155 ? '…' : '')
+    ? truncateAtWord(descBase, 155)
     : `${product.name} от BOSY — без добавена захар, без глутен, на растителна основа. Купи онлайн с доставка в цяла България.`
 
   return {
@@ -103,6 +121,7 @@ export default async function ProductPage({
   const url = `https://bosy.bg/product/${product.slug}`
   const inStock =
     product.stock == null || (typeof product.stock === 'number' && product.stock > 0)
+  const absoluteImages = images.map((i) => absoluteUrl(i)).filter(Boolean)
 
   const productLd = {
     '@context': 'https://schema.org',
@@ -110,8 +129,8 @@ export default async function ProductPage({
     '@id': url,
     name: product.name,
     url,
-    ...(product.description ? { description: product.description } : {}),
-    ...(images.length > 0 ? { image: images } : {}),
+    ...(product.description ? { description: truncateAtWord(product.description, 5000) } : {}),
+    ...(absoluteImages.length > 0 ? { image: absoluteImages } : {}),
     ...(product.category ? { category: product.category } : {}),
     brand: { '@type': 'Brand', name: 'BOSY' },
     sku: product.slug,

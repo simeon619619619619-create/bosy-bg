@@ -4,6 +4,13 @@ import Image from 'next/image'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { toEur } from '@/lib/currency'
 
+function absoluteUrl(url: string): string {
+  if (!url) return ''
+  if (url.startsWith('http://') || url.startsWith('https://')) return url
+  if (url.startsWith('//')) return `https:${url}`
+  return `https://bosy.bg${url.startsWith('/') ? '' : '/'}${url}`
+}
+
 export const metadata: Metadata = {
   title: 'BOSY — Healthy Kitchen | Здравословни лакомства без захар',
   description:
@@ -109,7 +116,7 @@ export default async function HomePage() {
         '@id': `https://bosy.bg/product/${p.slug}`,
         name: p.name,
         url: `https://bosy.bg/product/${p.slug}`,
-        ...(p.images && p.images.length > 0 ? { image: p.images[0] } : {}),
+        ...(p.images && p.images.length > 0 ? { image: absoluteUrl(p.images[0]) } : {}),
         ...(p.description ? { description: p.description.slice(0, 300) } : {}),
         brand: { '@type': 'Brand', name: 'BOSY' },
         offers: {

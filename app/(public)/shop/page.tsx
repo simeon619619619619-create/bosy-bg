@@ -4,6 +4,13 @@ import { toEur } from '@/lib/currency'
 
 import { ShopContent } from './shop-content'
 
+function absoluteUrl(url: string): string {
+  if (!url) return ''
+  if (url.startsWith('http://') || url.startsWith('https://')) return url
+  if (url.startsWith('//')) return `https:${url}`
+  return `https://bosy.bg${url.startsWith('/') ? '' : '/'}${url}`
+}
+
 export const metadata: Metadata = {
   title: 'Магазин — протеинови барове, топчета и напитки',
   description:
@@ -86,7 +93,7 @@ export default async function ShopPage({
           '@id': `https://bosy.bg/product/${p.slug}`,
           name: p.name,
           url: `https://bosy.bg/product/${p.slug}`,
-          ...(p.images?.[0] ? { image: p.images[0] } : {}),
+          ...(p.images?.[0] ? { image: absoluteUrl(p.images[0]) } : {}),
           brand: { '@type': 'Brand', name: 'BOSY' },
           offers: {
             '@type': 'Offer',
