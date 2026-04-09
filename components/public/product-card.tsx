@@ -43,7 +43,7 @@ export function ProductCard({ product }: { product: Product }) {
       <Link href={`/product/${product.slug}`} className="relative block">
         <div
           className="flex h-60 items-center justify-center p-4"
-          style={{ background: '#fafafa' }}
+          style={{ background: '#fdf5f0', borderBottom: '1px solid #eee5db' }}
         >
           {image ? (
             <img
@@ -81,7 +81,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span
             className="text-base font-bold"
-            style={{ color: '#a78bfa', fontFamily: 'var(--font-sans)' }}
+            style={{ color: '#61a229', fontFamily: 'var(--font-sans)' }}
           >
             {toEur(product.price).toFixed(2)} &euro;
           </span>
@@ -104,9 +104,9 @@ export function ProductCard({ product }: { product: Product }) {
           <button
             onClick={handleAdd}
             className="mt-auto w-full cursor-pointer rounded-md px-4 py-2.5 text-center text-sm font-bold tracking-wide text-white transition-colors"
-            style={{ background: added ? '#22c55e' : '#a78bfa', fontFamily: 'var(--font-sans)' }}
-            onMouseEnter={(e) => { if (!added) e.currentTarget.style.background = '#8b5cf6' }}
-            onMouseLeave={(e) => { if (!added) e.currentTarget.style.background = '#a78bfa' }}
+            style={{ background: added ? '#22c55e' : '#61a229', fontFamily: 'var(--font-sans)' }}
+            onMouseEnter={(e) => { if (!added) e.currentTarget.style.background = '#4e871f' }}
+            onMouseLeave={(e) => { if (!added) e.currentTarget.style.background = '#61a229' }}
           >
             {added ? 'Добавено!' : 'Добави в количката'}
           </button>

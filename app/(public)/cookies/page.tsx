@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Политика за бисквитките | BOSY Healthy Kitchen',
-  description: 'Политика за използване на бисквитки на BOSY Healthy Kitchen.',
+  title: 'Политика за бисквитките | BOSY',
+  description: 'Политика за използване на бисквитки на bosy.bg.',
 }
 
 export default function CookiesPage() {
@@ -110,8 +110,8 @@ export default function CookiesPage() {
         </h2>
         <p className="mb-4">
           Ако имате някакви въпроси по отношение на тази Политика за бисквитки, свържете се с нас на имейл:{' '}
-          <a href="mailto:bosykitchen@gmail.com" style={{ color: '#a78bfa' }}>
-            bosykitchen@gmail.com
+          <a href="mailto:marketing@bosy.bg" style={{ color: '#61a229' }}>
+            marketing@bosy.bg
           </a>
         </p>
       </div>

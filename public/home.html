@@ -18,7 +18,7 @@ ul { list-style: none; }
 
 /* Announcement Bar */
 .announcement-bar {
-  background: linear-gradient(90deg, #a78bfa, #f472b6, #60a5fa, #a78bfa);
+  background: linear-gradient(90deg, #61a229, #f472b6, #60a5fa, #61a229);
   color: #fff;
   overflow: hidden;
   height: 40px;
@@ -72,7 +72,7 @@ ul { list-style: none; }
   color: #333;
   transition: color 0.2s;
 }
-.header-nav a:hover { color: #a78bfa; }
+.header-nav a:hover { color: #61a229; }
 .header-actions { display: flex; align-items: center; gap: 14px; }
 .lang-selector {
   font-size: 13px;
@@ -111,7 +111,7 @@ ul { list-style: none; }
   position: absolute;
   top: -6px;
   right: -8px;
-  background: #a78bfa;
+  background: #61a229;
   color: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -134,7 +134,7 @@ ul { list-style: none; }
   align-items: center;
   transition: color 0.2s;
 }
-.header-social a:hover { color: #a78bfa; }
+.header-social a:hover { color: #61a229; }
 .header-social svg { width: 18px; height: 18px; }
 .hamburger {
   display: none;
@@ -188,7 +188,7 @@ ul { list-style: none; }
 }
 .hero-badge {
   display: inline-block;
-  background: #a78bfa;
+  background: #61a229;
   color: #fff;
   padding: 8px 22px;
   border-radius: 30px;
@@ -234,7 +234,7 @@ ul { list-style: none; }
 
 .btn-primary {
   display: inline-block;
-  background: #a78bfa;
+  background: #61a229;
   color: #fff;
   padding: 14px 40px;
   border-radius: 30px;
@@ -245,7 +245,7 @@ ul { list-style: none; }
   text-transform: uppercase;
   transition: background 0.3s, transform 0.2s;
 }
-.btn-primary:hover { background: #8b5cf6; transform: translateY(-2px); }
+.btn-primary:hover { background: #4e871f; transform: translateY(-2px); }
 
 /* Feature Badges */
 .badges {
@@ -268,7 +268,7 @@ ul { list-style: none; }
   width: 80px; height: 80px;
   border-radius: 50%;
   background: #fff;
-  border: 2px solid #a78bfa;
+  border: 2px solid #61a229;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -362,8 +362,8 @@ ul { list-style: none; }
 .flavor-overlay {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.85);
-  color: #fff;
+  background: rgba(253, 245, 240, 0.96);
+  color: #333;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -376,7 +376,7 @@ ul { list-style: none; }
 .flavor-overlay h4 {
   font-size: 18px;
   font-weight: 700;
-  color: #a78bfa;
+  color: #61a229;
   margin-bottom: 12px;
 }
 .flavor-overlay .nutri-row {
@@ -392,11 +392,11 @@ ul { list-style: none; }
 .flavor-overlay .nutri-val {
   font-size: 18px;
   font-weight: 700;
-  color: #a78bfa;
+  color: #61a229;
 }
 .flavor-overlay .nutri-label {
   font-size: 10px;
-  color: #aaa;
+  color: #666;
   text-transform: uppercase;
 }
 .flavor-overlay .tags {
@@ -407,7 +407,7 @@ ul { list-style: none; }
   margin-top: 10px;
 }
 .flavor-overlay .tag {
-  background: #a78bfa;
+  background: #61a229;
   color: #fff;
   font-size: 10px;
   font-weight: 600;
@@ -432,7 +432,7 @@ ul { list-style: none; }
 /* Products Grid */
 .products-section {
   padding: 60px 0;
-  background: #fafafa;
+  background: #fdf5f0;
 }
 .products-grid {
   display: grid;
@@ -465,7 +465,8 @@ ul { list-style: none; }
   align-items: center;
   justify-content: center;
   height: 220px;
-  background: #fff;
+  background: #fdf5f0;
+  border-bottom: 1px solid #eee5db;
   position: relative;
 }
 .product-img img {
@@ -475,8 +476,8 @@ ul { list-style: none; }
 .product-nutri-overlay {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.85);
-  color: #fff;
+  background: rgba(253, 245, 240, 0.96);
+  color: #333;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -488,13 +489,13 @@ ul { list-style: none; }
   z-index: 1;
 }
 .product-card:hover .product-nutri-overlay { opacity: 1; }
-.product-nutri-overlay h4 { font-size: 14px; font-weight: 700; color: #a78bfa; margin-bottom: 10px; }
+.product-nutri-overlay h4 { font-size: 14px; font-weight: 700; color: #61a229; margin-bottom: 10px; }
 .product-nutri-overlay .nutri-row { display: flex; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; justify-content: center; }
 .product-nutri-overlay .nutri-item { text-align: center; }
-.product-nutri-overlay .nutri-val { font-size: 16px; font-weight: 700; color: #a78bfa; }
-.product-nutri-overlay .nutri-label { font-size: 9px; color: #aaa; text-transform: uppercase; }
+.product-nutri-overlay .nutri-val { font-size: 16px; font-weight: 700; color: #61a229; }
+.product-nutri-overlay .nutri-label { font-size: 9px; color: #666; text-transform: uppercase; }
 .product-nutri-overlay .tags { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
-.product-nutri-overlay .tag { background: #a78bfa; color: #fff; font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+.product-nutri-overlay .tag { background: #61a229; color: #fff; font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
 .product-info {
   padding: 0 18px 18px;
 }
@@ -516,7 +517,7 @@ ul { list-style: none; }
 .price-current {
   font-size: 16px;
   font-weight: 700;
-  color: #e74c3c;
+  color: #61a229;
 }
 .price-old {
   font-size: 13px;
@@ -531,7 +532,7 @@ ul { list-style: none; }
 .btn-add-cart {
   display: block;
   width: 100%;
-  background: #a78bfa;
+  background: #61a229;
   color: #fff;
   border: none;
   padding: 10px;
@@ -545,7 +546,7 @@ ul { list-style: none; }
   letter-spacing: 0.5px;
   transition: background 0.3s;
 }
-.btn-add-cart:hover { background: #8b5cf6; }
+.btn-add-cart:hover { background: #4e871f; }
 
 /* Partners */
 .partners {
@@ -597,7 +598,7 @@ ul { list-style: none; }
   border-radius: 50%;
   object-fit: cover;
   margin: 0 auto 20px;
-  border: 3px solid #a78bfa;
+  border: 3px solid #61a229;
 }
 .testimonial-text {
   font-size: 15px;
@@ -629,7 +630,7 @@ ul { list-style: none; }
   cursor: pointer;
   transition: background 0.3s;
 }
-.carousel-dot.active { background: #a78bfa; }
+.carousel-dot.active { background: #61a229; }
 .carousel-arrows {
   position: absolute;
   top: 50%;
@@ -655,7 +656,7 @@ ul { list-style: none; }
   color: #333;
   transition: background 0.3s;
 }
-.carousel-arrow:hover { background: #a78bfa; color: #fff; }
+.carousel-arrow:hover { background: #61a229; color: #fff; }
 
 /* Good Vibes CTA */
 .good-vibes {
@@ -709,7 +710,7 @@ ul { list-style: none; }
   margin-bottom: 10px;
   transition: color 0.2s;
 }
-.footer-col a:hover { color: #a78bfa; }
+.footer-col a:hover { color: #61a229; }
 .footer-col p {
   font-size: 13px;
   line-height: 1.6;
@@ -731,7 +732,7 @@ ul { list-style: none; }
   font-size: 14px;
   transition: background 0.3s;
 }
-.footer-social a:hover { background: #a78bfa; }
+.footer-social a:hover { background: #61a229; }
 .footer-bottom {
   border-top: 1px solid #333;
   padding-top: 20px;
@@ -781,7 +782,7 @@ ul { list-style: none; }
   line-height: 1.5;
 }
 .free-delivery-popup .popup-text strong {
-  color: #a78bfa;
+  color: #61a229;
 }
 .popup-close {
   position: absolute;
@@ -825,11 +826,11 @@ ul { list-style: none; }
   line-height: 1.5;
 }
 .cookie-bar a {
-  color: #a78bfa;
+  color: #61a229;
   text-decoration: underline;
 }
 .cookie-accept {
-  background: #a78bfa;
+  background: #61a229;
   color: #fff;
   border: none;
   padding: 10px 28px;
@@ -841,7 +842,7 @@ ul { list-style: none; }
   transition: background 0.3s;
   white-space: nowrap;
 }
-.cookie-accept:hover { background: #8b5cf6; }
+.cookie-accept:hover { background: #4e871f; }
 .cookie-settings {
   background: transparent;
   color: #ccc;
@@ -999,9 +1000,6 @@ ul { list-style: none; }
 <section class="hero">
   <div class="hero-content">
     <div class="hero-text-group">
-      <div class="hero-promo-date">само до 31 март</div>
-      <div class="hero-discount">до <span>-31%</span></div>
-      <span class="hero-badge">на всички продукти!</span>
       <h1 class="hero-title">СИЛНА, ЗДРАВА,<br>НЕУСТОИМА.</h1>
       <div class="hero-script">The smart pleasure!</div>
     </div>
@@ -1014,169 +1012,34 @@ ul { list-style: none; }
     <div class="badges-grid" style="grid-template-columns: repeat(5, 1fr);">
       <div class="badge-item">
         <div class="badge-circle">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2-6h4l2 6"/><line x1="7" y1="12" x2="17" y2="12"/><path d="M9 16c1.5 1 4.5 1 6 0"/></svg>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2-6h4l2 6"/><line x1="7" y1="12" x2="17" y2="12"/><path d="M9 16c1.5 1 4.5 1 6 0"/></svg>
         </div>
         <span>Без добавена захар</span>
       </div>
       <div class="badge-item">
         <div class="badge-circle">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
         </div>
         <span>Без глутен</span>
       </div>
       <div class="badge-item">
         <div class="badge-circle">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M12 2a10 10 0 0 1 0 20 10 10 0 0 1 0-20z"/><path d="M12 8v4l2 2"/><path d="M8 14h8"/></svg>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" stroke-width="2"><path d="M12 2a10 10 0 0 1 0 20 10 10 0 0 1 0-20z"/><path d="M12 8v4l2 2"/><path d="M8 14h8"/></svg>
         </div>
         <span>Протеин</span>
       </div>
       <div class="badge-item">
         <div class="badge-circle">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4"/><path d="M12 8v1M12 15v1"/></svg>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4"/><path d="M12 8v1M12 15v1"/></svg>
         </div>
         <span>Колаген</span>
       </div>
       <div class="badge-item">
         <div class="badge-circle">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
         </div>
         <span>Витамини</span>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- Flavor Journey -->
-<section class="flavor-journey">
-  <div class="container">
-    <h2 class="section-title">THE SMART PLEASURE</h2>
-    <div class="flavor-grid">
-      <a href="/product/africa-balls" class="flavor-card">
-        <img src="/products/africa-balls/featured.jpg" alt="Afrika">
-        <div class="flavor-overlay">
-          <h4>Afrika</h4>
-          <div class="nutri-row">
-            <div class="nutri-item"><div class="nutri-val">98</div><div class="nutri-label">kcal</div></div>
-            <div class="nutri-item"><div class="nutri-val">6g</div><div class="nutri-label">протеин</div></div>
-            <div class="nutri-item"><div class="nutri-val">0g</div><div class="nutri-label">захар</div></div>
-            <div class="nutri-item"><div class="nutri-val">4g</div><div class="nutri-label">фибри</div></div>
-          </div>
-          <div class="tags">
-            <span class="tag">Без глутен</span>
-            <span class="tag">Веган</span>
-            <span class="tag">Без захар</span>
-          </div>
-        </div>
-        <div class="flavor-card-info">
-          <h3>Afrika</h3>
-          <p>Chocolate brownie + salted caramel</p>
-        </div>
-      </a>
-      <a href="/product/protein-crispy-balls" class="flavor-card">
-        <img src="/products/protein-crispy-balls/featured.jpg" alt="Protein Crispy Balls">
-        <div class="flavor-overlay">
-          <h4>Protein Crispy Balls</h4>
-          <div class="nutri-row">
-            <div class="nutri-item"><div class="nutri-val">156</div><div class="nutri-label">kcal</div></div>
-            <div class="nutri-item"><div class="nutri-val">5g</div><div class="nutri-label">протеин</div></div>
-            <div class="nutri-item"><div class="nutri-val">0g</div><div class="nutri-label">захар</div></div>
-            <div class="nutri-item"><div class="nutri-val">3g</div><div class="nutri-label">фибри</div></div>
-          </div>
-          <div class="tags">
-            <span class="tag">Без захар</span>
-            <span class="tag">Хрупкави</span>
-            <span class="tag">Протеин</span>
-          </div>
-        </div>
-        <div class="flavor-card-info">
-          <h3>Protein Crispy Balls</h3>
-          <p>Strawberry + white chocolate</p>
-        </div>
-      </a>
-      <a href="/product/california-balls" class="flavor-card">
-        <img src="/products/california-balls/featured.jpg" alt="California">
-        <div class="flavor-overlay">
-          <h4>California</h4>
-          <div class="nutri-row">
-            <div class="nutri-item"><div class="nutri-val">105</div><div class="nutri-label">kcal</div></div>
-            <div class="nutri-item"><div class="nutri-val">7g</div><div class="nutri-label">протеин</div></div>
-            <div class="nutri-item"><div class="nutri-val">0g</div><div class="nutri-label">захар</div></div>
-            <div class="nutri-item"><div class="nutri-val">5g</div><div class="nutri-label">фибри</div></div>
-          </div>
-          <div class="tags">
-            <span class="tag">Omega-3</span>
-            <span class="tag">Веган</span>
-            <span class="tag">Висок протеин</span>
-          </div>
-        </div>
-        <div class="flavor-card-info">
-          <h3>California</h3>
-          <p>Sesame tahini + cashew</p>
-        </div>
-      </a>
-      <a href="/product/moscow-protein-balls" class="flavor-card">
-        <img src="/products/moscow-protein-balls/featured.jpg" alt="Moscow">
-        <div class="flavor-overlay">
-          <h4>Moscow</h4>
-          <div class="nutri-row">
-            <div class="nutri-item"><div class="nutri-val">88</div><div class="nutri-label">kcal</div></div>
-            <div class="nutri-item"><div class="nutri-val">5g</div><div class="nutri-label">протеин</div></div>
-            <div class="nutri-item"><div class="nutri-val">0g</div><div class="nutri-label">захар</div></div>
-            <div class="nutri-item"><div class="nutri-val">3g</div><div class="nutri-label">фибри</div></div>
-          </div>
-          <div class="tags">
-            <span class="tag">Без глутен</span>
-            <span class="tag">Антиоксиданти</span>
-            <span class="tag">Без лактоза</span>
-          </div>
-        </div>
-        <div class="flavor-card-info">
-          <h3>Moscow</h3>
-          <p>Raspberry + white chocolate</p>
-        </div>
-      </a>
-      <a href="/product/protein-cream-macadamia" class="flavor-card">
-        <img src="/products/protein-bar/featured.png" alt="Creamy Luxe Macadamia">
-        <div class="flavor-overlay">
-          <h4>Creamy Luxe</h4>
-          <div class="nutri-row">
-            <div class="nutri-item"><div class="nutri-val">120</div><div class="nutri-label">kcal</div></div>
-            <div class="nutri-item"><div class="nutri-val">4g</div><div class="nutri-label">протеин</div></div>
-            <div class="nutri-item"><div class="nutri-val">0g</div><div class="nutri-label">захар</div></div>
-            <div class="nutri-item"><div class="nutri-val">3g</div><div class="nutri-label">фибри</div></div>
-          </div>
-          <div class="tags">
-            <span class="tag">Без захар</span>
-            <span class="tag">Био</span>
-            <span class="tag">Растителна основа</span>
-          </div>
-        </div>
-        <div class="flavor-card-info">
-          <h3>Creamy Luxe</h3>
-          <p>Macadamia cream with protein</p>
-        </div>
-      </a>
-      <a href="/product/dominicana-balls" class="flavor-card">
-        <img src="/products/dominicana-balls/featured.jpg" alt="Dominicana">
-        <div class="flavor-overlay">
-          <h4>Dominicana</h4>
-          <div class="nutri-row">
-            <div class="nutri-item"><div class="nutri-val">95</div><div class="nutri-label">kcal</div></div>
-            <div class="nutri-item"><div class="nutri-val">6g</div><div class="nutri-label">протеин</div></div>
-            <div class="nutri-item"><div class="nutri-val">0g</div><div class="nutri-label">захар</div></div>
-            <div class="nutri-item"><div class="nutri-val">4g</div><div class="nutri-label">фибри</div></div>
-          </div>
-          <div class="tags">
-            <span class="tag">Без глутен</span>
-            <span class="tag">Веган</span>
-            <span class="tag">Без лактоза</span>
-          </div>
-        </div>
-        <div class="flavor-card-info">
-          <h3>Dominicana</h3>
-          <p>Coconut cake + raw cashew</p>
-        </div>
-      </a>
     </div>
   </div>
 </section>
@@ -1185,112 +1048,66 @@ ul { list-style: none; }
 <section class="products-section">
   <div class="container">
     <h2 class="section-title">Нашите продукти</h2>
+    <p style="text-align:center;max-width:640px;margin:-24px auto 40px;color:#555;font-size:15px;line-height:1.6;">
+      Открий любимите ни напитки за чиста енергия, детокс билкови чайове и аксесоари за здравословно ежедневие.
+    </p>
     <div class="products-grid">
 
-      <div class="product-card">
+      <a href="/product/dragon-fruit" class="product-card" style="text-decoration:none;color:inherit;display:block;">
         <div class="product-img">
-          <img src="/products/protein-cream-mix-x12/featured.png" alt="Macadamia + Macadamia & Raspberry Mix x12">
+          <img src="/products/dragon-fruit/featured.png" alt="Dragon Fruit - напитка с хидролизиран колаген">
         </div>
         <div class="product-info">
-          <h3>Macadamia + Macadamia &amp; Raspberry Mix x12</h3>
+          <h3>Dragon Fruit <span style="display:block;font-size:12px;color:#666;font-weight:400;margin-top:2px;">Колагенова напитка 250мл</span></h3>
           <div class="product-prices">
-            <span class="price-current">&euro;142.00</span>
+            <span class="price-current">2.29 &euro;</span>
           </div>
-          <a href="/shop" class="btn-add-cart">Добави в количката</a>
+          <span class="btn-add-cart">Виж продукта</span>
         </div>
-      </div>
+      </a>
 
-      <div class="product-card">
+      <a href="/product/lychee-blueberry" class="product-card" style="text-decoration:none;color:inherit;display:block;">
         <div class="product-img">
-          <img src="/products/protein-cream-raspberry-x12/featured.png" alt="Macadamia & Raspberry x12">
+          <img src="/products/lychee-blueberry/featured.png" alt="Lychee & Blueberry - напитка с мака и женшен">
         </div>
         <div class="product-info">
-          <h3>Macadamia &amp; Raspberry x12</h3>
+          <h3>Lychee &amp; Blueberry <span style="display:block;font-size:12px;color:#666;font-weight:400;margin-top:2px;">Билкова напитка 250мл</span></h3>
           <div class="product-prices">
-            <span class="price-current">&euro;142.00</span>
+            <span class="price-current">2.29 &euro;</span>
           </div>
-          <a href="/shop" class="btn-add-cart">Добави в количката</a>
+          <span class="btn-add-cart">Виж продукта</span>
         </div>
-      </div>
+      </a>
 
-      <div class="product-card">
+      <a href="/product/herbal-boost" class="product-card" style="text-decoration:none;color:inherit;display:block;">
         <div class="product-img">
-          <img src="/products/protein-cream-macadamia-x12/featured.png" alt="Macadamia x12">
+          <img src="/products/herbal-boost/featured.png" alt="Herbal Boost - двустенна бутилка за чай">
         </div>
         <div class="product-info">
-          <h3>Macadamia x12</h3>
+          <h3>Herbal Boost <span style="display:block;font-size:12px;color:#666;font-weight:400;margin-top:2px;">Двустенна бутилка за чай</span></h3>
           <div class="product-prices">
-            <span class="price-current">&euro;142.00</span>
+            <span class="price-current">16.90 &euro;</span>
           </div>
-          <a href="/shop" class="btn-add-cart">Добави в количката</a>
+          <span class="btn-add-cart">Виж продукта</span>
         </div>
-      </div>
+      </a>
 
-      <div class="product-card">
+      <a href="/product/detox-me-baby" class="product-card" style="text-decoration:none;color:inherit;display:block;">
         <div class="product-img">
-          <img src="/products/protein-cream-macadamia-and-raspberry/featured.png" alt="Macadamia & Raspberry">
+          <img src="/products/detox-me-baby/featured.png" alt="DETOX ME BABY - детокс чай">
         </div>
         <div class="product-info">
-          <h3>Macadamia &amp; Raspberry</h3>
+          <h3>DETOX ME BABY <span style="display:block;font-size:12px;color:#666;font-weight:400;margin-top:2px;">Детокс чай с натурални билки</span></h3>
           <div class="product-prices">
-            <span class="price-current">&euro;11.90</span>
+            <span class="price-current">14.90 &euro;</span>
           </div>
-          <a href="/shop" class="btn-add-cart">Добави в количката</a>
+          <span class="btn-add-cart">Виж продукта</span>
         </div>
-      </div>
+      </a>
 
-      <div class="product-card">
-        <div class="product-img">
-          <img src="/products/protein-cream-macadamia/featured.png" alt="Macadamia">
-        </div>
-        <div class="product-info">
-          <h3>Macadamia</h3>
-          <div class="product-prices">
-            <span class="price-current">&euro;11.90</span>
-          </div>
-          <a href="/shop" class="btn-add-cart">Добави в количката</a>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          <img src="/products/protein-bar-box/featured.png" alt="Protein Bar Box x24">
-        </div>
-        <div class="product-info">
-          <h3>Protein Bar Box x24</h3>
-          <div class="product-prices">
-            <span class="price-current">&euro;52.50</span>
-          </div>
-          <a href="/shop" class="btn-add-cart">Добави в количката</a>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          <img src="/products/protein-bar/featured.png" alt="Protein Bar">
-        </div>
-        <div class="product-info">
-          <h3>Protein Bar</h3>
-          <div class="product-prices">
-            <span class="price-current">&euro;2.19</span>
-          </div>
-          <a href="/shop" class="btn-add-cart">Добави в количката</a>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img">
-          <img src="/products/protein-crispy-balls-x26/featured.jpg" alt="Protein Crispy Balls x26">
-        </div>
-        <div class="product-info">
-          <h3>Protein Crispy Balls x26</h3>
-          <div class="product-prices">
-            <span class="price-current">&euro;41.30</span>
-          </div>
-          <a href="/shop" class="btn-add-cart">Добави в количката</a>
-        </div>
-      </div>
-
+    </div>
+    <div style="text-align:center;margin-top:40px;">
+      <a href="/shop" style="display:inline-block;background:#61a229;color:#fff;padding:14px 36px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;letter-spacing:0.5px;text-transform:uppercase;transition:background 0.3s;" onmouseover="this.style.background='#4e871f'" onmouseout="this.style.background='#61a229'">Виж всички продукти</a>
     </div>
   </div>
 </section>
@@ -1428,7 +1245,7 @@ ul { list-style: none; }
     <div style="font-size:52px;margin-bottom:12px;">&#129370;</div>
     <h2 style="font-family:Montserrat,sans-serif;font-size:24px;font-weight:800;color:#222;margin:0 0 8px;">Великденски подарък</h2>
     <p style="font-size:15px;color:#666;margin:0 0 24px;line-height:1.6;">за всяка поръчка!</p>
-    <a href="/shop" style="display:inline-block;background:linear-gradient(135deg,#a78bfa 0%,#f472b6 50%,#60a5fa 100%);color:#fff;padding:14px 40px;border-radius:30px;font-family:Montserrat,sans-serif;font-weight:700;font-size:15px;letter-spacing:0.5px;text-transform:uppercase;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(167,139,250,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">КЪМ МАГАЗИНА</a>
+    <a href="/shop" style="display:inline-block;background:linear-gradient(135deg,#61a229 0%,#f472b6 50%,#60a5fa 100%);color:#fff;padding:14px 40px;border-radius:30px;font-family:Montserrat,sans-serif;font-weight:700;font-size:15px;letter-spacing:0.5px;text-transform:uppercase;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(167,139,250,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">КЪМ МАГАЗИНА</a>
   </div>
 </div>
 <style>
@@ -1506,37 +1323,18 @@ if (!sessionStorage.getItem('easter-popup-seen')) {
 }
 
 
-// Nutritional overlays for product cards
-const nutriData = {
-  'Macadamia + Macadamia & Raspberry Mix x12': { kcal:'120', protein:'4g', sugar:'0g', fiber:'3g', tags:['Без захар','Без глутен'] },
-  'Macadamia & Raspberry x12': { kcal:'118', protein:'4g', sugar:'0g', fiber:'3g', tags:['Без захар','Без глутен'] },
-  'Macadamia x12': { kcal:'122', protein:'4g', sugar:'0g', fiber:'3g', tags:['Без захар','Без глутен'] },
-  'Macadamia & Raspberry': { kcal:'118', protein:'4g', sugar:'0g', fiber:'3g', tags:['Без захар','Без глутен'] },
-  'Macadamia': { kcal:'122', protein:'4g', sugar:'0g', fiber:'3g', tags:['Без захар','Без глутен'] },
-  'Protein Bar Box x24': { kcal:'135', protein:'10g', sugar:'0g', fiber:'2g', tags:['Без захар','Висок протеин'] },
-  'Protein Bar': { kcal:'135', protein:'10g', sugar:'0g', fiber:'2g', tags:['Без захар','Висок протеин'] },
-  'Protein Crispy Balls x26': { kcal:'110', protein:'8g', sugar:'0g', fiber:'2g', tags:['Без захар','Висок протеин'] }
-};
-document.querySelectorAll('.products-section .product-card').forEach(card => {
-  const name = card.querySelector('h3').textContent.trim();
-  const data = nutriData[name];
-  if (!data) return;
-  const imgDiv = card.querySelector('.product-img');
-  const overlay = document.createElement('div');
-  overlay.className = 'product-nutri-overlay';
-  overlay.innerHTML = '<h4>Хранителна стойност</h4><div class="nutri-row"><div class="nutri-item"><div class="nutri-val">'+data.kcal+'</div><div class="nutri-label">kcal</div></div><div class="nutri-item"><div class="nutri-val">'+data.protein+'</div><div class="nutri-label">протеин</div></div><div class="nutri-item"><div class="nutri-val">'+data.sugar+'</div><div class="nutri-label">захар</div></div><div class="nutri-item"><div class="nutri-val">'+data.fiber+'</div><div class="nutri-label">фибри</div></div></div><div class="tags">'+data.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'</div>';
-  imgDiv.appendChild(overlay);
-});
+// Nutritional overlays removed — hardcoded values were inaccurate. Real nutrition data will live on each product detail page once owners provide correct values.
 </script>
 
 <script>
 // Add to cart functionality - syncs with Next.js cart (localStorage 'bosy-cart')
+// Skip if the card is itself a link (new cards navigate to product detail instead)
 document.querySelectorAll('.btn-add-cart').forEach(btn => {
   btn.addEventListener('click', function(e) {
-    e.preventDefault();
-
     const card = this.closest('.product-card');
     if (!card) return;
+    if (card.tagName === 'A') return; // card is a link, let the browser navigate
+    e.preventDefault();
 
     const name = card.querySelector('h3').textContent.trim();
     const img = card.querySelector('.product-img img');
@@ -1583,7 +1381,7 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
     // Visual feedback
     const origText = this.textContent;
     this.textContent = 'Добавено ✓';
-    this.style.background = '#8b5cf6';
+    this.style.background = '#4e871f';
     setTimeout(() => {
       this.textContent = origText;
       this.style.background = '';
@@ -1705,9 +1503,9 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
     // Progress bar
     if (remaining > 0) {
       progressDiv.innerHTML = '<div style="font-size:13px;color:#333;margin-bottom:8px;">Още <strong>' + toEur(remaining).toFixed(2) + ' \u20ac</strong> до безплатна доставка</div>' +
-        '<div style="background:#e0e0e0;border-radius:10px;height:8px;overflow:hidden;"><div style="background:#a78bfa;height:100%;width:' + progressPct + '%;border-radius:10px;transition:width 0.3s;"></div></div>';
+        '<div style="background:#e0e0e0;border-radius:10px;height:8px;overflow:hidden;"><div style="background:#61a229;height:100%;width:' + progressPct + '%;border-radius:10px;transition:width 0.3s;"></div></div>';
     } else {
-      progressDiv.innerHTML = '<div style="font-size:13px;color:#a78bfa;font-weight:600;">&#10003; Имаш безплатна доставка!</div>';
+      progressDiv.innerHTML = '<div style="font-size:13px;color:#61a229;font-weight:600;">&#10003; Имаш безплатна доставка!</div>';
     }
 
     // Items
@@ -1723,7 +1521,7 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
         (item.image ? '<img src="' + item.image + '" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;" />' : '<div style="width:60px;height:60px;background:#f0f0f0;border-radius:8px;flex-shrink:0;"></div>') +
         '<div style="flex:1;min-width:0;">' +
           '<p style="margin:0;font-size:13px;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + item.name + '</p>' +
-          '<p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#a78bfa;">' + toEur(item.price).toFixed(2) + ' \u20ac</p>' +
+          '<p style="margin:4px 0 0;font-size:14px;font-weight:600;color:#61a229;">' + toEur(item.price).toFixed(2) + ' \u20ac</p>' +
           '<div style="display:flex;align-items:center;gap:8px;margin-top:6px;">' +
             '<button onclick="changeQtySidebar(' + i + ',-1)" style="width:26px;height:26px;border:1px solid #ddd;background:#fff;border-radius:4px;cursor:pointer;font-size:14px;">−</button>' +
             '<span style="font-size:13px;font-weight:600;min-width:20px;text-align:center;">' + item.quantity + '</span>' +
@@ -1742,7 +1540,7 @@ document.querySelectorAll('.btn-add-cart').forEach(btn => {
     footerDiv.style.display = 'block';
     footerDiv.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;color:#333;margin-bottom:12px;"><span>Общо:</span><span>' + toEur(totalPrice).toFixed(2) + ' \u20ac</span></div>' +
       '<a href="/cart" style="display:block;text-align:center;padding:12px;background:#f5f5f5;color:#333;border-radius:8px;font-weight:600;font-size:14px;margin-bottom:8px;text-decoration:none;">Преглед на количката</a>' +
-      '<a href="/checkout" style="display:block;text-align:center;padding:12px;background:#a78bfa;color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">Поръчка</a>';
+      '<a href="/checkout" style="display:block;text-align:center;padding:12px;background:#61a229;color:#fff;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;">Поръчка</a>';
   };
 })();
 </script>
