@@ -143,7 +143,7 @@ export default function CheckoutPage() {
         <Link
           href="/shop"
           className="mt-4 inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: '#a78bfa' }}
+          style={{ background: '#61a229' }}
         >
           Към магазина
         </Link>
@@ -266,7 +266,7 @@ export default function CheckoutPage() {
       <Link
         href="/cart"
         className="inline-flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
-        style={{ color: '#a78bfa' }}
+        style={{ color: '#61a229' }}
       >
         <ArrowLeft size={16} />
         Обратно към количката
@@ -522,7 +522,7 @@ export default function CheckoutPage() {
               <label
                 className="flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors"
                 style={{
-                  borderColor: paymentMethod === 'cod' ? '#a78bfa' : '#ddd',
+                  borderColor: paymentMethod === 'cod' ? '#61a229' : '#ddd',
                   background: paymentMethod === 'cod' ? '#f0fce8' : '#fff',
                 }}
               >
@@ -532,7 +532,7 @@ export default function CheckoutPage() {
                   value="cod"
                   checked={paymentMethod === 'cod'}
                   onChange={() => setPaymentMethod('cod')}
-                  className="accent-[#a78bfa]"
+                  className="accent-[#61a229]"
                 />
                 <div>
                   <span className="text-sm font-semibold">Наложен платеж</span>
@@ -542,7 +542,7 @@ export default function CheckoutPage() {
               <label
                 className="flex cursor-pointer items-center gap-3 rounded-lg border p-4 transition-colors"
                 style={{
-                  borderColor: paymentMethod === 'card' ? '#a78bfa' : '#ddd',
+                  borderColor: paymentMethod === 'card' ? '#61a229' : '#ddd',
                   background: paymentMethod === 'card' ? '#f0fce8' : '#fff',
                 }}
               >
@@ -552,7 +552,7 @@ export default function CheckoutPage() {
                   value="card"
                   checked={paymentMethod === 'card'}
                   onChange={() => setPaymentMethod('card')}
-                  className="accent-[#a78bfa]"
+                  className="accent-[#61a229]"
                 />
                 <div>
                   <span className="text-sm font-semibold">Банкова карта</span>
@@ -656,7 +656,7 @@ export default function CheckoutPage() {
                     onClick={handleApplyPromo}
                     disabled={promoLoading || !promoCode.trim()}
                     className="shrink-0 rounded-md px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-                    style={{ background: '#a78bfa' }}
+                    style={{ background: '#61a229' }}
                   >
                     {promoLoading ? '...' : 'Приложи'}
                   </button>
@@ -706,17 +706,17 @@ export default function CheckoutPage() {
                       type="checkbox"
                       checked={useCashback}
                       onChange={(e) => setUseCashback(e.target.checked)}
-                      className="accent-[#a78bfa]"
+                      className="accent-[#61a229]"
                     />
                     <span className="text-sm font-medium" style={{ color: '#333' }}>
                       Използвай кешбак баланс
                     </span>
                   </label>
-                  <p className="mt-1 text-xs" style={{ color: '#a78bfa' }}>
+                  <p className="mt-1 text-xs" style={{ color: '#61a229' }}>
                     Наличен баланс: {toEur(cashbackBalance).toFixed(2)} &euro;
                   </p>
                   {useCashback && cashbackApplied > 0 && (
-                    <div className="mt-1 flex justify-between text-sm font-medium" style={{ color: '#a78bfa' }}>
+                    <div className="mt-1 flex justify-between text-sm font-medium" style={{ color: '#61a229' }}>
                       <span>Кешбак отстъпка</span>
                       <span>-{toEur(cashbackApplied).toFixed(2)} &euro;</span>
                     </div>
@@ -737,7 +737,7 @@ export default function CheckoutPage() {
 
               {/* Cashback earned info */}
               {cashbackEarned > 0 && (
-                <p className="text-xs" style={{ color: '#a78bfa' }}>
+                <p className="text-xs" style={{ color: '#61a229' }}>
                   С тази поръчка ще спечелите {toEur(cashbackEarned).toFixed(2)} &euro; кешбак!
                 </p>
               )}
@@ -747,7 +747,7 @@ export default function CheckoutPage() {
               type="submit"
               disabled={loading}
               className="mt-6 flex w-full items-center justify-center rounded-lg py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-              style={{ background: '#a78bfa' }}
+              style={{ background: '#61a229' }}
             >
               {loading
                 ? (paymentMethod === 'card' ? 'Пренасочване към плащане...' : 'Обработка...')

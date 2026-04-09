@@ -99,7 +99,7 @@ export default async function ReviewsPage() {
                   background: '#fff',
                   padding: 30,
                   boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-                  borderLeft: '4px solid #a78bfa',
+                  borderLeft: '4px solid #61a229',
                 }}
               >
                 <div className="mb-4" style={{ color: '#f5a623', fontSize: 20, letterSpacing: 2 }}>

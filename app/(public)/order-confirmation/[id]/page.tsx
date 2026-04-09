@@ -54,7 +54,7 @@ export default async function OrderConfirmationPage({
       >
         {/* Success icon */}
         <div className="flex justify-center">
-          <CheckCircle size={56} color="#a78bfa" strokeWidth={1.5} />
+          <CheckCircle size={56} color="#61a229" strokeWidth={1.5} />
         </div>
 
         <h1
@@ -75,7 +75,7 @@ export default async function OrderConfirmationPage({
         >
           <div className="flex items-center justify-between text-sm">
             <span style={{ color: '#777' }}>Номер на поръчка</span>
-            <span className="font-bold" style={{ color: '#a78bfa' }}>
+            <span className="font-bold" style={{ color: '#61a229' }}>
               #{order.order_number ?? id.slice(0, 8)}
             </span>
           </div>
@@ -132,7 +132,7 @@ export default async function OrderConfirmationPage({
         <Link
           href="/shop"
           className="mt-6 inline-flex items-center justify-center rounded-lg px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: '#a78bfa' }}
+          style={{ background: '#61a229' }}
         >
           Продължи пазаруването
         </Link>

@@ -114,7 +114,7 @@ export default async function BlogPage() {
                   <span
                     className="text-xs font-bold"
                     style={{
-                      background: 'linear-gradient(135deg, #a78bfa, #f472b6, #60a5fa)',
+                      background: 'linear-gradient(135deg, #61a229, #4e871f)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',

@@ -4,7 +4,7 @@ export function AnnouncementBar() {
   return (
     <div
       className="overflow-hidden flex items-center relative"
-      style={{ background: 'linear-gradient(90deg, #a78bfa, #f472b6, #60a5fa, #a78bfa)', color: '#fff', height: 40 }}
+      style={{ background: 'linear-gradient(90deg, #61a229, #7bc142, #4e871f, #61a229)', color: '#fff', height: 40 }}
     >
       <div
         className="flex whitespace-nowrap"

@@ -43,7 +43,7 @@ export default function AboutPage() {
       <section
         className="relative overflow-hidden text-center"
         style={{
-          background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)',
+          background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)',
           color: '#fff',
           padding: '80px 30px 70px',
         }}
@@ -79,7 +79,7 @@ export default function AboutPage() {
               width: 64,
               height: 64,
               background: 'rgba(167,139,250,.12)',
-              color: '#a78bfa',
+              color: '#61a229',
             }}
           >
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -101,7 +101,7 @@ export default function AboutPage() {
 
       {/* Goals */}
       <section className="px-5 pb-16" style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <div className="mx-auto mb-5" style={{ width: 60, height: 3, background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)', borderRadius: 3 }} />
+        <div className="mx-auto mb-5" style={{ width: 60, height: 3, background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)', borderRadius: 3 }} />
         <h2
           className="text-center text-2xl md:text-3xl font-bold mb-3"
           style={{ color: '#222', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
@@ -130,7 +130,7 @@ export default function AboutPage() {
                 style={{
                   width: 48,
                   height: 48,
-                  background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)',
+                  background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)',
                   color: '#fff',
                   fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
                 }}
@@ -152,7 +152,7 @@ export default function AboutPage() {
       {/* Team / Founders */}
       <section className="relative overflow-hidden py-16 px-5" style={{ background: '#fff' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div className="mx-auto mb-5" style={{ width: 60, height: 3, background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)', borderRadius: 3 }} />
+          <div className="mx-auto mb-5" style={{ width: 60, height: 3, background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)', borderRadius: 3 }} />
           <h2
             className="text-center text-2xl md:text-3xl font-bold mb-3"
             style={{ color: '#222', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
@@ -184,7 +184,7 @@ export default function AboutPage() {
                     style={{
                       width: 110,
                       height: 110,
-                      border: '4px solid #a78bfa',
+                      border: '4px solid #61a229',
                     }}
                   >
                     <img
@@ -206,7 +206,7 @@ export default function AboutPage() {
                     className="inline-block text-xs font-semibold mb-3 rounded-full"
                     style={{
                       background: 'rgba(167,139,250,.1)',
-                      color: '#a78bfa',
+                      color: '#61a229',
                       padding: '4px 14px',
                     }}
                   >

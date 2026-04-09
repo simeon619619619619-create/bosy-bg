@@ -82,7 +82,7 @@ export default async function ProductPage({
       <div className="mx-auto max-w-[1200px] px-5 py-10">
         {/* Breadcrumb */}
         <nav className="mb-8 flex items-center gap-2 text-sm" style={{ color: '#888' }}>
-          <Link href="/shop" className="transition-colors hover:underline" style={{ color: '#a78bfa' }}>
+          <Link href="/shop" className="transition-colors hover:underline" style={{ color: '#61a229' }}>
             Магазин
           </Link>
           <span>/</span>
@@ -99,7 +99,7 @@ export default async function ProductPage({
               <Link
                 href={`/shop?category=${encodeURIComponent(product.category)}`}
                 className="mb-2 inline-block self-start rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider transition-colors"
-                style={{ background: '#e8f5e0', color: '#a78bfa' }}
+                style={{ background: '#e8f5e0', color: '#61a229' }}
               >
                 {product.category}
               </Link>
@@ -134,7 +134,7 @@ export default async function ProductPage({
                   >
                     <span
                       className="inline-block h-1.5 w-1.5 rounded-full"
-                      style={{ background: '#a78bfa' }}
+                      style={{ background: '#61a229' }}
                     />
                     {badge}
                   </span>
@@ -146,7 +146,7 @@ export default async function ProductPage({
             <div className="mb-5 flex flex-wrap items-baseline gap-3">
               <span
                 className="text-3xl font-bold"
-                style={{ color: '#a78bfa' }}
+                style={{ color: '#61a229' }}
               >
                 {toEur(product.price).toFixed(2)} &euro;
               </span>
@@ -178,7 +178,7 @@ export default async function ProductPage({
             {/* Stock info */}
             <div className="mb-5">
               {product.stock != null && product.stock > 0 ? (
-                <span className="text-sm font-medium" style={{ color: '#a78bfa' }}>
+                <span className="text-sm font-medium" style={{ color: '#61a229' }}>
                   В наличност ({product.stock} бр.)
                 </span>
               ) : product.stock === 0 ? (
@@ -186,7 +186,7 @@ export default async function ProductPage({
                   Изчерпано
                 </span>
               ) : (
-                <span className="text-sm font-medium" style={{ color: '#a78bfa' }}>
+                <span className="text-sm font-medium" style={{ color: '#61a229' }}>
                   В наличност
                 </span>
               )}
@@ -227,7 +227,7 @@ export default async function ProductPage({
                 >
                   <div
                     className="mb-3 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white"
-                    style={{ background: '#a78bfa' }}
+                    style={{ background: '#61a229' }}
                   >
                     {i + 1}
                   </div>
@@ -341,7 +341,7 @@ export default async function ProductPage({
                       <div className="flex items-baseline gap-2">
                         <span
                           className="text-sm font-bold"
-                          style={{ color: '#a78bfa' }}
+                          style={{ color: '#61a229' }}
                         >
                           {toEur(rp.price).toFixed(2)} &euro;
                         </span>

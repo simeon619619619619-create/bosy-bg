@@ -10,7 +10,7 @@ export default function ContactsPage() {
       <section
         className="relative overflow-hidden text-center"
         style={{
-          background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)',
+          background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)',
           color: '#fff',
           padding: '60px 30px',
         }}
@@ -42,7 +42,7 @@ export default function ContactsPage() {
                   style={{
                     width: 48,
                     height: 48,
-                    background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)',
+                    background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)',
                     color: '#fff',
                   }}
                 >
@@ -59,14 +59,14 @@ export default function ContactsPage() {
               </div>
               <a
                 href="tel:+359887808808"
-                className="flex items-center gap-2.5 py-2 text-sm transition-colors hover:text-[#a78bfa]"
+                className="flex items-center gap-2.5 py-2 text-sm transition-colors hover:text-[#61a229]"
                 style={{ color: '#555', borderBottom: '1px solid #f0f0f0' }}
               >
                 +359 887 808 808
               </a>
               <a
                 href="tel:+359879898988"
-                className="flex items-center gap-2.5 py-2 text-sm transition-colors hover:text-[#a78bfa]"
+                className="flex items-center gap-2.5 py-2 text-sm transition-colors hover:text-[#61a229]"
                 style={{ color: '#555' }}
               >
                 +359 879 898 988
@@ -84,7 +84,7 @@ export default function ContactsPage() {
                   style={{
                     width: 48,
                     height: 48,
-                    background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)',
+                    background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)',
                     color: '#fff',
                   }}
                 >
@@ -102,7 +102,7 @@ export default function ContactsPage() {
               </div>
               <a
                 href="mailto:sales@bosy.bg"
-                className="block py-2 text-sm transition-colors hover:text-[#a78bfa]"
+                className="block py-2 text-sm transition-colors hover:text-[#61a229]"
                 style={{ color: '#555', borderBottom: '1px solid #f0f0f0' }}
               >
                 sales@bosy.bg
@@ -110,7 +110,7 @@ export default function ContactsPage() {
               </a>
               <a
                 href="mailto:marketing@bosy.bg"
-                className="block py-2 text-sm transition-colors hover:text-[#a78bfa]"
+                className="block py-2 text-sm transition-colors hover:text-[#61a229]"
                 style={{ color: '#555' }}
               >
                 marketing@bosy.bg
@@ -185,7 +185,7 @@ export default function ContactsPage() {
                     type="text"
                     name="name"
                     placeholder="Вашето име"
-                    className="w-full rounded-lg text-sm outline-none transition-colors focus:border-[#a78bfa] focus:bg-white"
+                    className="w-full rounded-lg text-sm outline-none transition-colors focus:border-[#61a229] focus:bg-white"
                     style={{
                       padding: '14px 16px',
                       border: '2px solid #e8e8e8',
@@ -202,7 +202,7 @@ export default function ContactsPage() {
                     type="email"
                     name="email"
                     placeholder="Вашият имейл"
-                    className="w-full rounded-lg text-sm outline-none transition-colors focus:border-[#a78bfa] focus:bg-white"
+                    className="w-full rounded-lg text-sm outline-none transition-colors focus:border-[#61a229] focus:bg-white"
                     style={{
                       padding: '14px 16px',
                       border: '2px solid #e8e8e8',
@@ -220,7 +220,7 @@ export default function ContactsPage() {
                   type="tel"
                   name="phone"
                   placeholder="Вашият телефон"
-                  className="w-full rounded-lg text-sm outline-none transition-colors focus:border-[#a78bfa] focus:bg-white"
+                  className="w-full rounded-lg text-sm outline-none transition-colors focus:border-[#61a229] focus:bg-white"
                   style={{
                     padding: '14px 16px',
                     border: '2px solid #e8e8e8',
@@ -237,7 +237,7 @@ export default function ContactsPage() {
                   name="message"
                   placeholder="Напишете вашето съобщение тук..."
                   rows={5}
-                  className="w-full rounded-lg text-sm outline-none transition-colors resize-y focus:border-[#a78bfa] focus:bg-white"
+                  className="w-full rounded-lg text-sm outline-none transition-colors resize-y focus:border-[#61a229] focus:bg-white"
                   style={{
                     padding: '14px 16px',
                     border: '2px solid #e8e8e8',
@@ -250,7 +250,7 @@ export default function ContactsPage() {
                 type="button"
                 className="w-full rounded-lg font-bold text-sm tracking-wide transition-transform hover:-translate-y-0.5"
                 style={{
-                  background: 'linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #60a5fa 100%)',
+                  background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)',
                   color: '#fff',
                   padding: '16px 40px',
                   border: 'none',

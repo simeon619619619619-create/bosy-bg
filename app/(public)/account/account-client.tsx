@@ -78,7 +78,7 @@ export function AccountClient({
               className="flex items-center justify-center rounded-full"
               style={{ width: 44, height: 44, background: 'rgba(97,162,41,.12)' }}
             >
-              <User size={22} color="#a78bfa" />
+              <User size={22} color="#61a229" />
             </div>
             <div>
               <p className="font-bold text-base" style={{ color: '#333' }}>{customer.name}</p>
@@ -106,7 +106,7 @@ export function AccountClient({
         <div
           className="rounded-xl p-6 flex flex-col justify-center"
           style={{
-            background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
+            background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)',
             boxShadow: '0 4px 20px rgba(97, 162, 41, 0.3)',
           }}
         >
@@ -131,7 +131,7 @@ export function AccountClient({
         style={{ background: '#fff', boxShadow: '0 1px 6px rgba(0,0,0,0.06)' }}
       >
         <div className="flex items-center gap-2 mb-5">
-          <Package size={20} color="#a78bfa" />
+          <Package size={20} color="#61a229" />
           <h2
             className="text-lg font-bold"
             style={{ fontFamily: 'var(--font-montserrat), Montserrat, sans-serif', color: '#333' }}
@@ -149,7 +149,7 @@ export function AccountClient({
             <Link
               href="/shop"
               className="mt-4 inline-block rounded-lg px-5 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ background: '#a78bfa' }}
+              style={{ background: '#61a229' }}
             >
               Към магазина
             </Link>
