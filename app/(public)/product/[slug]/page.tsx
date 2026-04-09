@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { AddToCartButton } from '@/components/public/add-to-cart-button'
@@ -20,22 +21,44 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>
-}) {
+}): Promise<Metadata> {
   const { slug } = await params
   const supabase = createPublicSupabaseClient()
   const { data: product } = await supabase
     .from('products')
-    .select('name, description')
+    .select('name, description, images, price, category')
     .eq('slug', slug)
     .single()
 
   if (!product) {
-    return { title: 'Продукт не е намерен - BOSY' }
+    return { title: 'Продукт не е намерен' }
   }
 
+  const url = `https://bosy.bg/product/${slug}`
+  const img = product.images?.[0]
+  const descBase = product.description?.replace(/\s+/g, ' ').trim() ?? ''
+  const description = descBase
+    ? descBase.slice(0, 155) + (descBase.length > 155 ? '…' : '')
+    : `${product.name} от BOSY — без добавена захар, без глутен, на растителна основа. Купи онлайн с доставка в цяла България.`
+
   return {
-    title: `${product.name} - BOSY`,
-    description: product.description?.slice(0, 160) ?? '',
+    title: `${product.name} — BOSY Healthy Kitchen`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'website',
+      url,
+      siteName: 'BOSY — Healthy Kitchen',
+      title: `${product.name} | BOSY`,
+      description,
+      images: img ? [{ url: img, alt: product.name }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description,
+      images: img ? [img] : [],
+    },
   }
 }
 
@@ -77,11 +100,77 @@ export default async function ProductPage({
     relatedProducts = data ?? []
   }
 
+  const url = `https://bosy.bg/product/${product.slug}`
+  const inStock =
+    product.stock == null || (typeof product.stock === 'number' && product.stock > 0)
+
+  const productLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    '@id': url,
+    name: product.name,
+    url,
+    ...(product.description ? { description: product.description } : {}),
+    ...(images.length > 0 ? { image: images } : {}),
+    ...(product.category ? { category: product.category } : {}),
+    brand: { '@type': 'Brand', name: 'BOSY' },
+    sku: product.slug,
+    offers: {
+      '@type': 'Offer',
+      url,
+      priceCurrency: 'EUR',
+      price: toEur(product.price).toFixed(2),
+      ...(hasDiscount
+        ? { priceSpecification: { '@type': 'UnitPriceSpecification', price: toEur(product.price).toFixed(2), priceCurrency: 'EUR' } }
+        : {}),
+      availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: { '@id': 'https://bosy.bg/#organization' },
+    },
+  }
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Начало', item: 'https://bosy.bg' },
+      { '@type': 'ListItem', position: 2, name: 'Магазин', item: 'https://bosy.bg/shop' },
+      ...(product.category
+        ? [
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: product.category,
+              item: `https://bosy.bg/shop?category=${encodeURIComponent(product.category)}`,
+            },
+          ]
+        : []),
+      {
+        '@type': 'ListItem',
+        position: product.category ? 4 : 3,
+        name: product.name,
+        item: url,
+      },
+    ],
+  }
+
   return (
     <div style={{ background: '#fdf5f0', minHeight: '100vh' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       <div className="mx-auto max-w-[1200px] px-5 py-10">
         {/* Breadcrumb */}
-        <nav className="mb-8 flex items-center gap-2 text-sm" style={{ color: '#888' }}>
+        <nav className="mb-8 flex items-center gap-2 text-sm" style={{ color: '#888' }} aria-label="Breadcrumb">
+          <Link href="/" className="transition-colors hover:underline" style={{ color: '#61a229' }}>
+            Начало
+          </Link>
+          <span>/</span>
           <Link href="/shop" className="transition-colors hover:underline" style={{ color: '#61a229' }}>
             Магазин
           </Link>

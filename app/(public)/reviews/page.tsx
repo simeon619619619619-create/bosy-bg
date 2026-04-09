@@ -1,8 +1,15 @@
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 
 export const metadata = {
-  title: 'Отзиви | BOSY Healthy Kitchen',
-  description: 'Какво казват клиентите за BOSY - отзиви и мнения.',
+  title: 'Отзиви от клиенти — BOSY Healthy Kitchen',
+  description:
+    'Какво казват клиентите за BOSY — реални отзиви и мнения за протеиновите барове, топчета и напитки на BOSY Healthy Kitchen.',
+  alternates: { canonical: '/reviews' },
+  openGraph: {
+    title: 'Отзиви за BOSY',
+    description: 'Реални отзиви от клиенти на BOSY.',
+    url: 'https://bosy.bg/reviews',
+  },
 }
 
 const FALLBACK_REVIEWS = [

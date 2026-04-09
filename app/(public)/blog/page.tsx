@@ -2,8 +2,15 @@ import Image from 'next/image'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 
 export const metadata = {
-  title: 'Блог | BOSY Healthy Kitchen',
-  description: 'Статии за здравословно хранене, рецепти и съвети от BOSY.',
+  title: 'Блог — здравословно хранене, рецепти и съвети',
+  description:
+    'Блогът на BOSY: статии за здравословно хранене, растителни рецепти, съвети за чист състав, фитнес и начин на живот без добавена захар.',
+  alternates: { canonical: '/blog' },
+  openGraph: {
+    title: 'Блог | BOSY Healthy Kitchen',
+    description: 'Рецепти и съвети за здравословно хранене от BOSY.',
+    url: 'https://bosy.bg/blog',
+  },
 }
 
 const FALLBACK_POSTS = [

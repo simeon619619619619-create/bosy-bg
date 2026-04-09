@@ -16,13 +16,10 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
-    ];
-  },
-  async rewrites() {
-    return [
       {
-        source: '/',
-        destination: '/home.html',
+        source: '/home.html',
+        destination: '/',
+        permanent: true,
       },
     ];
   },

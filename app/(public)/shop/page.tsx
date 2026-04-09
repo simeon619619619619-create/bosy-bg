@@ -1,10 +1,21 @@
+import type { Metadata } from 'next'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
+import { toEur } from '@/lib/currency'
 
 import { ShopContent } from './shop-content'
 
-export const metadata = {
-  title: 'Магазин - BOSY',
-  description: 'Протеинови барове, раници и фитнес аксесоари от BOSY',
+export const metadata: Metadata = {
+  title: 'Магазин — протеинови барове, топчета и напитки',
+  description:
+    'Всички здравословни лакомства на BOSY на едно място: протеинови барове, топчета, колагенови и билкови напитки, детокс чайове. Без добавена захар, без глутен. Доставка в цяла България.',
+  alternates: { canonical: '/shop' },
+  openGraph: {
+    type: 'website',
+    url: 'https://bosy.bg/shop',
+    title: 'Магазин | BOSY — Healthy Kitchen',
+    description:
+      'Протеинови барове, топчета и напитки без захар. Разгледай всички продукти на BOSY.',
+  },
 }
 
 export default async function ShopPage({
@@ -57,8 +68,57 @@ export default async function ShopPage({
     )
   ).sort()
 
+  const itemListLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Магазин на BOSY',
+    url: 'https://bosy.bg/shop',
+    isPartOf: { '@id': 'https://bosy.bg/#website' },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: products?.length ?? 0,
+      itemListElement: (products ?? []).map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `https://bosy.bg/product/${p.slug}`,
+        item: {
+          '@type': 'Product',
+          '@id': `https://bosy.bg/product/${p.slug}`,
+          name: p.name,
+          url: `https://bosy.bg/product/${p.slug}`,
+          ...(p.images?.[0] ? { image: p.images[0] } : {}),
+          brand: { '@type': 'Brand', name: 'BOSY' },
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'EUR',
+            price: toEur(p.price).toFixed(2),
+            availability: 'https://schema.org/InStock',
+            url: `https://bosy.bg/product/${p.slug}`,
+          },
+        },
+      })),
+    },
+  }
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Начало', item: 'https://bosy.bg' },
+      { '@type': 'ListItem', position: 2, name: 'Магазин', item: 'https://bosy.bg/shop' },
+    ],
+  }
+
   return (
     <div style={{ background: '#fdf5f0', minHeight: '100vh' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       {/* Page title */}
       <div className="py-10 text-center">
         <h1

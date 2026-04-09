@@ -1,6 +1,14 @@
 export const metadata = {
-  title: 'За нас | BOSY Healthy Kitchen',
-  description: 'Научете повече за BOSY - растителни протеинови десерти без добавена захар, глутен или лактоза.',
+  title: 'За нас — BOSY Healthy Kitchen',
+  description:
+    'Научете повече за BOSY Healthy Kitchen — българска марка за растителни протеинови десерти без добавена захар, глутен или лактоза. Нашата мисия за здравословно удоволствие.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'За нас | BOSY',
+    description:
+      'Българска марка за растителни протеинови десерти без захар, глутен и лактоза.',
+    url: 'https://bosy.bg/about',
+  },
 }
 
 const GOALS = [

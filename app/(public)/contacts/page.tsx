@@ -1,6 +1,13 @@
 export const metadata = {
-  title: 'Контакти | BOSY Healthy Kitchen',
-  description: 'Свържете се с BOSY Healthy Kitchen. Телефон, имейл, контактна форма.',
+  title: 'Контакти — BOSY Healthy Kitchen',
+  description:
+    'Свържете се с BOSY Healthy Kitchen. Телефон, имейл и контактна форма за поръчки, въпроси, сътрудничества и B2B зареждане на магазини с BOSY.',
+  alternates: { canonical: '/contacts' },
+  openGraph: {
+    title: 'Контакти | BOSY',
+    description: 'Имейл, телефон и форма за връзка с BOSY Healthy Kitchen.',
+    url: 'https://bosy.bg/contacts',
+  },
 }
 
 export default function ContactsPage() {

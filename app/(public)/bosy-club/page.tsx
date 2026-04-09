@@ -1,8 +1,15 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'BOSY Club | BOSY Healthy Kitchen',
-  description: 'Стани част от BOSY Club и получавай ексклузивни отстъпки, подаръци и безплатна доставка.',
+  title: 'BOSY Club — програма за лоялни клиенти',
+  description:
+    'Стани част от BOSY Club — ексклузивни отстъпки, точки за лоялност, безплатна доставка, ранен достъп до нови продукти и подаръци за рожден ден.',
+  alternates: { canonical: '/bosy-club' },
+  openGraph: {
+    title: 'BOSY Club',
+    description: 'Ексклузивни отстъпки, точки, подаръци и ранен достъп.',
+    url: 'https://bosy.bg/bosy-club',
+  },
 }
 
 const BENEFITS = [
