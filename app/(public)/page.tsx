@@ -196,7 +196,7 @@ export default async function HomePage() {
       {/* Products */}
       <section
         id="products"
-        style={{ background: '#fdf5f0', padding: '80px 20px' }}
+        style={{ background: '#fff', padding: '80px 20px' }}
       >
         <div className="mx-auto max-w-[1200px]">
           <h2
