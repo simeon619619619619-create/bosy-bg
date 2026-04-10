@@ -368,7 +368,7 @@ export default async function HomePage() {
                     className=”text-sm leading-relaxed italic”
                     style={{ color: '#555' }}
                   >
-                    &ldquo;{t.text}&rdquo;
+                    {'\u201C'}{t.text}{'\u201D'}
                   </blockquote>
                 </figure>
               )
