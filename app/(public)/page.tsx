@@ -138,60 +138,18 @@ export default async function HomePage() {
       />
 
       {/* Hero */}
-      <section
-        className="relative overflow-hidden"
-        style={{
-          background: '#fdf5f0',
-          padding: '80px 20px 60px',
-          textAlign: 'center',
-        }}
-      >
-        <div className="mx-auto max-w-[960px]">
-          <p
-            className="mb-4 text-sm font-semibold uppercase tracking-[0.3em]"
-            style={{ color: '#61a229' }}
-          >
-            Healthy Kitchen
-          </p>
-          <h1
-            className="mb-5 text-4xl md:text-6xl font-extrabold leading-tight"
-            style={{
-              color: '#333',
-              fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            СИЛНА, ЗДРАВА,<br />
-            НЕУСТОИМА.
-          </h1>
-          <p
-            className="mb-8 text-lg italic"
-            style={{
-              color: '#61a229',
-              fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-            }}
-          >
-            The smart pleasure
-          </p>
-          <p
-            className="mx-auto mb-8 max-w-[640px] text-base leading-relaxed"
-            style={{ color: '#555' }}
-          >
-            Здравословни лакомства без добавена захар, без глутен, на растителна
-            основа. Протеинови барове и топчета за чиста енергия всеки ден.
-          </p>
-          <Link
-            href="/shop"
-            className="inline-block rounded-lg px-9 py-4 text-sm font-bold uppercase tracking-wider transition-colors"
-            style={{
-              background: '#61a229',
-              color: '#fff',
-              textDecoration: 'none',
-            }}
-          >
-            Разгледай магазина
-          </Link>
-        </div>
+      <section className="relative w-full">
+        <Link href="/shop">
+          <Image
+            src="/hero-banner-easter.png"
+            alt="BOSY — The Smart Pleasure"
+            width={5488}
+            height={3072}
+            priority
+            className="w-full h-auto block"
+            style={{ objectFit: 'cover' }}
+          />
+        </Link>
       </section>
 
       {/* Badges */}
