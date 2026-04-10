@@ -77,11 +77,19 @@ const organizationLd = {
   '@id': 'https://bosy.bg/#organization',
   name: 'BOSY — Healthy Kitchen',
   alternateName: 'BOSY',
+  legalName: 'Боси Хелти ООД',
   url: 'https://bosy.bg',
   logo: 'https://bosy.bg/bosy-logo.jpg',
   image: 'https://bosy.bg/bosy-logo.jpg',
   description:
     'BOSY Healthy Kitchen — българска марка за здравословни лакомства: протеинови барове, топчета и напитки без добавена захар и глутен.',
+  taxID: 'BG206532236',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'ул. Боряна 33',
+    addressLocality: 'София',
+    addressCountry: 'BG',
+  },
   sameAs: [
     'https://www.facebook.com/Bosy-Healthy-Kitchen-106774147859327',
     'https://www.instagram.com/bosyhealthy/',
