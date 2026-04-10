@@ -4,6 +4,7 @@
     { "path": "/api/cron/sync-meta", "schedule": "*/15 * * * *" },
     { "path": "/api/cron/sync-klaviyo", "schedule": "*/15 * * * *" },
     { "path": "/api/cron/sync-speedy", "schedule": "*/5 * * * *" },
-    { "path": "/api/cron/promo-reminder", "schedule": "0 9 * * *" }
+    { "path": "/api/cron/promo-reminder", "schedule": "0 9 * * *" },
+    { "path": "/api/cron/abandoned-cart", "schedule": "0 10,18 * * *" }
   ]
 }

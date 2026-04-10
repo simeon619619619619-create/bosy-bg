@@ -266,6 +266,69 @@ BOSY`
   })
 }
 
+export async function sendAbandonedCartReminder(
+  to: string,
+  customerName: string,
+  items: Array<{ name: string; quantity: number; price: number }>,
+  total: number
+) {
+  const resend = getResendClient()
+  if (!resend) return null
+
+  const itemsHtml = items
+    .map(i => `<tr><td style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:14px;">${i.name}</td><td style="padding:8px 0;border-bottom:1px solid #f0f0f0;text-align:center;font-size:14px;">${i.quantity}</td><td style="padding:8px 0;border-bottom:1px solid #f0f0f0;text-align:right;font-size:14px;">${toEur(i.price * i.quantity).toFixed(2)} EUR</td></tr>`)
+    .join('')
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:20px;font-family:Georgia,'Times New Roman',serif;color:#222;background:#fff;">
+  <table style="max-width:560px;margin:0 auto;" cellpadding="0" cellspacing="0">
+    <tr><td>
+      <p style="margin:0 0 16px;font-size:15px;">Здравейте, ${customerName},</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Забелязахме, че не довършихте поръчката си. Вашите продукти все още Ви чакат:</p>
+
+      <table style="width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:14px;" cellpadding="0" cellspacing="0">
+        <tr>
+          <th style="text-align:left;padding:8px 0;border-bottom:2px solid #222;">Продукт</th>
+          <th style="text-align:center;padding:8px 0;border-bottom:2px solid #222;">Бр.</th>
+          <th style="text-align:right;padding:8px 0;border-bottom:2px solid #222;">Сума</th>
+        </tr>
+        ${itemsHtml}
+        <tr>
+          <td colspan="2" style="padding:12px 0;font-weight:bold;">Обща сума</td>
+          <td style="padding:12px 0;text-align:right;font-weight:bold;">${toEur(total).toFixed(2)} EUR</td>
+        </tr>
+      </table>
+
+      <p style="margin:16px 0;font-size:15px;line-height:1.6;">Използвайте код <span style="font-family:'Courier New',monospace;font-weight:bold;color:#c0392b;">VELIKDEN20</span> за 20% отстъпка!</p>
+
+      <p style="margin:24px 0;text-align:center;">
+        <a href="https://bosy.bg/shop" style="display:inline-block;background:linear-gradient(135deg,#c77dba 0%,#f472b6 50%,#60a5fa 100%);color:#fff;padding:14px 40px;border-radius:30px;font-family:Montserrat,sans-serif;font-weight:700;font-size:15px;text-decoration:none;">ДОВЪРШИ ПОРЪЧКАТА</a>
+      </p>
+
+      <p style="margin:16px 0;font-size:15px;line-height:1.6;">Ако имате въпрос, просто отговорете на този имейл.</p>
+      <p style="margin:24px 0 4px;font-size:15px;">Поздрави,</p>
+      <p style="margin:0;font-size:15px;">Екипът на BOSY</p>
+      <p style="margin:4px 0 0;font-size:13px;color:#888;">bosy.bg</p>
+    </td></tr>
+  </table>
+</body>
+</html>`
+
+  return resend.emails.send({
+    from: 'BOSY <orders@bosy.bg>',
+    replyTo: 'marketing@bosy.bg',
+    to,
+    subject: `${customerName}, забравихте нещо в кошницата`,
+    text: `Здравейте, ${customerName}, забелязахме, че не довършихте поръчката си. Използвайте код VELIKDEN20 за 20% отстъпка! Довършете поръчката на bosy.bg/shop`,
+    html,
+    headers: {
+      'X-Entity-Ref-ID': `abandoned-${Date.now()}`,
+    },
+  })
+}
+
 export async function sendDeliveryConfirmation(to: string, orderNumber: number) {
   const resend = getResendClient()
   if (!resend) return null

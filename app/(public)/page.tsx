@@ -52,6 +52,27 @@ interface Product {
   description: string | null
 }
 
+const HERO_SLUGS = [
+  'detox-drops-herbal-extract',
+  'detox-me-baby',
+  'herbal-boost',
+  'bubbles-lemongrass-ginger-green-tea-x12',
+]
+
+async function getHeroProducts(): Promise<Product[]> {
+  try {
+    const supabase = createPublicSupabaseClient()
+    const { data } = await supabase
+      .from('products')
+      .select('id, name, slug, price, compare_price, images, category, description')
+      .eq('is_active', true)
+      .in('slug', HERO_SLUGS)
+    return (data as Product[] | null) ?? []
+  } catch {
+    return []
+  }
+}
+
 async function getFeaturedProducts(): Promise<Product[]> {
   try {
     const supabase = createPublicSupabaseClient()
@@ -59,6 +80,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
       .from('products')
       .select('id, name, slug, price, compare_price, images, category, description')
       .eq('is_active', true)
+      .not('slug', 'in', `(${HERO_SLUGS.join(',')})`)
       .order('created_at', { ascending: false })
       .limit(8)
     return (data as Product[] | null) ?? []
@@ -100,7 +122,10 @@ const TESTIMONIALS = [
 ]
 
 export default async function HomePage() {
-  const products = await getFeaturedProducts()
+  const [heroProducts, products] = await Promise.all([
+    getHeroProducts(),
+    getFeaturedProducts(),
+  ])
 
   const productListLd = {
     '@context': 'https://schema.org',
@@ -208,6 +233,57 @@ export default async function HomePage() {
           >
             Нашите продукти
           </h2>
+          {/* Hero products — Detox & Tea */}
+          {heroProducts.length > 0 && (
+            <div className="mb-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {heroProducts.map((p) => {
+                const img = p.images?.[0] ?? null
+                return (
+                  <Link
+                    key={p.id}
+                    href={`/product/${p.slug}`}
+                    className="group flex flex-col md:flex-row items-center gap-6 overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1"
+                    style={{
+                      background: '#fdf5f0',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                      textDecoration: 'none',
+                      color: 'inherit',
+                      padding: 20,
+                    }}
+                  >
+                    <div className="flex shrink-0 items-center justify-center" style={{ width: 200, height: 200 }}>
+                      {img ? (
+                        <Image
+                          src={img}
+                          alt={p.name}
+                          width={200}
+                          height={200}
+                          className="object-contain transition-transform group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center text-2xl" style={{ width: 160, height: 160, background: '#f5f5f5', borderRadius: 12, color: '#ccc' }}>BOSY</div>
+                      )}
+                    </div>
+                    <div className="text-center md:text-left">
+                      <span className="mb-2 inline-block rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: '#c77dba' }}>
+                        {p.category}
+                      </span>
+                      <h3 className="mb-2 text-lg font-bold" style={{ color: '#222' }}>{p.name}</h3>
+                      {p.description && (
+                        <p className="mb-3 text-sm leading-relaxed" style={{ color: '#666' }}>
+                          {p.description.slice(0, 120)}...
+                        </p>
+                      )}
+                      <span className="text-lg font-bold" style={{ color: '#c77dba' }}>
+                        {toEur(p.price).toFixed(2)} &euro;
+                      </span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
+
           <p
             className="mx-auto mb-10 max-w-[640px] text-center text-base leading-relaxed"
             style={{ color: '#555' }}
