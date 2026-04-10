@@ -4,6 +4,7 @@ import { AnnouncementBar } from '@/components/public/announcement-bar'
 import { Header } from '@/components/public/header'
 import { Footer } from '@/components/public/footer'
 import { CartProvider } from '@/components/public/cart-provider'
+import { EasterPopup } from '@/components/public/easter-popup'
 
 const montserrat = Montserrat({
   subsets: ['latin', 'cyrillic'],
@@ -137,6 +138,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <Header />
         <main>{children}</main>
         <Footer />
+        <EasterPopup />
       </CartProvider>
     </div>
   )
