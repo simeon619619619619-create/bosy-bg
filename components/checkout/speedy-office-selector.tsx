@@ -76,7 +76,7 @@ export function SpeedyOfficeSelector({
           value={city}
           onChange={(e) => setCity(e.target.value)}
           placeholder="напр. софия, или софия младост"
-          className="w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm outline-none transition-colors focus:border-[#61a229]"
+          className="w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm outline-none transition-colors focus:border-[#c77dba]"
           style={{
             backgroundColor: '#f5f5f5',
             borderColor: '#d1d5db',
@@ -129,7 +129,7 @@ export function SpeedyOfficeSelector({
                     onClick={() => onSelect(office)}
                     className="w-full rounded-md border p-3 text-left text-xs transition-all"
                     style={{
-                      borderColor: isSelected ? '#61a229' : '#e5e7eb',
+                      borderColor: isSelected ? '#c77dba' : '#e5e7eb',
                       backgroundColor: isSelected ? '#f0fdf4' : '#fff',
                       borderWidth: isSelected ? '2px' : '1px',
                     }}
@@ -137,7 +137,7 @@ export function SpeedyOfficeSelector({
                     <div className="flex items-start gap-2">
                       <MapPin
                         className="mt-0.5 h-3.5 w-3.5 shrink-0"
-                        style={{ color: isSelected ? '#61a229' : '#9ca3af' }}
+                        style={{ color: isSelected ? '#c77dba' : '#9ca3af' }}
                       />
                       <div className="flex-1">
                         <p

@@ -79,12 +79,12 @@ export function AddToCartButton({ product }: Props) {
       <button
         onClick={handleAdd}
         className="w-full cursor-pointer rounded-md px-6 py-3 text-center text-base font-bold tracking-wide text-white transition-colors"
-        style={{ background: added ? '#4e871f' : '#61a229' }}
+        style={{ background: added ? '#4e871f' : '#c77dba' }}
         onMouseEnter={(e) => {
           if (!added) e.currentTarget.style.background = '#4e871f'
         }}
         onMouseLeave={(e) => {
-          if (!added) e.currentTarget.style.background = '#61a229'
+          if (!added) e.currentTarget.style.background = '#c77dba'
         }}
       >
         {added ? 'Добавено!' : 'Добави в количката'}

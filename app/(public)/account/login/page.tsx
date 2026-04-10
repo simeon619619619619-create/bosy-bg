@@ -98,7 +98,7 @@ export default function CustomerLoginPage() {
             type="submit"
             disabled={loading}
             className="w-full flex items-center justify-center rounded-lg py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-            style={{ background: '#61a229' }}
+            style={{ background: '#c77dba' }}
           >
             {loading ? 'Влизане...' : 'Вход'}
           </button>
@@ -106,7 +106,7 @@ export default function CustomerLoginPage() {
 
         <p className="text-center text-sm mt-6" style={{ color: '#666' }}>
           Нямаш акаунт?{' '}
-          <Link href="/register" className="font-semibold hover:underline" style={{ color: '#61a229' }}>
+          <Link href="/register" className="font-semibold hover:underline" style={{ color: '#c77dba' }}>
             Регистрация
           </Link>
         </p>

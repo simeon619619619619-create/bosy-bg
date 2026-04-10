@@ -186,11 +186,11 @@ export default async function ProductPage({
       <div className="mx-auto max-w-[1200px] px-5 py-10">
         {/* Breadcrumb */}
         <nav className="mb-8 flex items-center gap-2 text-sm" style={{ color: '#888' }} aria-label="Breadcrumb">
-          <Link href="/" className="transition-colors hover:underline" style={{ color: '#61a229' }}>
+          <Link href="/" className="transition-colors hover:underline" style={{ color: '#c77dba' }}>
             Начало
           </Link>
           <span>/</span>
-          <Link href="/shop" className="transition-colors hover:underline" style={{ color: '#61a229' }}>
+          <Link href="/shop" className="transition-colors hover:underline" style={{ color: '#c77dba' }}>
             Магазин
           </Link>
           <span>/</span>
@@ -207,7 +207,7 @@ export default async function ProductPage({
               <Link
                 href={`/shop?category=${encodeURIComponent(product.category)}`}
                 className="mb-2 inline-block self-start rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider transition-colors"
-                style={{ background: '#e8f5e0', color: '#61a229' }}
+                style={{ background: '#f3e5f0', color: '#c77dba' }}
               >
                 {product.category}
               </Link>
@@ -235,14 +235,14 @@ export default async function ProductPage({
                     key={i}
                     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold"
                     style={{
-                      background: '#e8f5e0',
+                      background: '#f3e5f0',
                       color: '#3d7a12',
                       border: '1px solid #c8e6b0',
                     }}
                   >
                     <span
                       className="inline-block h-1.5 w-1.5 rounded-full"
-                      style={{ background: '#61a229' }}
+                      style={{ background: '#c77dba' }}
                     />
                     {badge}
                   </span>
@@ -254,7 +254,7 @@ export default async function ProductPage({
             <div className="mb-5 flex flex-wrap items-baseline gap-3">
               <span
                 className="text-3xl font-bold"
-                style={{ color: '#61a229' }}
+                style={{ color: '#c77dba' }}
               >
                 {toEur(product.price).toFixed(2)} &euro;
               </span>
@@ -286,7 +286,7 @@ export default async function ProductPage({
             {/* Stock info */}
             <div className="mb-5">
               {product.stock != null && product.stock > 0 ? (
-                <span className="text-sm font-medium" style={{ color: '#61a229' }}>
+                <span className="text-sm font-medium" style={{ color: '#c77dba' }}>
                   В наличност ({product.stock} бр.)
                 </span>
               ) : product.stock === 0 ? (
@@ -294,7 +294,7 @@ export default async function ProductPage({
                   Изчерпано
                 </span>
               ) : (
-                <span className="text-sm font-medium" style={{ color: '#61a229' }}>
+                <span className="text-sm font-medium" style={{ color: '#c77dba' }}>
                   В наличност
                 </span>
               )}
@@ -335,7 +335,7 @@ export default async function ProductPage({
                 >
                   <div
                     className="mb-3 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white"
-                    style={{ background: '#61a229' }}
+                    style={{ background: '#c77dba' }}
                   >
                     {i + 1}
                   </div>
@@ -449,7 +449,7 @@ export default async function ProductPage({
                       <div className="flex items-baseline gap-2">
                         <span
                           className="text-sm font-bold"
-                          style={{ color: '#61a229' }}
+                          style={{ color: '#c77dba' }}
                         >
                           {toEur(rp.price).toFixed(2)} &euro;
                         </span>

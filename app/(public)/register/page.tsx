@@ -104,7 +104,7 @@ export default function RegisterPage() {
           className="mx-auto flex items-center justify-center rounded-full"
           style={{ width: 64, height: 64, background: 'rgba(97,162,41,.12)' }}
         >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#61a229" strokeWidth="2.5">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c77dba" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
@@ -174,7 +174,7 @@ export default function RegisterPage() {
             type="submit"
             disabled={loading}
             className="w-full flex items-center justify-center rounded-lg py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-            style={{ background: '#61a229' }}
+            style={{ background: '#c77dba' }}
           >
             {loading ? 'Регистриране...' : 'Регистрация'}
           </button>
@@ -182,7 +182,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm mt-6" style={{ color: '#666' }}>
           Вече имаш акаунт?{' '}
-          <Link href="/account/login" className="font-semibold hover:underline" style={{ color: '#61a229' }}>
+          <Link href="/account/login" className="font-semibold hover:underline" style={{ color: '#c77dba' }}>
             Вход
           </Link>
         </p>

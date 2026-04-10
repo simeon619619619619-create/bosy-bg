@@ -38,7 +38,7 @@ export default function CartPage() {
         <Link
           href="/shop"
           className="mt-6 inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #c77dba 0%, #4e871f 100%)' }}
         >
           Към магазина
         </Link>
@@ -167,7 +167,7 @@ export default function CartPage() {
                 </span>
               </div>
               {subtotal < SHIPPING_THRESHOLD && subtotal > 0 && (
-                <p className="text-xs font-semibold animate-pulse" style={{ color: '#61a229' }}>
+                <p className="text-xs font-semibold animate-pulse" style={{ color: '#c77dba' }}>
                   Още {toEur(SHIPPING_THRESHOLD - subtotal).toFixed(2)} &euro; за безплатна доставка!
                 </p>
               )}
@@ -183,7 +183,7 @@ export default function CartPage() {
             <Link
               href="/checkout"
               className="mt-6 flex w-full items-center justify-center rounded-lg py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg, #61a229 0%, #4e871f 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #c77dba 0%, #4e871f 100%)' }}
             >
               Продължи към поръчка
             </Link>

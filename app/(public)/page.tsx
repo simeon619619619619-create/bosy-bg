@@ -168,8 +168,8 @@ export default async function HomePage() {
                 <div
                   className="flex h-14 w-14 items-center justify-center rounded-full"
                   style={{
-                    background: '#e8f5e0',
-                    border: '2px solid #61a229',
+                    background: '#f3e5f0',
+                    border: '2px solid #c77dba',
                   }}
                 >
                   <svg
@@ -177,7 +177,7 @@ export default async function HomePage() {
                     height="24"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="#61a229"
+                    stroke="#c77dba"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -285,7 +285,7 @@ export default async function HomePage() {
                       <div className="flex items-baseline gap-2">
                         <span
                           className="text-base font-bold"
-                          style={{ color: hasDiscount ? '#e74c3c' : '#61a229' }}
+                          style={{ color: hasDiscount ? '#e74c3c' : '#c77dba' }}
                         >
                           {toEur(p.price).toFixed(2)} &euro;
                         </span>
@@ -314,7 +314,7 @@ export default async function HomePage() {
               href="/shop"
               className="inline-block rounded-lg px-9 py-4 text-sm font-bold uppercase tracking-wider transition-colors"
               style={{
-                background: '#61a229',
+                background: '#c77dba',
                 color: '#fff',
                 textDecoration: 'none',
               }}
@@ -355,7 +355,7 @@ export default async function HomePage() {
                 </blockquote>
                 <figcaption
                   className="text-xs font-bold uppercase tracking-wider"
-                  style={{ color: '#61a229' }}
+                  style={{ color: '#c77dba' }}
                 >
                   — {t.name}
                 </figcaption>

@@ -129,11 +129,11 @@ export default function PrivacyPolicyPage() {
         </h2>
         <p className="mb-4">
           За въпроси относно настоящите Общи условия, свържете се с нас на имейл:{' '}
-          <a href="mailto:marketing@bosy.bg" style={{ color: '#61a229' }}>
+          <a href="mailto:marketing@bosy.bg" style={{ color: '#c77dba' }}>
             marketing@bosy.bg
           </a>{' '}
           или на телефон:{' '}
-          <a href="tel:+359887808808" style={{ color: '#61a229' }}>
+          <a href="tel:+359887808808" style={{ color: '#c77dba' }}>
             +359 887 808 808
           </a>
           .

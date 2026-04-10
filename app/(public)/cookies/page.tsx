@@ -110,7 +110,7 @@ export default function CookiesPage() {
         </h2>
         <p className="mb-4">
           Ако имате някакви въпроси по отношение на тази Политика за бисквитки, свържете се с нас на имейл:{' '}
-          <a href="mailto:marketing@bosy.bg" style={{ color: '#61a229' }}>
+          <a href="mailto:marketing@bosy.bg" style={{ color: '#c77dba' }}>
             marketing@bosy.bg
           </a>
         </p>
