@@ -337,7 +337,7 @@ export default async function HomePage() {
           >
             Какво казват клиентите
           </h2>
-          <div className=”grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6”>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {TESTIMONIALS.map((t) => {
               const initials = t.name
                 .split(' ')
@@ -346,26 +346,26 @@ export default async function HomePage() {
               return (
                 <figure
                   key={t.name}
-                  className=”rounded-2xl p-6 flex flex-col items-center text-center”
+                  className="rounded-2xl p-6 flex flex-col items-center text-center"
                   style={{
                     background: '#fdf5f0',
                     border: '1px solid #f3e6dc',
                   }}
                 >
                   <div
-                    className=”mb-4 flex h-14 w-14 items-center justify-center rounded-full text-base font-bold text-white”
+                    className="mb-4 flex h-14 w-14 items-center justify-center rounded-full text-base font-bold text-white"
                     style={{ background: '#c77dba' }}
                   >
                     {initials}
                   </div>
                   <figcaption
-                    className=”mb-3 text-sm font-bold”
+                    className="mb-3 text-sm font-bold"
                     style={{ color: '#333' }}
                   >
                     {t.name}
                   </figcaption>
                   <blockquote
-                    className=”text-sm leading-relaxed italic”
+                    className="text-sm leading-relaxed italic"
                     style={{ color: '#555' }}
                   >
                     {'\u201C'}{t.text}{'\u201D'}
