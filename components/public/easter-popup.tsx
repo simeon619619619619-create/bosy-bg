@@ -67,16 +67,38 @@ export function EasterPopup() {
           &times;
         </button>
 
-        {/* Big gift emoji from the start */}
+        {/* Big red Easter egg */}
         <div
           className="mx-auto mb-4"
           style={{
-            fontSize: 110,
-            lineHeight: 1,
-            animation: 'giftBounce 1s ease infinite',
+            width: 150,
+            height: 190,
+            animation: 'eggBounce 2s ease-in-out infinite',
           }}
         >
-          &#127873;
+          <svg viewBox="0 0 100 130" width="150" height="190">
+            <defs>
+              <radialGradient id="eggGradBig" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stopColor="#ff6b6b" />
+                <stop offset="100%" stopColor="#c0392b" />
+              </radialGradient>
+            </defs>
+            <ellipse
+              cx="50" cy="70" rx="40" ry="52"
+              fill="url(#eggGradBig)"
+              stroke="#a93226"
+              strokeWidth="1.5"
+            />
+            <path d="M20 50 Q50 40 80 50" fill="none" stroke="#ffd700" strokeWidth="2.5" />
+            <path d="M18 65 Q50 75 82 65" fill="none" stroke="#ffd700" strokeWidth="2.5" />
+            <path d="M20 85 Q50 95 80 85" fill="none" stroke="#ffd700" strokeWidth="2.5" />
+            <circle cx="35" cy="58" r="2.5" fill="#ffd700" />
+            <circle cx="50" cy="54" r="2.5" fill="#ffd700" />
+            <circle cx="65" cy="58" r="2.5" fill="#ffd700" />
+            <circle cx="32" cy="75" r="2.5" fill="#ffd700" />
+            <circle cx="50" cy="80" r="2.5" fill="#ffd700" />
+            <circle cx="68" cy="75" r="2.5" fill="#ffd700" />
+          </svg>
         </div>
 
         <h2
@@ -134,9 +156,9 @@ export function EasterPopup() {
           from { transform: scale(0.8); opacity: 0; }
           to { transform: scale(1); opacity: 1; }
         }
-        @keyframes giftBounce {
-          0%, 100% { transform: translateY(0) rotate(-3deg); }
-          50% { transform: translateY(-8px) rotate(3deg); }
+        @keyframes eggBounce {
+          0%, 100% { transform: translateY(0) rotate(-2deg); }
+          50% { transform: translateY(-10px) rotate(2deg); }
         }
         @keyframes codeGlow {
           0%, 100% { box-shadow: 0 0 8px rgba(199, 125, 186, 0.3); }
