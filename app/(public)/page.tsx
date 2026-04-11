@@ -178,20 +178,20 @@ export default async function HomePage() {
       </section>
 
       {/* Badges */}
-      <section style={{ background: '#fff', padding: '40px 20px' }}>
+      <section style={{ background: '#fff', padding: '40px 10px' }}>
         <div className="mx-auto max-w-[1200px]">
           <ul
-            className="grid list-none grid-cols-2 md:grid-cols-5 gap-6 text-center"
+            className="grid list-none grid-cols-5 gap-2 md:gap-6 text-center"
             style={{ padding: 0, margin: 0 }}
           >
             {BADGES.map((b) => (
               <li
                 key={b}
-                className="flex flex-col items-center gap-3"
+                className="flex flex-col items-center gap-2 md:gap-3"
                 style={{ color: '#333' }}
               >
                 <div
-                  className="flex h-14 w-14 items-center justify-center rounded-full"
+                  className="flex h-10 w-10 md:h-14 md:w-14 items-center justify-center rounded-full"
                   style={{
                     background: '#f3e5f0',
                     border: '2px solid #c77dba',
@@ -211,7 +211,7 @@ export default async function HomePage() {
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                 </div>
-                <span className="text-sm font-semibold">{b}</span>
+                <span className="text-[10px] md:text-sm font-semibold leading-tight">{b}</span>
               </li>
             ))}
           </ul>
