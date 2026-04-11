@@ -53,7 +53,8 @@ interface Product {
   description: string | null
 }
 
-const HERO_SLUGS = [
+const HERO_SLUGS = ['detox-trio-bundle']
+const FEATURED_EXCLUDE = [
   'detox-trio-bundle',
   'detox-drops-herbal-extract',
   'detox-me-baby',
@@ -84,7 +85,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
       .from('products')
       .select('id, name, slug, price, compare_price, images, category, description')
       .eq('is_active', true)
-      .not('slug', 'in', `(${HERO_SLUGS.join(',')})`)
+      .not('slug', 'in', `(${FEATURED_EXCLUDE.join(',')})`)
       .order('created_at', { ascending: false })
       .limit(8)
     return (data as Product[] | null) ?? []
