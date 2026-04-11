@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { toEur } from '@/lib/currency'
+import { QuickBuyButton } from '@/components/public/quick-buy-button'
 
 function absoluteUrl(url: string): string {
   if (!url) return ''
@@ -374,6 +375,7 @@ export default async function HomePage() {
                           </span>
                         )}
                       </div>
+                      <QuickBuyButton product={p} />
                     </div>
                   </Link>
                 )
