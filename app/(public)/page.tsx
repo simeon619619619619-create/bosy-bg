@@ -240,48 +240,48 @@ export default async function HomePage() {
           </h2>
           {/* Hero products — Detox & Tea */}
           {heroProducts.length > 0 && (
-            <div className="mb-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="mb-12 grid grid-cols-1 gap-6">
               {heroProducts.map((p) => {
                 const img = p.images?.[0] ?? null
                 return (
                   <Link
                     key={p.id}
                     href={`/product/${p.slug}`}
-                    className="group flex flex-col md:flex-row items-center gap-6 overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1"
+                    className="group flex flex-col md:flex-row items-center gap-8 md:gap-12 overflow-hidden rounded-3xl transition-all duration-300 hover:-translate-y-1"
                     style={{
                       background: '#fdf5f0',
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                       textDecoration: 'none',
                       color: 'inherit',
-                      padding: 20,
+                      padding: 32,
                     }}
                   >
-                    <div className="flex shrink-0 items-center justify-center" style={{ width: 200, height: 200 }}>
+                    <div className="flex shrink-0 items-center justify-center w-full md:w-[520px] h-[320px] md:h-[520px]">
                       {img ? (
                         <Image
                           src={img}
                           alt={p.name}
-                          width={200}
-                          height={200}
-                          className="object-contain transition-transform group-hover:scale-105"
+                          width={520}
+                          height={520}
+                          className="h-full w-full object-contain transition-transform group-hover:scale-105"
                         />
                       ) : (
-                        <div className="flex items-center justify-center text-2xl" style={{ width: 160, height: 160, background: '#f5f5f5', borderRadius: 12, color: '#ccc' }}>BOSY</div>
+                        <div className="flex items-center justify-center text-2xl" style={{ width: 320, height: 320, background: '#f5f5f5', borderRadius: 16, color: '#ccc' }}>BOSY</div>
                       )}
                     </div>
-                    <div className="text-center md:text-left">
-                      <span className="mb-2 inline-block rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: '#c77dba' }}>
+                    <div className="flex-1 text-center md:text-left">
+                      <span className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white" style={{ background: '#c77dba' }}>
                         {p.category}
                       </span>
-                      <h3 className="mb-2 text-lg font-bold" style={{ color: '#222' }}>{p.name}</h3>
+                      <h3 className="mb-4 text-2xl md:text-4xl font-extrabold leading-tight" style={{ color: '#222' }}>{p.name}</h3>
                       {p.description && (
-                        <p className="mb-3 text-sm leading-relaxed" style={{ color: '#666' }}>
-                          {p.description.slice(0, 120)}...
+                        <p className="mb-6 text-base md:text-lg leading-relaxed" style={{ color: '#666' }}>
+                          {p.description.slice(0, 180)}...
                         </p>
                       )}
-                      <div className="flex items-baseline justify-center md:justify-start gap-3">
+                      <div className="flex flex-wrap items-baseline justify-center md:justify-start gap-3 md:gap-4">
                         <span
-                          className="text-2xl font-extrabold"
+                          className="text-4xl md:text-5xl font-extrabold"
                           style={{
                             color:
                               p.compare_price != null && p.compare_price > p.price
@@ -294,13 +294,13 @@ export default async function HomePage() {
                         {p.compare_price != null && p.compare_price > p.price && (
                           <>
                             <span
-                              className="text-base line-through"
+                              className="text-xl md:text-2xl line-through"
                               style={{ color: '#999' }}
                             >
                               {toEur(p.compare_price).toFixed(2)} &euro;
                             </span>
                             <span
-                              className="rounded-full px-2 py-0.5 text-xs font-bold text-white"
+                              className="rounded-full px-3 py-1 text-sm md:text-base font-bold text-white"
                               style={{ background: '#e74c3c' }}
                             >
                               -
