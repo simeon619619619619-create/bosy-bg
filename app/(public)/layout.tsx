@@ -5,6 +5,7 @@ import { Header } from '@/components/public/header'
 import { Footer } from '@/components/public/footer'
 import { CartProvider } from '@/components/public/cart-provider'
 import { EasterPopup } from '@/components/public/easter-popup'
+import { FloatingTimer } from '@/components/public/floating-timer'
 
 const montserrat = Montserrat({
   subsets: ['latin', 'cyrillic'],
@@ -139,6 +140,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <main>{children}</main>
         <Footer />
         <EasterPopup />
+        <FloatingTimer />
       </CartProvider>
     </div>
   )
