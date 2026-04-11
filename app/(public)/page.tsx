@@ -54,10 +54,10 @@ interface Product {
 }
 
 const HERO_SLUGS = [
+  'detox-trio-bundle',
   'detox-drops-herbal-extract',
   'detox-me-baby',
   'herbal-boost',
-  'bubbles-lemongrass-ginger-green-tea-x12',
 ]
 
 async function getHeroProducts(): Promise<Product[]> {
@@ -68,7 +68,10 @@ async function getHeroProducts(): Promise<Product[]> {
       .select('id, name, slug, price, compare_price, images, category, description')
       .eq('is_active', true)
       .in('slug', HERO_SLUGS)
-    return (data as Product[] | null) ?? []
+    const rows = (data as Product[] | null) ?? []
+    return rows.sort(
+      (a, b) => HERO_SLUGS.indexOf(a.slug) - HERO_SLUGS.indexOf(b.slug),
+    )
   } catch {
     return []
   }
@@ -289,8 +292,7 @@ export default async function HomePage() {
             className="mx-auto mb-10 max-w-[640px] text-center text-base leading-relaxed"
             style={{ color: '#555' }}
           >
-            Открий любимите ни напитки за чиста енергия, детокс билкови чайове и
-            аксесоари за здравословно ежедневие.
+            Свалете излишните килограми след празниците.
           </p>
 
           {products.length > 0 ? (
