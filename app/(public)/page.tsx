@@ -279,9 +279,39 @@ export default async function HomePage() {
                           {p.description.slice(0, 120)}...
                         </p>
                       )}
-                      <span className="text-lg font-bold" style={{ color: '#c77dba' }}>
-                        {toEur(p.price).toFixed(2)} &euro;
-                      </span>
+                      <div className="flex items-baseline justify-center md:justify-start gap-3">
+                        <span
+                          className="text-2xl font-extrabold"
+                          style={{
+                            color:
+                              p.compare_price != null && p.compare_price > p.price
+                                ? '#e74c3c'
+                                : '#c77dba',
+                          }}
+                        >
+                          {toEur(p.price).toFixed(2)} &euro;
+                        </span>
+                        {p.compare_price != null && p.compare_price > p.price && (
+                          <>
+                            <span
+                              className="text-base line-through"
+                              style={{ color: '#999' }}
+                            >
+                              {toEur(p.compare_price).toFixed(2)} &euro;
+                            </span>
+                            <span
+                              className="rounded-full px-2 py-0.5 text-xs font-bold text-white"
+                              style={{ background: '#e74c3c' }}
+                            >
+                              -
+                              {Math.round(
+                                ((p.compare_price - p.price) / p.compare_price) * 100,
+                              )}
+                              %
+                            </span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </Link>
                 )
