@@ -236,7 +236,7 @@ export default async function HomePage() {
               fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
             }}
           >
-            Нашите продукти
+            Специална оферта
           </h2>
           {/* Hero products — Detox & Tea */}
           {heroProducts.length > 0 && (
@@ -323,7 +323,7 @@ export default async function HomePage() {
             className="mx-auto mb-10 max-w-[640px] text-center text-base leading-relaxed"
             style={{ color: '#555' }}
           >
-            Свалете излишните килограми след празниците.
+            Нашите продукти
           </p>
 
           {products.length > 0 ? (
