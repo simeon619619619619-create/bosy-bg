@@ -73,7 +73,17 @@ export function FloatingTimer() {
           className="flex items-center gap-3 px-4 py-3 w-full cursor-pointer border-none bg-transparent"
           aria-label="Покажи промо код"
         >
-          <span style={{ fontSize: 24 }}>&#127873;</span>
+          <svg width="28" height="36" viewBox="0 0 100 130" style={{ flexShrink: 0 }}>
+            <defs>
+              <radialGradient id="timerEggGrad" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stopColor="#ff6b6b" />
+                <stop offset="100%" stopColor="#c0392b" />
+              </radialGradient>
+            </defs>
+            <ellipse cx="50" cy="70" rx="40" ry="52" fill="url(#timerEggGrad)" stroke="#a93226" strokeWidth="1.5" />
+            <path d="M20 55 Q50 45 80 55" fill="none" stroke="#ffd700" strokeWidth="3" />
+            <path d="M18 75 Q50 85 82 75" fill="none" stroke="#ffd700" strokeWidth="3" />
+          </svg>
           <div className="flex flex-col items-start leading-tight">
             <span
               className="text-[11px] font-semibold uppercase tracking-wider"
