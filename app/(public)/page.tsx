@@ -90,7 +90,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
 }
 
 const BADGES = [
-  'Без добавена захар',
+  'Без захар',
   'Без глутен',
   'Протеин',
   'Колаген',
