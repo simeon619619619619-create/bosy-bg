@@ -13,8 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BOSY.BG Admin",
-  description: "BOSY.BG Admin Panel — управление на продукти, поръчки и клиенти",
+  title: {
+    default: 'BOSY — Healthy Kitchen',
+    template: '%s | BOSY',
+  },
+  description: 'BOSY Healthy Kitchen — здравословни лакомства без добавена захар и глутен. Доставка в цяла България.',
+  robots: { index: false },
 };
 
 export default function RootLayout({

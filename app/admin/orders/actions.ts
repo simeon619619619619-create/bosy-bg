@@ -36,8 +36,8 @@ export async function confirmOrder(id: string) {
     }
   }
 
-  revalidatePath('/orders')
-  revalidatePath(`/orders/${id}`)
+  revalidatePath('/admin/orders')
+  revalidatePath(`/admin/orders/${id}`)
 }
 
 export async function cancelOrder(id: string) {
@@ -52,8 +52,8 @@ export async function cancelOrder(id: string) {
     throw new Error(error.message)
   }
 
-  revalidatePath('/orders')
-  revalidatePath(`/orders/${id}`)
+  revalidatePath('/admin/orders')
+  revalidatePath(`/admin/orders/${id}`)
 }
 
 export async function bulkConfirmOrders(ids: string[]) {
@@ -61,7 +61,7 @@ export async function bulkConfirmOrders(ids: string[]) {
     await confirmOrder(id)
   }
 
-  revalidatePath('/orders')
+  revalidatePath('/admin/orders')
 }
 
 export async function bulkCancelOrders(ids: string[]) {
@@ -69,7 +69,7 @@ export async function bulkCancelOrders(ids: string[]) {
     await cancelOrder(id)
   }
 
-  revalidatePath('/orders')
+  revalidatePath('/admin/orders')
 }
 
 export async function updateOrderNotes(id: string, notes: string) {
@@ -84,5 +84,5 @@ export async function updateOrderNotes(id: string, notes: string) {
     throw new Error(error.message)
   }
 
-  revalidatePath(`/orders/${id}`)
+  revalidatePath(`/admin/orders/${id}`)
 }
