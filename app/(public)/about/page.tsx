@@ -29,6 +29,33 @@ const GOALS = [
   },
 ]
 
+const FAQS = [
+  {
+    q: 'Съдържат ли BOSY продуктите добавена захар?',
+    a: 'Не. Всички BOSY продукти са без добавена захар. Натуралната сладост идва от фурми, плодове и разрешени подсладители като еритритол.',
+  },
+  {
+    q: 'Подходящи ли са BOSY продуктите за вегани?',
+    a: 'Да. Барове, топчета и напитки BOSY са 100% на растителна основа, без лактоза и без продукти от животински произход.',
+  },
+  {
+    q: 'Колко време отнема доставката?',
+    a: 'Стандартна доставка със Speedy в рамките на България — 1 до 2 работни дни. Безплатна доставка при поръчка над 50 лв.',
+  },
+  {
+    q: 'Има ли глутен в продуктите?',
+    a: 'Не. Всички BOSY продукти са без глутен и са подходящи за хора с глутенова непоносимост.',
+  },
+  {
+    q: 'Мога ли да върна продукт?',
+    a: 'Да. В рамките на 14 дни след доставката имате право на отказ от договора и връщане на продукта съгласно ЗЗП, ако е в оригинална опаковка.',
+  },
+  {
+    q: 'Къде мога да купя BOSY на дребно?',
+    a: 'BOSY се предлага онлайн на bosy.bg и в партньорски магазини и фитнес обекти. За B2B запитвания пишете на sales@bosy.bg.',
+  },
+]
+
 const FOUNDERS = [
   {
     name: 'Саня Ганчева',
@@ -44,9 +71,23 @@ const FOUNDERS = [
   },
 ]
 
+const faqPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+}
+
 export default function AboutPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageLd) }}
+      />
       {/* Hero */}
       <section
         className="relative overflow-hidden text-center"
@@ -153,6 +194,43 @@ export default function AboutPage() {
               </h3>
               <p style={{ color: '#666', fontSize: '14.5px', lineHeight: 1.7 }}>{g.text}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="px-5 pb-16" style={{ maxWidth: 860, margin: '0 auto' }}>
+        <div className="mx-auto mb-5" style={{ width: 60, height: 3, background: 'linear-gradient(135deg, #c77dba 0%, #4e871f 100%)', borderRadius: 3 }} />
+        <h2
+          className="text-center text-2xl md:text-3xl font-bold mb-3"
+          style={{ color: '#222', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+        >
+          Често задавани въпроси
+        </h2>
+        <p
+          className="text-center mb-10 mx-auto"
+          style={{ color: '#666', fontSize: 15, lineHeight: 1.75, maxWidth: 640 }}
+        >
+          Отговори на най-често срещаните въпроси от нашите клиенти.
+        </p>
+        <div className="flex flex-col gap-3">
+          {FAQS.map((f) => (
+            <details
+              key={f.q}
+              className="rounded-xl group"
+              style={{ background: '#fff', boxShadow: '0 2px 12px rgba(0,0,0,.05)', padding: '18px 22px' }}
+            >
+              <summary
+                className="cursor-pointer list-none font-semibold flex justify-between items-center"
+                style={{ color: '#222', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+              >
+                <span>{f.q}</span>
+                <span className="ml-4 text-[#c77dba] transition-transform group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-3" style={{ color: '#555', fontSize: '14.5px', lineHeight: 1.75 }}>
+                {f.a}
+              </p>
+            </details>
           ))}
         </div>
       </section>

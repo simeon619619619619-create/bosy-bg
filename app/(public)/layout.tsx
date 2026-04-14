@@ -75,7 +75,7 @@ export const metadata: Metadata = {
 
 const organizationLd = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
+  '@type': ['Organization', 'FoodEstablishment'],
   '@id': 'https://bosy.bg/#organization',
   name: 'BOSY — Healthy Kitchen',
   alternateName: 'BOSY',
@@ -86,10 +86,14 @@ const organizationLd = {
   description:
     'BOSY Healthy Kitchen — българска марка за здравословни лакомства: протеинови барове, топчета и напитки без добавена захар и глутен.',
   taxID: 'BG206532236',
+  vatID: 'BG206532236',
+  iso6523Code: '0199:206532236',
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'ул. Боряна 33',
     addressLocality: 'София',
+    addressRegion: 'София-град',
+    postalCode: '1618',
     addressCountry: 'BG',
   },
   sameAs: [
@@ -98,11 +102,16 @@ const organizationLd = {
     'https://www.linkedin.com/company/bosyhealthy',
   ],
   areaServed: { '@type': 'Country', name: 'Bulgaria' },
-  contactPoint: {
-    '@type': 'ContactPoint',
-    contactType: 'customer service',
-    availableLanguage: ['Bulgarian', 'English'],
-  },
+  contactPoint: [
+    {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      telephone: '+359-887-808-808',
+      email: 'sales@bosy.bg',
+      availableLanguage: ['Bulgarian', 'English'],
+      areaServed: 'BG',
+    },
+  ],
 }
 
 const websiteLd = {

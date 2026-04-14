@@ -106,8 +106,41 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Legal (ЗЗП compliance) */}
+        <div className="pt-5 pb-4" style={{ borderTop: '1px solid #333' }}>
+          <div className="grid gap-3 sm:grid-cols-2 text-xs" style={{ color: '#888', lineHeight: 1.7 }}>
+            <div>
+              <p style={{ color: '#aaa', fontWeight: 600, marginBottom: 4 }}>Търговец</p>
+              <p>„Боси Хелти" ООД</p>
+              <p>ЕИК/BULSTAT: 206532236</p>
+              <p>ДДС №: BG206532236</p>
+              <p>Адрес: гр. София, ул. Боряна 33</p>
+            </div>
+            <div>
+              <p style={{ color: '#aaa', fontWeight: 600, marginBottom: 4 }}>Права на потребителя</p>
+              <p>
+                Орган за надзор:{' '}
+                <a href="https://kzp.bg" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#c77dba]">
+                  Комисия за защита на потребителите
+                </a>
+              </p>
+              <p>
+                Онлайн решаване на спорове:{' '}
+                <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#c77dba]">
+                  ec.europa.eu/consumers/odr
+                </a>
+              </p>
+              <p>
+                <Link href="/privacy-policy" className="underline hover:text-[#c77dba]">Общи условия</Link>
+                {' · '}
+                <Link href="/privacy-policy" className="underline hover:text-[#c77dba]">Поверителност</Link>
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Bottom */}
-        <div className="text-center pt-5" style={{ borderTop: '1px solid #333' }}>
+        <div className="text-center pt-4" style={{ borderTop: '1px solid #333' }}>
           <p className="text-xs mb-2" style={{ color: '#777', lineHeight: 1.6 }}>
             BOSY.bg &copy; {new Date().getFullYear()} | Всички права запазени
           </p>

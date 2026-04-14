@@ -53,13 +53,14 @@ interface Product {
   description: string | null
 }
 
-const HERO_SLUGS = ['detox-trio-bundle']
-const FEATURED_EXCLUDE = [
-  'detox-trio-bundle',
-  'detox-drops-herbal-extract',
-  'detox-me-baby',
-  'herbal-boost',
-]
+// Easter 2026 campaign — auto-disables on May 1, 2026 (EEST).
+const EASTER_END = new Date('2026-04-30T23:59:59+03:00')
+const isEasterActive = () => Date.now() < EASTER_END.getTime()
+
+const HERO_SLUGS = isEasterActive() ? ['detox-trio-bundle'] : []
+const FEATURED_EXCLUDE = isEasterActive()
+  ? ['detox-trio-bundle', 'detox-drops-herbal-extract', 'detox-me-baby', 'herbal-boost']
+  : []
 
 async function getHeroProducts(): Promise<Product[]> {
   try {
@@ -171,11 +172,12 @@ export default async function HomePage() {
       <section className="relative w-full">
         <Link href="/shop">
           <Image
-            src="/hero-banner-easter.png"
+            src={isEasterActive() ? '/hero-banner-easter.jpg' : '/hero-banner.jpg'}
             alt="BOSY — The Smart Pleasure"
-            width={5488}
-            height={3072}
+            width={1920}
+            height={1075}
             priority
+            sizes="100vw"
             className="w-full h-auto block"
             style={{ objectFit: 'cover' }}
           />
