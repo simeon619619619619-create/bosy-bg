@@ -167,7 +167,7 @@ export default function CartPage() {
                       border: '1px solid #4e871f40',
                     }}
                   >
-                    🎉 Имаш БЕЗПЛАТНА доставка!
+                    Имаш БЕЗПЛАТНА доставка!
                   </div>
                 ) : (
                   <>
@@ -176,7 +176,7 @@ export default function CartPage() {
                       <span style={{ color: '#c77dba' }}>
                         {toEur(SHIPPING_THRESHOLD - subtotal).toFixed(2)} &euro;
                       </span>{' '}
-                      до БЕЗПЛАТНА доставка 🎯
+                      до БЕЗПЛАТНА доставка
                     </p>
                     <div
                       className="h-2 w-full overflow-hidden rounded-full"
