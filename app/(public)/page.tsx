@@ -12,34 +12,57 @@ function absoluteUrl(url: string): string {
   return `https://bosy.bg${url.startsWith('/') ? '' : '/'}${url}`
 }
 
-export const metadata: Metadata = {
-  title: 'BOSY — Healthy Kitchen | Здравословни лакомства без захар',
-  description:
-    'BOSY Healthy Kitchen — протеинови барове, топчета и напитки без добавена захар, без глутен, на растителна основа. Здравословни лакомства с чист състав. Доставка в цяла България.',
-  alternates: { canonical: '/' },
-  openGraph: {
-    type: 'website',
-    url: 'https://bosy.bg',
-    siteName: 'BOSY — Healthy Kitchen',
-    locale: 'bg_BG',
+export async function generateMetadata(): Promise<Metadata> {
+  let heroImage = 'https://bosy.bg/hero-banner.jpg'
+
+  try {
+    if (HERO_SLUGS.length > 0) {
+      const supabase = createPublicSupabaseClient()
+      const { data } = await supabase
+        .from('products')
+        .select('images')
+        .eq('is_active', true)
+        .eq('slug', HERO_SLUGS[0])
+        .single()
+
+      const productImage = data?.images?.[0]
+      if (productImage) {
+        heroImage = absoluteUrl(productImage)
+      }
+    }
+  } catch {
+    // Fallback to static hero image
+  }
+
+  return {
     title: 'BOSY — Healthy Kitchen | Здравословни лакомства без захар',
     description:
-      'Протеинови барове, топчета и напитки без добавена захар и без глутен. Чист състав, страхотен вкус.',
-    images: [
-      {
-        url: 'https://bosy.bg/hero-banner.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'BOSY Healthy Kitchen',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'BOSY — Healthy Kitchen',
-    description: 'Здравословни лакомства без добавена захар, без глутен.',
-    images: ['https://bosy.bg/hero-banner.jpg'],
-  },
+      'BOSY Healthy Kitchen — протеинови барове, топчета и напитки без добавена захар, без глутен, на растителна основа. Здравословни лакомства с чист състав. Доставка в цяла България.',
+    alternates: { canonical: '/' },
+    openGraph: {
+      type: 'website',
+      url: 'https://bosy.bg',
+      siteName: 'BOSY — Healthy Kitchen',
+      locale: 'bg_BG',
+      title: 'BOSY — Healthy Kitchen | Здравословни лакомства без захар',
+      description:
+        'Протеинови барове, топчета и напитки без добавена захар и без глутен. Чист състав, страхотен вкус.',
+      images: [
+        {
+          url: heroImage,
+          width: 1200,
+          height: 630,
+          alt: 'BOSY Healthy Kitchen',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'BOSY — Healthy Kitchen',
+      description: 'Здравословни лакомства без добавена захар, без глутен.',
+      images: [heroImage],
+    },
+  }
 }
 
 interface Product {

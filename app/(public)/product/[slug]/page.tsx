@@ -16,6 +16,10 @@ interface ProductVariants {
   nutrition_image?: string
   shelf_life?: string
   related_slugs?: string[]
+  use_title?: string
+  use_steps?: { title: string; description: string }[]
+  faq_title?: string
+  faq_items?: { question: string; answer: string }[]
 }
 
 // Truncate at word boundary, not mid-word
@@ -104,12 +108,103 @@ export default async function ProductPage({
       ? product.variants
       : {}
 
+  const isDetoxTrio = product.slug === 'detox-trio-bundle'
+
+  const detoxTrioDefaults: ProductVariants = isDetoxTrio
+    ? {
+        subtitle:
+          '3-step ритуал за лекота, баланс и по-приятно ежедневие.',
+        badges: [
+          'На растителна основа',
+          'Без добавена захар',
+          'Лимитирано bundle предложение',
+        ],
+        why_title: 'Защо DETOX TRIO работи толкова добре като система',
+        why_items: [
+          {
+            title: '1 готов ритуал, без чудене',
+            description:
+              'Получаваш чай, detox drops и бутилка в един комплект, подредени така, че да превърнат грижата за себе си в лесен навик.',
+          },
+          {
+            title: 'По-леко и балансирано ежедневие',
+            description:
+              'Създадено за хора, които търсят усещане за лекота, по-добър ритъм и по-приятен wellness режим.',
+          },
+          {
+            title: 'По-изгодно от поотделно',
+            description:
+              'Bundle форматът ти дава цялата система в една покупка и спестява 7.15 € спрямо единичното вземане.',
+          },
+        ],
+        ingredients:
+          'Комплектът включва: DETOX ME BABY, BOSY Detox Drops — Herbal Extract и бутилка за чай Herbal Boost. Комбинация, създадена за удобен ежедневен detox ритуал у дома, в офиса или в движение.',
+        use_title: 'Как да използваш DETOX TRIO',
+        use_steps: [
+          {
+            title: 'Стъпка 1: Приготви своя чай',
+            description:
+              'Използвай DETOX ME BABY като основа на ритуала си и си отдели момент за по-лек старт или рестарт на деня.',
+          },
+          {
+            title: 'Стъпка 2: Добави drops към режима си',
+            description:
+              'BOSY Detox Drops допълват усещането за балансирана ежедневна грижа и правят системата по-пълна.',
+          },
+          {
+            title: 'Стъпка 3: Носи ритуала със себе си',
+            description:
+              'Herbal Boost бутилката прави приема лесен и красив, така че да останеш постоянна дори в динамично ежедневие.',
+          },
+        ],
+        faq_title: 'Често задавани въпроси',
+        faq_items: [
+          {
+            question: 'За кого е подходящ DETOX TRIO?',
+            answer:
+              'Подходящ е за хора, които искат по-лек и добре структуриран daily wellness ритуал с удобството на готов комплект.',
+          },
+          {
+            question: 'Защо да взема bundle вместо продуктите поотделно?',
+            answer:
+              'Защото получаваш цялата система в една покупка, по-ясен ритуал и по-добра крайна цена.',
+          },
+          {
+            question: 'Какво получавам в комплекта?',
+            answer:
+              'DETOX ME BABY, BOSY Detox Drops — Herbal Extract и бутилка за чай Herbal Boost.',
+          },
+          {
+            question: 'Има ли отстъпка в момента?',
+            answer:
+              'Да, комплектът е с -15% и струва 40.55 € вместо 47.70 €, което ти спестява 7.15 €.',
+          },
+        ],
+      }
+    : {}
+
+  const mergedVariants: ProductVariants = {
+    ...detoxTrioDefaults,
+    ...variants,
+    badges: variants.badges && variants.badges.length > 0 ? variants.badges : detoxTrioDefaults.badges,
+    why_items: variants.why_items && variants.why_items.length > 0 ? variants.why_items : detoxTrioDefaults.why_items,
+    use_steps: variants.use_steps && variants.use_steps.length > 0 ? variants.use_steps : detoxTrioDefaults.use_steps,
+    faq_items: variants.faq_items && variants.faq_items.length > 0 ? variants.faq_items : detoxTrioDefaults.faq_items,
+  }
+
   const images: string[] = product.images ?? []
   const hasDiscount =
     product.compare_price != null && product.compare_price > product.price
 
   // Fetch related products
-  let relatedProducts: any[] = []
+  let relatedProducts: Array<{
+    id: string
+    name: string
+    slug: string
+    price: number
+    compare_price: number | null
+    images: string[] | null
+  }> = []
   if (variants.related_slugs && variants.related_slugs.length > 0) {
     const { data } = await supabase
       .from('products')
@@ -222,16 +317,16 @@ export default async function ProductPage({
             </h1>
 
             {/* Subtitle */}
-            {variants.subtitle && (
-              <p className="mb-4 text-base" style={{ color: '#888' }}>
-                {variants.subtitle}
+            {mergedVariants.subtitle && (
+              <p className="mb-4 max-w-[620px] text-base leading-relaxed" style={{ color: '#666' }}>
+                {mergedVariants.subtitle}
               </p>
             )}
 
             {/* Badges */}
-            {variants.badges && variants.badges.length > 0 && (
+            {mergedVariants.badges && mergedVariants.badges.length > 0 && (
               <div className="mb-5 flex flex-wrap gap-2">
-                {variants.badges.map((badge, i) => (
+                {mergedVariants.badges.map((badge, i) => (
                   <span
                     key={i}
                     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold"
@@ -277,10 +372,34 @@ export default async function ProductPage({
             {/* Short description */}
             {product.description && (
               <div
-                className="mb-5 text-sm leading-relaxed"
+                className="mb-5 space-y-3 text-sm leading-relaxed"
                 style={{ color: '#555' }}
               >
-                {product.description}
+                {isDetoxTrio ? (
+                  <>
+                    <p>
+                      DETOX TRIO е 3-step ритуал за лекота и баланс, който събира на едно място чай, detox drops и красива бутилка за твоя ежедневен wellness reset.
+                    </p>
+                    <div
+                      className="rounded-2xl p-4"
+                      style={{ background: '#fff', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
+                    >
+                      <p className="mb-2 font-semibold" style={{ color: '#333' }}>
+                        Какво получаваш:
+                      </p>
+                      <ul className="space-y-2 pl-5" style={{ listStyle: 'disc' }}>
+                        <li>DETOX ME BABY за по-приятен дневен ритуал</li>
+                        <li>BOSY Detox Drops — Herbal Extract за допълване на режима</li>
+                        <li>Herbal Boost бутилка за удобство у дома и в движение</li>
+                      </ul>
+                    </div>
+                    <p>
+                      Взимаш цялата система с -15% отстъпка, спестяваш 7.15 € и получаваш готов bundle, който е по-лесен за следване от разпокъсани единични продукти.
+                    </p>
+                  </>
+                ) : (
+                  product.description
+                )}
               </div>
             )}
 
@@ -304,6 +423,22 @@ export default async function ProductPage({
             {/* Add to cart */}
             <AddToCartButton product={product} />
 
+            {isDetoxTrio && (
+              <div
+                className="mt-5 rounded-2xl p-4 text-sm"
+                style={{ background: '#fff', boxShadow: '0 2px 12px rgba(0,0,0,0.05)', color: '#555' }}
+              >
+                <p className="font-semibold" style={{ color: '#333' }}>
+                  Защо да купиш сега
+                </p>
+                <ul className="mt-2 space-y-2 pl-5" style={{ listStyle: 'disc' }}>
+                  <li>Лимитирано bundle предложение до края на април</li>
+                  <li>Спестяваш 7.15 € спрямо покупка поотделно</li>
+                  <li>Получаваш готов ритуал, а не просто отделни продукти</li>
+                </ul>
+              </div>
+            )}
+
             {/* Shelf life */}
             {variants.shelf_life && (
               <p className="mt-5 text-xs leading-relaxed" style={{ color: '#999' }}>
@@ -314,18 +449,18 @@ export default async function ProductPage({
         </div>
 
         {/* Why section */}
-        {variants.why_items && variants.why_items.length > 0 && (
+        {mergedVariants.why_items && mergedVariants.why_items.length > 0 && (
           <section className="mt-14">
-            {variants.why_title && (
+            {mergedVariants.why_title && (
               <h2
                 className="mb-6 text-center text-2xl font-bold"
                 style={{ color: '#333' }}
               >
-                {variants.why_title}
+                {mergedVariants.why_title}
               </h2>
             )}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {variants.why_items.map((item, i) => (
+              {mergedVariants.why_items.map((item, i) => (
                 <div
                   key={i}
                   className="rounded-xl p-6"
@@ -358,7 +493,40 @@ export default async function ProductPage({
         )}
 
         {/* Ingredients */}
-        {variants.ingredients && (
+        {mergedVariants.use_steps && mergedVariants.use_steps.length > 0 && (
+          <section className="mt-14">
+            <h2
+              className="mb-6 text-2xl font-bold"
+              style={{ color: '#333' }}
+            >
+              {mergedVariants.use_title ?? 'Как се използва'}
+            </h2>
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+              {mergedVariants.use_steps.map((step, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl p-6"
+                  style={{ background: '#fff', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
+                >
+                  <div
+                    className="mb-3 flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white"
+                    style={{ background: '#c77dba' }}
+                  >
+                    {i + 1}
+                  </div>
+                  <h3 className="mb-2 text-base font-bold" style={{ color: '#333' }}>
+                    {step.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: '#666' }}>
+                    {step.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {mergedVariants.ingredients && (
           <section className="mt-14">
             <h2
               className="mb-4 text-2xl font-bold"
@@ -374,13 +542,40 @@ export default async function ProductPage({
                 color: '#555',
               }}
             >
-              {variants.ingredients}
+              {mergedVariants.ingredients}
+            </div>
+          </section>
+        )}
+
+        {mergedVariants.faq_items && mergedVariants.faq_items.length > 0 && (
+          <section className="mt-14">
+            <h2
+              className="mb-6 text-2xl font-bold"
+              style={{ color: '#333' }}
+            >
+              {mergedVariants.faq_title ?? 'Често задавани въпроси'}
+            </h2>
+            <div className="space-y-4">
+              {mergedVariants.faq_items.map((item, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl p-5"
+                  style={{ background: '#fff', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
+                >
+                  <h3 className="mb-2 text-base font-bold" style={{ color: '#333' }}>
+                    {item.question}
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: '#666' }}>
+                    {item.answer}
+                  </p>
+                </div>
+              ))}
             </div>
           </section>
         )}
 
         {/* Nutrition image */}
-        {variants.nutrition_image && (
+        {mergedVariants.nutrition_image && (
           <section className="mt-14">
             <h2
               className="mb-4 text-2xl font-bold"
@@ -396,7 +591,7 @@ export default async function ProductPage({
               }}
             >
               <img
-                src={variants.nutrition_image}
+                src={mergedVariants.nutrition_image}
                 alt={`${product.name} - хранителна информация`}
                 className="mx-auto max-w-full"
                 style={{ maxHeight: '500px', objectFit: 'contain' }}
@@ -477,7 +672,7 @@ export default async function ProductPage({
           price: product.price,
           compare_at_price: product.compare_price ?? null,
           images: product.images,
-          stock: product.stock,
+          stock: product.stock_quantity,
         }}
       />
     </div>
