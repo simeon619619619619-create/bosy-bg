@@ -649,7 +649,7 @@ export default async function ProductPage({
                         >
                           {toEur(rp.price).toFixed(2)} &euro;
                         </span>
-                        {rpDiscount && (
+                        {rpDiscount && rp.compare_price != null && (
                           <span className="text-xs text-gray-400 line-through">
                             {toEur(rp.compare_price).toFixed(2)} &euro;
                           </span>
