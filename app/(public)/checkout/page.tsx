@@ -182,12 +182,12 @@ export default function CheckoutPage() {
       }
     } else {
       if (!selectedOffice) {
-        setError(`Моля, изберете офис на ${courier === 'econt' ? 'Еконт' : 'Speedy'} за доставка`)
+        setError('Моля, изберете офис на Speedy за доставка')
         setLoading(false)
         return
       }
       officeId = selectedOffice.id
-      city = `${courier === 'econt' ? 'Еконт' : 'Speedy'} офис: ${selectedOffice.name}`
+      city = `Speedy офис: ${selectedOffice.name}`
       address = selectedOffice.address
     }
 
@@ -206,9 +206,7 @@ export default function CheckoutPage() {
         promoDiscount,
         cashbackUsed: cashbackApplied,
         deliveryType,
-        courier,
-        speedyOfficeId: courier === 'speedy' ? officeId : null,
-        econtOfficeId: courier === 'econt' ? officeId : null,
+        speedyOfficeId: officeId,
         items: items.map((i) => ({
           id: i.id,
           name: i.name,
@@ -360,16 +358,6 @@ export default function CheckoutPage() {
               Доставка
             </h2>
 
-            <div className="mt-4">
-              <CourierSelector
-                value={courier}
-                onChange={(c) => {
-                  setCourier(c)
-                  setSelectedOffice(null)
-                }}
-              />
-            </div>
-
             {/* Delivery type radio */}
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <button
@@ -410,7 +398,7 @@ export default function CheckoutPage() {
                 />
                 <div>
                   <p className="text-sm font-semibold" style={{ color: '#111' }}>
-                    До офис на {courier === 'econt' ? 'Еконт' : 'Speedy'}
+                    До офис на Speedy
                   </p>
                   <p className="text-xs" style={{ color: '#6b7280' }}>
                     Вземане от офис
@@ -467,31 +455,17 @@ export default function CheckoutPage() {
               </div>
             ) : (
               <div className="mt-5">
-                {courier === 'econt' ? (
-                  <EcontOfficeSelector
-                    initialCity={prefilled?.city ?? ''}
-                    selectedOfficeId={selectedOffice?.id ?? null}
-                    onSelect={(office) =>
-                      setSelectedOffice({
-                        id: office.id,
-                        name: office.name,
-                        address: office.address,
-                      })
-                    }
-                  />
-                ) : (
-                  <SpeedyOfficeSelector
-                    initialCity={prefilled?.city ?? ''}
-                    selectedOfficeId={selectedOffice?.id ?? null}
-                    onSelect={(office) =>
-                      setSelectedOffice({
-                        id: office.id,
-                        name: office.name,
-                        address: office.address,
-                      })
-                    }
-                  />
-                )}
+                <SpeedyOfficeSelector
+                  initialCity={prefilled?.city ?? ''}
+                  selectedOfficeId={selectedOffice?.id ?? null}
+                  onSelect={(office) =>
+                    setSelectedOffice({
+                      id: office.id,
+                      name: office.name,
+                      address: office.address,
+                    })
+                  }
+                />
                 {selectedOffice && (
                   <div
                     className="mt-3 rounded-lg border p-3 text-xs"

@@ -178,7 +178,6 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       total,
       status: 'pending',
       notes: fullNotes,
-      courier,
     })
     .select('id, order_number')
     .single()
