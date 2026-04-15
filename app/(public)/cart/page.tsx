@@ -155,6 +155,47 @@ export default function CartPage() {
               Обобщение
             </h2>
 
+            {/* Free shipping progress bar */}
+            {subtotal > 0 && (
+              <div className="mt-4">
+                {subtotal >= SHIPPING_THRESHOLD ? (
+                  <div
+                    className="rounded-lg px-3 py-2.5 text-center text-xs font-semibold"
+                    style={{
+                      background: 'linear-gradient(135deg, #c77dba20, #4e871f20)',
+                      color: '#4e871f',
+                      border: '1px solid #4e871f40',
+                    }}
+                  >
+                    🎉 Имаш БЕЗПЛАТНА доставка!
+                  </div>
+                ) : (
+                  <>
+                    <p className="mb-1.5 text-xs font-semibold" style={{ color: '#333' }}>
+                      Остават ти{' '}
+                      <span style={{ color: '#c77dba' }}>
+                        {toEur(SHIPPING_THRESHOLD - subtotal).toFixed(2)} &euro;
+                      </span>{' '}
+                      до БЕЗПЛАТНА доставка 🎯
+                    </p>
+                    <div
+                      className="h-2 w-full overflow-hidden rounded-full"
+                      style={{ background: '#f0e6ef' }}
+                    >
+                      <div
+                        className="h-full rounded-full transition-all duration-500 ease-out"
+                        style={{
+                          width: `${Math.min((subtotal / SHIPPING_THRESHOLD) * 100, 100)}%`,
+                          background:
+                            'linear-gradient(90deg, #c77dba 0%, #7bc142 100%)',
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between">
                 <span style={{ color: '#777' }}>Междинна сума</span>
@@ -166,11 +207,6 @@ export default function CartPage() {
                   {shipping === 0 ? 'Безплатна' : `${toEur(shipping).toFixed(2)} \u20AC`}
                 </span>
               </div>
-              {subtotal < SHIPPING_THRESHOLD && subtotal > 0 && (
-                <p className="text-xs font-semibold animate-pulse" style={{ color: '#c77dba' }}>
-                  Още {toEur(SHIPPING_THRESHOLD - subtotal).toFixed(2)} &euro; за безплатна доставка!
-                </p>
-              )}
               <div
                 className="flex justify-between pt-3 text-base font-bold"
                 style={{ borderTop: '1px solid #eee' }}

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { AddToCartButton } from '@/components/public/add-to-cart-button'
+import { StickyMobileBuy } from '@/components/public/sticky-mobile-buy'
 import { ProductGallery } from '@/components/public/product-gallery'
 import Link from 'next/link'
 import { toEur } from '@/lib/currency'
@@ -467,6 +468,18 @@ export default async function ProductPage({
           </section>
         )}
       </div>
+
+      <StickyMobileBuy
+        product={{
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          price: product.price,
+          compare_at_price: product.compare_price ?? null,
+          images: product.images,
+          stock: product.stock,
+        }}
+      />
     </div>
   )
 }
