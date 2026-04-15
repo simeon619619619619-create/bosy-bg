@@ -23,19 +23,24 @@ export function SpeedyOfficeSelector({
   initialCity = '',
 }: Props) {
   const [city, setCity] = useState(initialCity)
+  const [quarter, setQuarter] = useState('')
   const [offices, setOffices] = useState<Office[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function searchOffices(q: string) {
-    if (q.trim().length < 2) {
+  async function searchOffices(cityName: string, quarterText: string) {
+    const trimmedCity = cityName.trim()
+    if (trimmedCity.length < 2) {
       setOffices([])
       return
     }
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`/api/speedy/offices?city=${encodeURIComponent(q)}`)
+      const query = quarterText.trim()
+        ? `${trimmedCity} ${quarterText.trim()}`
+        : trimmedCity
+      const res = await fetch(`/api/speedy/offices?city=${encodeURIComponent(query)}`)
       const data = await res.json()
       if (data.error) {
         setError(data.error)
@@ -51,44 +56,67 @@ export function SpeedyOfficeSelector({
     }
   }
 
-  // Search on city change (debounced)
   useEffect(() => {
-    const t = setTimeout(() => searchOffices(city), 400)
+    const t = setTimeout(() => searchOffices(city, quarter), 400)
     return () => clearTimeout(t)
-  }, [city])
+  }, [city, quarter])
+
+  const inputStyle: React.CSSProperties = {
+    backgroundColor: '#f5f5f5',
+    borderColor: '#d1d5db',
+    color: '#111',
+  }
 
   return (
     <div>
-      {/* City search */}
-      <label
-        className="mb-1.5 block text-xs font-medium"
-        style={{ color: '#4a3728' }}
-      >
-        Търсене на град / квартал <span style={{ color: '#dc2626' }}>*</span>
-      </label>
-      <div className="relative">
-        <Search
-          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-          style={{ color: '#9ca3af' }}
-        />
-        <input
-          type="text"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder="напр. софия, или софия младост"
-          className="w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm outline-none transition-colors focus:border-[#c77dba]"
-          style={{
-            backgroundColor: '#f5f5f5',
-            borderColor: '#d1d5db',
-            color: '#111',
-          }}
-        />
+      <div className="grid gap-3 sm:grid-cols-2">
+        {/* City */}
+        <div>
+          <label
+            className="mb-1.5 block text-xs font-medium"
+            style={{ color: '#4a3728' }}
+          >
+            Град <span style={{ color: '#dc2626' }}>*</span>
+          </label>
+          <div className="relative">
+            <Search
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+              style={{ color: '#9ca3af' }}
+            />
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="напр. София"
+              className="w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm outline-none transition-colors focus:border-[#c77dba]"
+              style={inputStyle}
+            />
+          </div>
+        </div>
+
+        {/* Quarter / filter */}
+        <div>
+          <label
+            className="mb-1.5 block text-xs font-medium"
+            style={{ color: '#4a3728' }}
+          >
+            Квартал / ключова дума
+          </label>
+          <input
+            type="text"
+            value={quarter}
+            onChange={(e) => setQuarter(e.target.value)}
+            placeholder="напр. Младост, ж.к. ..."
+            className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-colors focus:border-[#c77dba]"
+            style={inputStyle}
+          />
+        </div>
       </div>
-      <p className="mt-1 text-[11px]" style={{ color: '#9ca3af' }}>
-        Първо градът, после може да добавите квартал или ключова дума
+
+      <p className="mt-1.5 text-[11px]" style={{ color: '#9ca3af' }}>
+        Първо изберете град. Квартал е незадължителен — стеснява резултатите.
       </p>
 
-      {/* Results */}
       <div className="mt-3">
         {loading && (
           <p className="text-xs" style={{ color: '#6b7280' }}>
@@ -104,7 +132,7 @@ export function SpeedyOfficeSelector({
 
         {!loading && !error && city.length >= 2 && offices.length === 0 && (
           <p className="text-xs" style={{ color: '#6b7280' }}>
-            Няма намерени офиси в този град.
+            Няма намерени офиси по тези критерии.
           </p>
         )}
 

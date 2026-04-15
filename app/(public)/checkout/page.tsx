@@ -9,8 +9,6 @@ import { createOrder, lookupCashback, getCashbackPercent } from './actions'
 import { validatePromoCode } from '@/app/admin/promo-codes/actions'
 import { toEur } from '@/lib/currency'
 import { SpeedyOfficeSelector } from '@/components/checkout/speedy-office-selector'
-import { EcontOfficeSelector } from '@/components/checkout/econt-office-selector'
-import { CourierSelector } from '@/components/checkout/courier-selector'
 
 interface SelectedOffice {
   id: number
@@ -48,7 +46,6 @@ export default function CheckoutPage() {
   const [promoError, setPromoError] = useState<string | null>(null)
   const [promoLoading, setPromoLoading] = useState(false)
   const [deliveryType, setDeliveryType] = useState<'address' | 'office'>('address')
-  const [courier, setCourier] = useState<'speedy' | 'econt'>('speedy')
   const [selectedOffice, setSelectedOffice] = useState<SelectedOffice | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
