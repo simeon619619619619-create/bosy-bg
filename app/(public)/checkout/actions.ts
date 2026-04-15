@@ -27,7 +27,9 @@ interface CreateOrderInput {
   promoDiscount: number
   cashbackUsed: number
   deliveryType?: 'address' | 'office'
+  courier?: 'speedy' | 'econt'
   speedyOfficeId?: number | null
+  econtOfficeId?: number | null
   items: OrderItem[]
 }
 
@@ -152,10 +154,15 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
   }))
 
   // Build notes with delivery and payment metadata tags
-  const noteTags = [`[${input.paymentMethod.toUpperCase()}]`]
+  const courier = input.courier ?? 'speedy'
+  const noteTags = [`[${input.paymentMethod.toUpperCase()}]`, `[COURIER:${courier.toUpperCase()}]`]
   if (input.promoCode) noteTags.push(`[PROMO:${input.promoCode}]`)
-  if (input.deliveryType === 'office' && input.speedyOfficeId) {
-    noteTags.push(`[OFFICE:${input.speedyOfficeId}]`)
+  if (input.deliveryType === 'office') {
+    if (courier === 'econt' && input.econtOfficeId) {
+      noteTags.push(`[ECONT_OFFICE:${input.econtOfficeId}]`)
+    } else if (courier === 'speedy' && input.speedyOfficeId) {
+      noteTags.push(`[OFFICE:${input.speedyOfficeId}]`)
+    }
   }
   const fullNotes = input.notes
     ? `${noteTags.join(' ')} ${input.notes}`
@@ -171,6 +178,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       total,
       status: 'pending',
       notes: fullNotes,
+      courier,
     })
     .select('id, order_number')
     .single()

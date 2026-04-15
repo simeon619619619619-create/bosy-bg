@@ -67,3 +67,32 @@ export function ShipWithSpeedyButton({ orderId }: { orderId: string }) {
     </Button>
   )
 }
+
+export function ShipWithEcontButton({ orderId }: { orderId: string }) {
+  const [isPending, startTransition] = useTransition()
+
+  return (
+    <Button
+      disabled={isPending}
+      onClick={() => {
+        startTransition(async () => {
+          const res = await fetch('/api/econt/create-label', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId }),
+          })
+
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}))
+            alert(data.error ?? 'Грешка при създаване на пратка')
+            return
+          }
+
+          window.location.reload()
+        })
+      }}
+    >
+      {isPending ? 'Изпращане...' : 'Изпрати с Еконт'}
+    </Button>
+  )
+}

@@ -18,6 +18,58 @@ import { OrderStatusBadge } from '@/components/admin/orders/order-status-badge'
 import { bulkConfirmOrders, bulkCancelOrders } from '@/app/admin/orders/actions'
 import { Search } from 'lucide-react'
 
+function bulkPrintPackingSlips(orderIds: string[]) {
+  orderIds.forEach((id, i) => {
+    setTimeout(() => {
+      window.open(`/api/admin/packing-slip/${id}`, '_blank')
+    }, i * 200)
+  })
+}
+
+async function bulkShip(
+  orderIds: string[],
+  courier: 'speedy' | 'econt',
+  startTransition: (fn: () => void) => void,
+  router: ReturnType<typeof useRouter>,
+  setSelectedIds: (ids: Set<string>) => void
+) {
+  const endpoint =
+    courier === 'econt' ? '/api/econt/create-label' : '/api/speedy/create-parcel'
+
+  if (!confirm(`Ще генерираме ${orderIds.length} товарителници с ${courier === 'econt' ? 'Еконт' : 'Speedy'}. Продължи?`)) {
+    return
+  }
+
+  startTransition(async () => {
+    let ok = 0
+    const failed: string[] = []
+    for (const orderId of orderIds) {
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId }),
+        })
+        if (res.ok) {
+          ok++
+        } else {
+          const data = await res.json().catch(() => ({}))
+          failed.push(`${orderId.slice(0, 8)}: ${data.error ?? 'грешка'}`)
+        }
+      } catch (e) {
+        failed.push(`${orderId.slice(0, 8)}: ${e instanceof Error ? e.message : 'грешка'}`)
+      }
+    }
+    alert(
+      `Създадени: ${ok}/${orderIds.length}${
+        failed.length ? '\n\nГрешки:\n' + failed.join('\n') : ''
+      }`
+    )
+    setSelectedIds(new Set())
+    router.refresh()
+  })
+}
+
 interface Order {
   id: string
   order_number: number | null
@@ -26,7 +78,9 @@ interface Order {
   total: number
   status: string
   payment_method: string | null
+  courier?: string
   speedy_tracking_number: string | null
+  econt_tracking_number?: string | null
   created_at: string
 }
 
@@ -109,6 +163,33 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
             </Button>
             <Button
               size="sm"
+              variant="secondary"
+              disabled={isPending}
+              onClick={() => {
+                bulkShip(selectedArr, 'speedy', startTransition, router, setSelectedIds)
+              }}
+            >
+              Изпрати със Speedy
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={isPending}
+              onClick={() => {
+                bulkShip(selectedArr, 'econt', startTransition, router, setSelectedIds)
+              }}
+            >
+              Изпрати с Еконт
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => bulkPrintPackingSlips(selectedArr)}
+            >
+              Печат packing slips
+            </Button>
+            <Button
+              size="sm"
               variant="destructive"
               disabled={isPending}
               onClick={() => {
@@ -143,7 +224,8 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
               <TableHead>Общо</TableHead>
               <TableHead>Плащане</TableHead>
               <TableHead>Статус</TableHead>
-              <TableHead>Speedy</TableHead>
+              <TableHead>Куриер</TableHead>
+              <TableHead>Tracking</TableHead>
               <TableHead>Дата</TableHead>
             </TableRow>
           </TableHeader>
@@ -190,8 +272,17 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
                   </TableCell>
                   <TableCell>
                     <Link href={orderUrl} className="block">
-                      {order.speedy_tracking_number ? (
-                        <span className="font-mono text-primary">{order.speedy_tracking_number}</span>
+                      {order.courier === 'econt' ? (
+                        <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">Еконт</span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-400">Speedy</span>
+                      )}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Link href={orderUrl} className="block">
+                      {order.econt_tracking_number || order.speedy_tracking_number ? (
+                        <span className="font-mono text-primary">{order.econt_tracking_number || order.speedy_tracking_number}</span>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}

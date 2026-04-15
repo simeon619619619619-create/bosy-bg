@@ -7,7 +7,7 @@ import { ShoppingBag } from 'lucide-react'
 const filterTabs = [
   { key: 'all', label: 'Всички' },
   { key: 'pending', label: 'Чакащи' },
-  { key: 'confirmed', label: 'Потвърдени' },
+  { key: 'confirmed', label: 'Готови за пакетиране' },
   { key: 'shipped', label: 'Изпратени' },
   { key: 'delivered', label: 'Доставени' },
 ] as const
@@ -25,10 +25,15 @@ export default async function OrdersPage({
   let query = supabase
     .from('orders')
     .select('*, customers(name)')
-    .order('created_at', { ascending: false })
 
-  if (activeFilter !== 'all') {
-    query = query.eq('status', activeFilter)
+  if (activeFilter === 'confirmed') {
+    // Ready-to-pack: oldest first so FIFO
+    query = query.eq('status', 'confirmed').order('created_at', { ascending: true })
+  } else {
+    query = query.order('created_at', { ascending: false })
+    if (activeFilter !== 'all') {
+      query = query.eq('status', activeFilter)
+    }
   }
 
   const { data: orders } = await query
@@ -46,15 +51,49 @@ export default async function OrdersPage({
       total: Number(order.total ?? 0),
       status: order.status,
       payment_method,
+      courier: (order.courier as string) ?? 'speedy',
       speedy_tracking_number: order.speedy_tracking_number,
+      econt_tracking_number: order.econt_tracking_number,
       created_at: order.created_at,
     }
   })
 
+  const today = new Date().toISOString().slice(0, 10)
+
   return (
     <div>
       {/* Header */}
-      <h1 className="text-3xl font-bold">Поръчки</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-bold">Поръчки</h1>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            render={
+              <a
+                href={`/api/admin/manifest/speedy?date=${today}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            }
+          >
+            Лист Speedy (днес)
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            render={
+              <a
+                href={`/api/admin/manifest/econt?date=${today}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            }
+          >
+            Лист Еконт (днес)
+          </Button>
+        </div>
+      </div>
 
       {/* Filter tabs */}
       <div className="mt-6 flex items-center gap-1">

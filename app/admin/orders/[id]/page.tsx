@@ -8,6 +8,7 @@ import {
   ConfirmOrderButton,
   CancelOrderButton,
   ShipWithSpeedyButton,
+  ShipWithEcontButton,
 } from '@/components/admin/orders/order-actions'
 import { OrderNotes } from '@/components/admin/orders/order-notes'
 import { OrderTimeline } from '@/components/admin/orders/order-timeline'
@@ -121,19 +122,33 @@ export default async function OrderDetailPage({
             </div>
           </div>
 
-          {/* Speedy tracking info */}
+          {/* Shipping info */}
           {(order.status === 'shipped' || order.status === 'delivered') &&
-            order.speedy_tracking_number && (
+            (order.speedy_tracking_number || order.econt_tracking_number) && (
               <div className="rounded-lg border border-border bg-card p-6">
-                <h2 className="text-lg font-semibold">Доставка</h2>
+                <h2 className="text-lg font-semibold">
+                  Доставка · {order.courier === 'econt' ? 'Еконт' : 'Speedy'}
+                </h2>
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Tracking номер</span>
                     <span className="font-mono text-primary">
-                      {order.speedy_tracking_number}
+                      {order.econt_tracking_number || order.speedy_tracking_number}
                     </span>
                   </div>
-                  {order.speedy_parcel_id && (
+                  {order.econt_label_url && (
+                    <div className="mt-3">
+                      <a
+                        href={order.econt_label_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Принтирай Еконт етикет
+                      </a>
+                    </div>
+                  )}
+                  {!order.econt_label_url && order.speedy_parcel_id && (
                     <div className="mt-3">
                       <a
                         href={`/api/speedy/label?parcelId=${order.speedy_parcel_id}`}
@@ -141,7 +156,7 @@ export default async function OrderDetailPage({
                         rel="noopener noreferrer"
                         className="text-sm text-primary hover:underline"
                       >
-                        Принтирай етикет
+                        Принтирай Speedy етикет
                       </a>
                     </div>
                   )}
@@ -194,7 +209,25 @@ export default async function OrderDetailPage({
                 </>
               )}
               {order.status === 'confirmed' && (
-                <ShipWithSpeedyButton orderId={order.id} />
+                <>
+                  {(order.courier ?? 'speedy') === 'econt' ? (
+                    <ShipWithEcontButton orderId={order.id} />
+                  ) : (
+                    <ShipWithSpeedyButton orderId={order.id} />
+                  )}
+                  <Button
+                    variant="outline"
+                    render={
+                      <a
+                        href={`/api/admin/packing-slip/${order.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    }
+                  >
+                    Печат packing slip
+                  </Button>
+                </>
               )}
               {order.status === 'shipped' && order.speedy_parcel_id && (
                 <Button
@@ -207,7 +240,35 @@ export default async function OrderDetailPage({
                     />
                   }
                 >
-                  Принтирай етикет
+                  Принтирай Speedy етикет
+                </Button>
+              )}
+              {order.status === 'shipped' && order.econt_label_url && (
+                <Button
+                  variant="outline"
+                  render={
+                    <a
+                      href={order.econt_label_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  }
+                >
+                  Принтирай Еконт етикет
+                </Button>
+              )}
+              {order.status === 'shipped' && (
+                <Button
+                  variant="outline"
+                  render={
+                    <a
+                      href={`/api/admin/packing-slip/${order.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  }
+                >
+                  Печат packing slip
                 </Button>
               )}
               {(order.status === 'delivered' || order.status === 'cancelled') && (
