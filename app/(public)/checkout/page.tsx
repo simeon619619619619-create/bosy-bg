@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ShoppingBag, ArrowLeft, Home, Building2 } from 'lucide-react'
+import { ShoppingBag, ArrowLeft, Home, Building2, Package } from 'lucide-react'
 import { useCart } from '@/components/public/cart-provider'
 import { createOrder, lookupCashback, getCashbackPercent } from './actions'
 import { validatePromoCode } from '@/app/admin/promo-codes/actions'
 import { toEur } from '@/lib/currency'
 import { SpeedyOfficeSelector } from '@/components/checkout/speedy-office-selector'
+import { BoxNowLockerSelector } from '@/components/checkout/boxnow-locker-selector'
 
 interface SelectedOffice {
   id: number
@@ -45,8 +46,14 @@ export default function CheckoutPage() {
   const [promoApplied, setPromoApplied] = useState<{ code: string; discount_type: string; discount_value: number } | null>(null)
   const [promoError, setPromoError] = useState<string | null>(null)
   const [promoLoading, setPromoLoading] = useState(false)
-  const [deliveryType, setDeliveryType] = useState<'address' | 'office'>('address')
+  const [deliveryType, setDeliveryType] = useState<'address' | 'office' | 'boxnow'>('address')
   const [selectedOffice, setSelectedOffice] = useState<SelectedOffice | null>(null)
+  const [selectedBoxNow, setSelectedBoxNow] = useState<{
+    id: string
+    name: string
+    address: string
+    postalCode: string
+  } | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
   // Auto-fill from logged-in customer
@@ -177,6 +184,15 @@ export default function CheckoutPage() {
         setLoading(false)
         return
       }
+    } else if (deliveryType === 'boxnow') {
+      if (!selectedBoxNow) {
+        setError('Моля, изберете автомат на BoxNow')
+        setLoading(false)
+        return
+      }
+      city = `BoxNow: ${selectedBoxNow.name}`
+      address = selectedBoxNow.address
+      postalCode = selectedBoxNow.postalCode
     } else {
       if (!selectedOffice) {
         setError('Моля, изберете офис на Speedy за доставка')
@@ -204,6 +220,7 @@ export default function CheckoutPage() {
         cashbackUsed: cashbackApplied,
         deliveryType,
         speedyOfficeId: officeId,
+        boxnowLockerId: selectedBoxNow?.id ?? null,
         items: items.map((i) => ({
           id: i.id,
           name: i.name,
@@ -356,7 +373,7 @@ export default function CheckoutPage() {
             </h2>
 
             {/* Delivery type radio */}
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <button
                 type="button"
                 onClick={() => setDeliveryType('address')}
@@ -402,9 +419,32 @@ export default function CheckoutPage() {
                   </p>
                 </div>
               </button>
+
+              <button
+                type="button"
+                onClick={() => setDeliveryType('boxnow')}
+                className="flex items-center gap-3 rounded-lg border-2 p-4 text-left transition-all"
+                style={{
+                  borderColor: deliveryType === 'boxnow' ? '#4caf50' : '#e5e7eb',
+                  backgroundColor: deliveryType === 'boxnow' ? '#e8f5e9' : '#fff',
+                }}
+              >
+                <Package
+                  className="h-5 w-5 shrink-0"
+                  style={{ color: deliveryType === 'boxnow' ? '#4caf50' : '#9ca3af' }}
+                />
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: '#111' }}>
+                    До автомат BoxNow
+                  </p>
+                  <p className="text-xs" style={{ color: '#6b7280' }}>
+                    24/7 вземане
+                  </p>
+                </div>
+              </button>
             </div>
 
-            {/* Address fields OR office selector */}
+            {/* Address fields / office selector / BoxNow */}
             {deliveryType === 'address' ? (
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>
@@ -449,6 +489,13 @@ export default function CheckoutPage() {
                     key={`street-${prefilled?.street ?? ''}`}
                   />
                 </div>
+              </div>
+            ) : deliveryType === 'boxnow' ? (
+              <div className="mt-5">
+                <BoxNowLockerSelector
+                  onSelect={setSelectedBoxNow}
+                  selected={selectedBoxNow}
+                />
               </div>
             ) : (
               <div className="mt-5">
