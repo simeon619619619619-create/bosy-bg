@@ -1,11 +1,11 @@
 'use server'
 
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { sendOrderConfirmation } from '@/lib/resend/client'
 
 export async function confirmOrder(id: string) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
 
   const { data: order, error: fetchError } = await supabase
     .from('orders')
@@ -41,7 +41,7 @@ export async function confirmOrder(id: string) {
 }
 
 export async function cancelOrder(id: string) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
 
   const { error } = await supabase
     .from('orders')
@@ -73,7 +73,7 @@ export async function bulkCancelOrders(ids: string[]) {
 }
 
 export async function updateOrderNotes(id: string, notes: string) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
 
   const { error } = await supabase
     .from('orders')

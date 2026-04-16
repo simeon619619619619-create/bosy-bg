@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 
 function esc(s: unknown): string {
   return String(s ?? '')
@@ -26,7 +26,7 @@ export async function GET(
   const dayStart = new Date(`${dateStr}T00:00:00+03:00`)
   const dayEnd = new Date(`${dateStr}T23:59:59+03:00`)
 
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
   const { data: orders } = await supabase
     .from('orders')
     .select('id, order_number, customer_id, total, items, speedy_tracking_number, econt_tracking_number, courier, updated_at, notes, customers(name, phone)')
