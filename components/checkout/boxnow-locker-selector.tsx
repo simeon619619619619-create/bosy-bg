@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useId } from 'react'
+import { MapPin } from 'lucide-react'
 
 interface SelectedLocker {
   id: string
@@ -21,9 +22,10 @@ declare global {
 }
 
 export function BoxNowLockerSelector({ onSelect, selected }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [loaded, setLoaded] = useState(false)
-  const [showWidget, setShowWidget] = useState(false)
+  const [city, setCity] = useState('')
+  const [scriptLoaded, setScriptLoaded] = useState(false)
+  const uniqueId = useId()
+  const btnClass = `boxnow-btn-${uniqueId.replace(/:/g, '')}`
 
   const handleSelect = useCallback(
     (data: {
@@ -38,87 +40,107 @@ export function BoxNowLockerSelector({ onSelect, selected }: Props) {
         address: data.boxnowLockerAddressLine1 ?? '',
         postalCode: data.boxnowLockerPostalCode ?? '',
       })
-      setShowWidget(false)
     },
     [onSelect]
   )
 
   useEffect(() => {
-    if (!showWidget) return
     if (typeof window === 'undefined') return
 
     window._bn_map_widget_config = {
-      parentElement: '#boxnow-map-container',
-      type: 'inline',
+      parentElement: '#boxnow-map-root',
+      type: 'popup',
+      gps: true,
+      autoclose: true,
+      zip: city.trim() || undefined,
+      buttonSelector: `.${btnClass}`,
       afterSelect: handleSelect,
     }
 
-    if (loaded) return
+    if (scriptLoaded) return
+
+    const existing = document.querySelector('script[src*="boxnow"]')
+    if (existing) {
+      setScriptLoaded(true)
+      return
+    }
 
     const script = document.createElement('script')
     script.src = 'https://widget-cdn.boxnow.bg/map-widget/client/v5.js'
     script.async = true
     script.defer = true
-    script.onload = () => setLoaded(true)
+    script.onload = () => setScriptLoaded(true)
     document.head.appendChild(script)
+  }, [city, scriptLoaded, handleSelect, btnClass])
 
-    return () => {}
-  }, [showWidget, loaded, handleSelect])
+  // Re-apply config when city changes (so zip updates for map centering)
+  useEffect(() => {
+    if (!scriptLoaded || typeof window === 'undefined') return
+    window._bn_map_widget_config = {
+      ...(window._bn_map_widget_config ?? {}),
+      zip: city.trim() || undefined,
+    }
+  }, [city, scriptLoaded])
+
+  const inputStyle: React.CSSProperties = {
+    backgroundColor: '#f5f5f5',
+    borderColor: '#d1d5db',
+    color: '#111',
+  }
 
   return (
     <div>
-      {selected ? (
+      {/* City / address field for map centering */}
+      <label
+        className="mb-1.5 block text-xs font-medium"
+        style={{ color: '#4a3728' }}
+      >
+        Населено място / адрес
+      </label>
+      <input
+        type="text"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        placeholder="напр. София, Пловдив, Бургас..."
+        className="w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition-colors focus:border-[#4caf50]"
+        style={inputStyle}
+      />
+      <p className="mt-1 text-[11px]" style={{ color: '#9ca3af' }}>
+        Въведете града си за да намерим автомати наблизо
+      </p>
+
+      {/* Open map button */}
+      <button
+        type="button"
+        className={`${btnClass} mt-3 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90`}
+        style={{ background: '#4caf50' }}
+      >
+        <MapPin className="h-4 w-4" />
+        Избери автомат от картата
+      </button>
+
+      {/* Hidden root for BoxNow widget */}
+      <div id="boxnow-map-root" />
+
+      {/* Selected locker info */}
+      {selected && (
         <div
-          className="rounded-lg border p-3 text-xs"
+          className="mt-3 rounded-lg border p-3 text-xs"
           style={{
             borderColor: '#4caf50',
-            backgroundColor: '#f0fdf4',
-            color: '#166534',
+            backgroundColor: '#e8f5e9',
+            color: '#1b5e20',
           }}
         >
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <p className="font-semibold">
-                Избран автомат: {selected.name}
-              </p>
-              {selected.address && (
-                <p className="mt-0.5">{selected.address}</p>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setShowWidget(true)
-              }}
-              className="shrink-0 text-xs font-semibold underline"
-              style={{ color: '#4caf50' }}
-            >
-              Промени
-            </button>
-          </div>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setShowWidget(true)}
-          className="w-full rounded-lg border-2 border-dashed px-4 py-4 text-center text-sm font-semibold transition-colors hover:border-[#4caf50] hover:bg-[#f0fdf4]"
-          style={{ borderColor: '#d1d5db', color: '#333' }}
-        >
-          Избери автомат на BoxNow
-        </button>
-      )}
-
-      {showWidget && (
-        <div className="mt-3">
-          <div
-            id="boxnow-map-container"
-            ref={containerRef}
-            className="overflow-hidden rounded-lg border"
-            style={{
-              height: 420,
-              borderColor: '#d1d5db',
-            }}
-          />
+          <p className="font-semibold">
+            Избран автомат: {selected.name}
+          </p>
+          {selected.address && (
+            <p className="mt-0.5">{selected.address}</p>
+          )}
+          {selected.postalCode && (
+            <p className="mt-0.5">Пощ. код: {selected.postalCode}</p>
+          )}
         </div>
       )}
     </div>
