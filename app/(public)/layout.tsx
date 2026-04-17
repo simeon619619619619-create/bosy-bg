@@ -63,13 +63,13 @@ export const metadata: Metadata = {
     title: 'BOSY — The Smart Pleasure',
     description:
       'Здравословни лакомства без добавена захар, без глутен, на растителна основа.',
-    images: [{ url: '/og-homepage.jpg?v=2', width: 1200, height: 630, alt: 'BOSY — The Smart Pleasure' }],
+    images: [{ url: '/og-homepage-v3.jpg', width: 1200, height: 630, alt: 'BOSY — The Smart Pleasure' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'BOSY — The Smart Pleasure',
     description: 'Здравословни лакомства без добавена захар.',
-    images: ['/og-homepage.jpg?v=2'],
+    images: ['/og-homepage-v3.jpg'],
   },
 }
 

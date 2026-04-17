@@ -13,7 +13,7 @@ function absoluteUrl(url: string): string {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const heroImage = 'https://bosy.bg/og-homepage.jpg?v=2'
+  const heroImage = 'https://bosy.bg/og-homepage-v3.jpg'
 
   return {
     title: 'BOSY — The Smart Pleasure | Здравословни лакомства без захар',
