@@ -13,26 +13,7 @@ function absoluteUrl(url: string): string {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  let heroImage = 'https://bosy.bg/og-homepage.jpg'
-
-  try {
-    if (HERO_SLUGS.length > 0) {
-      const supabase = createPublicSupabaseClient()
-      const { data } = await supabase
-        .from('products')
-        .select('images')
-        .eq('is_active', true)
-        .eq('slug', HERO_SLUGS[0])
-        .single()
-
-      const productImage = data?.images?.[0]
-      if (productImage) {
-        heroImage = absoluteUrl(productImage)
-      }
-    }
-  } catch {
-    // Fallback to static hero image
-  }
+  const heroImage = 'https://bosy.bg/og-homepage.jpg'
 
   return {
     title: 'BOSY — The Smart Pleasure | Здравословни лакомства без захар',
