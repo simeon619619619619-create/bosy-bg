@@ -24,7 +24,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://bosy.bg'),
   title: {
-    default: 'BOSY — Healthy Kitchen | Здравословни лакомства без захар',
+    default: 'BOSY — The Smart Pleasure | Здравословни лакомства без захар',
     template: '%s | BOSY',
   },
   description:
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     'колагенова напитка',
     'фитнес снак',
   ],
-  applicationName: 'BOSY — Healthy Kitchen',
+  applicationName: 'BOSY — The Smart Pleasure',
   authors: [{ name: 'BOSY' }],
   robots: {
     index: true,
@@ -58,18 +58,18 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     url: 'https://bosy.bg',
-    siteName: 'BOSY — Healthy Kitchen',
+    siteName: 'BOSY — The Smart Pleasure',
     locale: 'bg_BG',
-    title: 'BOSY — Healthy Kitchen',
+    title: 'BOSY — The Smart Pleasure',
     description:
       'Здравословни лакомства без добавена захар, без глутен, на растителна основа.',
-    images: [{ url: '/hero-banner.jpg', width: 1200, height: 630, alt: 'BOSY' }],
+    images: [{ url: '/og-homepage.jpg?v=2', width: 1200, height: 630, alt: 'BOSY — The Smart Pleasure' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BOSY — Healthy Kitchen',
+    title: 'BOSY — The Smart Pleasure',
     description: 'Здравословни лакомства без добавена захар.',
-    images: ['/hero-banner.jpg'],
+    images: ['/og-homepage.jpg?v=2'],
   },
 }
 
@@ -77,7 +77,7 @@ const organizationLd = {
   '@context': 'https://schema.org',
   '@type': ['Organization', 'FoodEstablishment'],
   '@id': 'https://bosy.bg/#organization',
-  name: 'BOSY — Healthy Kitchen',
+  name: 'BOSY — The Smart Pleasure',
   alternateName: 'BOSY',
   legalName: 'Боси Хелти ООД',
   url: 'https://bosy.bg',
@@ -119,7 +119,7 @@ const websiteLd = {
   '@type': 'WebSite',
   '@id': 'https://bosy.bg/#website',
   url: 'https://bosy.bg',
-  name: 'BOSY — Healthy Kitchen',
+  name: 'BOSY — The Smart Pleasure',
   inLanguage: 'bg-BG',
   publisher: { '@id': 'https://bosy.bg/#organization' },
   potentialAction: {
