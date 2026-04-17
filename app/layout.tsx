@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'BOSY — Healthy Kitchen',
+    default: 'BOSY — The Smart Pleasure',
     template: '%s | BOSY',
   },
-  description: 'BOSY Healthy Kitchen — здравословни лакомства без добавена захар и глутен. Доставка в цяла България.',
+  description: 'BOSY — The Smart Pleasure. Здравословни лакомства без добавена захар и глутен. Доставка в цяла България.',
   robots: { index: false },
 };
 

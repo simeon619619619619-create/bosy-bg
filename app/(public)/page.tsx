@@ -13,7 +13,7 @@ function absoluteUrl(url: string): string {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  let heroImage = 'https://bosy.bg/hero-banner.jpg'
+  let heroImage = 'https://bosy.bg/og-homepage.jpg'
 
   try {
     if (HERO_SLUGS.length > 0) {
@@ -35,16 +35,16 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: 'BOSY — Healthy Kitchen | Здравословни лакомства без захар',
+    title: 'BOSY — The Smart Pleasure | Здравословни лакомства без захар',
     description:
       'BOSY Healthy Kitchen — протеинови барове, топчета и напитки без добавена захар, без глутен, на растителна основа. Здравословни лакомства с чист състав. Доставка в цяла България.',
     alternates: { canonical: '/' },
     openGraph: {
       type: 'website',
       url: 'https://bosy.bg',
-      siteName: 'BOSY — Healthy Kitchen',
+      siteName: 'BOSY — The Smart Pleasure',
       locale: 'bg_BG',
-      title: 'BOSY — Healthy Kitchen | Здравословни лакомства без захар',
+      title: 'BOSY — The Smart Pleasure | Здравословни лакомства без захар',
       description:
         'Протеинови барове, топчета и напитки без добавена захар и без глутен. Чист състав, страхотен вкус.',
       images: [
@@ -52,13 +52,13 @@ export async function generateMetadata(): Promise<Metadata> {
           url: heroImage,
           width: 1200,
           height: 630,
-          alt: 'BOSY Healthy Kitchen',
+          alt: 'BOSY — The Smart Pleasure',
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'BOSY — Healthy Kitchen',
+      title: 'BOSY — The Smart Pleasure',
       description: 'Здравословни лакомства без добавена захар, без глутен.',
       images: [heroImage],
     },
