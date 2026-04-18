@@ -64,24 +64,24 @@ export function NewsletterPopup() {
                 fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
               }}
             >
-              Знаеш ли за предимствата?
+              Като член получаваш достъп до:
             </p>
             <ul className="mt-4 text-left text-sm space-y-3" style={{ color: '#555' }}>
               <li className="flex items-start gap-2">
                 <span style={{ color: '#c77dba', fontWeight: 'bold', fontSize: 18, lineHeight: '20px' }}>&#10003;</span>
-                <span>Събирай <strong>точки за лоялност</strong> с всяка поръчка</span>
+                <span><strong>Безплатни спортни събития</strong> с общността</span>
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: '#c77dba', fontWeight: 'bold', fontSize: 18, lineHeight: '20px' }}>&#10003;</span>
-                <span><strong>Безплатна доставка</strong> за поръчки над 69.99€</span>
+                <span><strong>Практики по себеопознаване</strong> и личностно развитие</span>
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: '#c77dba', fontWeight: 'bold', fontSize: 18, lineHeight: '20px' }}>&#10003;</span>
-                <span><strong>Ранен достъп</strong> до нови продукти</span>
+                <span><strong>Ексклузивни отстъпки</strong> и ранен достъп до нови продукти</span>
               </li>
               <li className="flex items-start gap-2">
                 <span style={{ color: '#c77dba', fontWeight: 'bold', fontSize: 18, lineHeight: '20px' }}>&#10003;</span>
-                <span><strong>Подарък</strong> за рождения ти ден</span>
+                <span><strong>Още бонуси</strong> — подаръци, безплатна доставка и изненади</span>
               </li>
             </ul>
             <div className="mt-5">
