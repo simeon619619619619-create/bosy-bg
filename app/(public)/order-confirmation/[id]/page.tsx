@@ -39,6 +39,10 @@ export default async function OrderConfirmationPage({
   const customer = order.customers as { name: string; email: string | null; address: Record<string, unknown> | null } | null
   const cashbackEarned = Math.round(total * 5) / 100 // 5% cashback
 
+  // Check if customer has an auth account (has cashback_balance means registered)
+  const cashbackBalance = (customer?.address as Record<string, number> | null)?.cashback_balance ?? 0
+  const hasAccount = customer?.email && cashbackBalance > 0
+
   return (
     <div
       className="flex flex-col items-center justify-center px-4 py-16"
@@ -118,13 +122,46 @@ export default async function OrderConfirmationPage({
           </div>
         </div>
 
-        {/* Cashback earned */}
-        {cashbackEarned > 0 && (
+        {/* Points / Registration CTA */}
+        {hasAccount ? (
           <div
-            className="mt-4 rounded-lg p-3 text-sm font-medium"
-            style={{ background: '#f0fce8', color: '#3d7a0a', border: '1px solid #d4edbc' }}
+            className="mt-4 rounded-xl p-5 text-center"
+            style={{ background: '#f3e5f0', border: '1px solid #e8cce3' }}
           >
-            Спечелихте {toEur(cashbackEarned).toFixed(2)} &euro; кешбак за следващата поръчка!
+            <p className="text-sm font-bold" style={{ color: '#333' }}>
+              Спечелихте {toEur(cashbackEarned).toFixed(2)}&euro; точки!
+            </p>
+            <p className="mt-1 text-xs" style={{ color: '#666' }}>
+              Общ баланс: <strong>{toEur(cashbackBalance + cashbackEarned).toFixed(2)}&euro;</strong> — използвай при следващата поръчка.
+            </p>
+          </div>
+        ) : (
+          <div
+            className="mt-4 rounded-xl p-5 text-center"
+            style={{ background: '#f3e5f0', border: '1px solid #e8cce3' }}
+          >
+            <p
+              className="text-lg font-extrabold"
+              style={{ color: '#c77dba', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
+            >
+              {toEur(cashbackEarned).toFixed(2)}&euro; точки те чакат!
+            </p>
+            <p className="mt-2 text-sm" style={{ color: '#555' }}>
+              Направи си безплатна регистрация и започни да трупаш точки с всяка поръчка.
+              Използвай ги за отстъпки когато пожелаеш.
+            </p>
+            <div className="mt-3 flex flex-col gap-2">
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+                style={{ background: '#c77dba' }}
+              >
+                Регистрирай се и вземи точките
+              </Link>
+              <p className="text-xs" style={{ color: '#aaa' }}>
+                5% от всяка поръчка се връща като точки в акаунта ти
+              </p>
+            </div>
           </div>
         )}
 
@@ -132,7 +169,7 @@ export default async function OrderConfirmationPage({
         <Link
           href="/shop"
           className="mt-6 inline-flex items-center justify-center rounded-lg px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: '#c77dba' }}
+          style={{ background: '#333' }}
         >
           Продължи пазаруването
         </Link>
