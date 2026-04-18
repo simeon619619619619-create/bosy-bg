@@ -60,19 +60,13 @@ export function NewsletterPopup() {
           за целия април
         </p>
         <p className="mt-3 text-sm" style={{ color: '#666' }}>
-          Направи си регистрация и получи 20% отстъпка за всички продукти до края на месеца.
-        </p>
-        <p
-          className="mt-4 inline-block rounded-lg px-5 py-2 text-lg font-extrabold tracking-widest text-white"
-          style={{ background: '#c77dba' }}
-        >
-          WELCOME20
+          Направи си безплатна регистрация и ще получиш промо код за 20% отстъпка на имейла си.
         </p>
         <div className="mt-5">
           <a
             href="/register"
             className="inline-block w-full rounded-lg py-3 text-sm font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-            style={{ background: '#333' }}
+            style={{ background: '#c77dba' }}
           >
             Регистрирай се
           </a>
