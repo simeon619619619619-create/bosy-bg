@@ -7,6 +7,7 @@ export function NewsletterPopup() {
   const [show, setShow] = useState(false)
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -26,6 +27,7 @@ export function NewsletterPopup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
+    setError('')
 
     try {
       const res = await fetch('/api/customer/register', {
@@ -36,10 +38,11 @@ export function NewsletterPopup() {
       if (res.ok) {
         setSubmitted(true)
         localStorage.setItem('newsletter-subscribed', '1')
-        setTimeout(() => setShow(false), 3000)
+      } else {
+        setError('Нещо се обърка. Опитай отново.')
       }
     } catch {
-      // silently fail
+      setError('Нещо се обърка. Опитай отново.')
     }
   }
 
@@ -65,13 +68,29 @@ export function NewsletterPopup() {
         </button>
 
         {submitted ? (
-          <div className="py-6">
+          <div className="py-4">
             <p className="text-2xl font-bold" style={{ color: '#333' }}>
-              Благодарим!
+              Твоят код:
             </p>
-            <p className="mt-2 text-sm" style={{ color: '#666' }}>
-              Ще получиш промоции и новини на имейла си.
+            <p
+              className="mt-4 inline-block rounded-lg px-6 py-3 text-2xl font-extrabold tracking-widest text-white"
+              style={{ background: '#c77dba' }}
+            >
+              WELCOME20
             </p>
+            <p className="mt-4 text-sm" style={{ color: '#666' }}>
+              Използвай го при поръчка за 20% отстъпка.
+            </p>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText('WELCOME20')
+                handleClose()
+              }}
+              className="mt-4 rounded-lg px-6 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
+              style={{ background: '#f3e5f0', color: '#c77dba' }}
+            >
+              Копирай и затвори
+            </button>
           </div>
         ) : (
           <>
@@ -82,10 +101,10 @@ export function NewsletterPopup() {
                 fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
               }}
             >
-              Вземи 10% отстъпка
+              Вземи 20% отстъпка
             </p>
             <p className="mt-2 text-sm" style={{ color: '#666' }}>
-              Запиши се за нашия бюлетин и получи код за 10% при първата поръчка.
+              Запиши се и получи код за 20% при първата поръчка.
             </p>
             <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">
               <input
@@ -106,8 +125,11 @@ export function NewsletterPopup() {
                 className="w-full rounded-lg py-3 text-sm font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-90"
                 style={{ background: '#c77dba' }}
               >
-                Искам 10% отстъпка
+                Искам 20% отстъпка
               </button>
+              {error && (
+                <p className="text-xs" style={{ color: '#e53e3e' }}>{error}</p>
+              )}
             </form>
             <p className="mt-3 text-xs" style={{ color: '#aaa' }}>
               Без спам. Отписване по всяко време.

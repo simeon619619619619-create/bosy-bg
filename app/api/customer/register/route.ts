@@ -3,9 +3,13 @@ import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: Request) {
   try {
-    const { name, email, phone } = await request.json()
+    const { name, email, phone, source } = await request.json()
 
-    if (!name || !email) {
+    if (!email) {
+      return NextResponse.json({ error: 'Липсва имейл.' }, { status: 400 })
+    }
+
+    if (!name && source !== 'newsletter-popup') {
       return NextResponse.json({ error: 'Липсват задължителни полета.' }, { status: 400 })
     }
 
@@ -28,10 +32,10 @@ export async function POST(request: Request) {
 
     // Create new customer record
     const { error: insertError } = await supabase.from('customers').insert({
-      name,
+      name: name || email.split('@')[0],
       email: email.toLowerCase().trim(),
       phone: phone || null,
-      address: { cashback_balance: 0 },
+      address: { cashback_balance: 0, source: source || 'register' },
       total_orders: 0,
       total_spent: 0,
     })
