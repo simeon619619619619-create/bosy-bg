@@ -5,15 +5,11 @@ import { X } from 'lucide-react'
 
 export function NewsletterPopup() {
   const [show, setShow] = useState(false)
-  const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState('')
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const dismissed = sessionStorage.getItem('newsletter-dismissed')
-    const subscribed = localStorage.getItem('newsletter-subscribed')
-    if (dismissed || subscribed) return
+    const dismissed = sessionStorage.getItem('promo-dismissed')
+    if (dismissed) return
 
     const timer = setTimeout(() => setShow(true), 15000)
     return () => clearTimeout(timer)
@@ -21,30 +17,7 @@ export function NewsletterPopup() {
 
   const handleClose = () => {
     setShow(false)
-    sessionStorage.setItem('newsletter-dismissed', '1')
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email) return
-    setError('')
-
-    try {
-      const res = await fetch('/api/customer/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'newsletter-popup' }),
-      })
-      if (res.ok) {
-        setSubmitted(true)
-        localStorage.setItem('newsletter-subscribed', '1')
-        setTimeout(() => setShow(false), 3000)
-      } else {
-        setError('Нещо се обърка. Опитай отново.')
-      }
-    } catch {
-      setError('Нещо се обърка. Опитай отново.')
-    }
+    sessionStorage.setItem('promo-dismissed', '1')
   }
 
   if (!show) return null
@@ -68,59 +41,49 @@ export function NewsletterPopup() {
           <X size={20} />
         </button>
 
-        {submitted ? (
-          <div className="py-6">
-            <p className="text-2xl font-bold" style={{ color: '#333' }}>
-              Благодарим!
-            </p>
-            <p className="mt-2 text-sm" style={{ color: '#666' }}>
-              Ще получаваш новини и промоции на имейла си.
-            </p>
-          </div>
-        ) : (
-          <>
-            <p
-              className="text-2xl font-extrabold"
-              style={{
-                color: '#333',
-                fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
-              }}
-            >
-              Бъди в крак с BOSY
-            </p>
-            <p className="mt-2 text-sm" style={{ color: '#666' }}>
-              Запиши се за новини, промоции и нови продукти.
-            </p>
-            <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">
-              <input
-                type="email"
-                required
-                placeholder="Твоят имейл"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border px-4 py-3 text-sm outline-none focus:ring-2"
-                style={{
-                  borderColor: '#e5e5e5',
-                  color: '#333',
-                  background: '#fafafa',
-                }}
-              />
-              <button
-                type="submit"
-                className="w-full rounded-lg py-3 text-sm font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-90"
-                style={{ background: '#c77dba' }}
-              >
-                Запиши се
-              </button>
-              {error && (
-                <p className="text-xs" style={{ color: '#e53e3e' }}>{error}</p>
-              )}
-            </form>
-            <p className="mt-3 text-xs" style={{ color: '#aaa' }}>
-              Без спам. Отписване по всяко време.
-            </p>
-          </>
-        )}
+        <p
+          className="text-3xl font-extrabold"
+          style={{
+            color: '#c77dba',
+            fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+          }}
+        >
+          -20%
+        </p>
+        <p
+          className="mt-2 text-xl font-bold"
+          style={{
+            color: '#333',
+            fontFamily: 'var(--font-montserrat), Montserrat, sans-serif',
+          }}
+        >
+          за целия април
+        </p>
+        <p className="mt-3 text-sm" style={{ color: '#666' }}>
+          Направи си регистрация и получи 20% отстъпка за всички продукти до края на месеца.
+        </p>
+        <p
+          className="mt-4 inline-block rounded-lg px-5 py-2 text-lg font-extrabold tracking-widest text-white"
+          style={{ background: '#c77dba' }}
+        >
+          WELCOME20
+        </p>
+        <div className="mt-5">
+          <a
+            href="/register"
+            className="inline-block w-full rounded-lg py-3 text-sm font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-90"
+            style={{ background: '#333' }}
+          >
+            Регистрирай се
+          </a>
+        </div>
+        <button
+          onClick={handleClose}
+          className="mt-3 text-xs underline"
+          style={{ color: '#aaa' }}
+        >
+          Не, благодаря
+        </button>
       </div>
     </div>
   )
