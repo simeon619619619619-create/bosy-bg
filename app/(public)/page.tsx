@@ -111,23 +111,45 @@ const BADGES = [
 const TESTIMONIALS = [
   {
     name: 'Gala Chalkova',
+    photo: '/images/wp/ladyygala-300x300.jpg',
     text:
       'Балансирани вкусове, качествени съставки и невероятно удоволствие без излишна захар. BOSY топчетата са моят фаворит за здравословно лакомство!',
   },
   {
     name: 'Svetoslav Todorov',
+    photo: '/images/wp/st-300x300.jpg',
     text:
       'След тренировка BOSY топчетата са перфектният снак — бърз, вкусен и с качествен протеин. Препоръчвам ги на всеки активен човек!',
   },
   {
     name: 'Katerina Katrandzieva',
+    photo: '/images/wp/unnamed-300x268.jpg',
     text:
       'Като веган, рядко намирам толкова вкусни десерти на растителна основа. BOSY продуктите са истинско откритие за мен!',
   },
   {
     name: 'Elena Boyanova',
+    photo: '/images/wp/elena-212x300.jpeg',
     text:
       'Нула захар и пълен вкус! Най-накрая мога да се наслаждавам на сладко без угризения. BOSY промениха начина, по който гледам на здравословното хранене.',
+  },
+  {
+    name: 'Victoria Kapitonova',
+    photo: '/images/wp/BOSY_SQUARE_1-optimized-300x300.png',
+    text:
+      'Следя калориите си и BOSY топчетата перфектно се вписват в хранителния ми план. Вкусни, удобни и с ясна хранителна информация!',
+  },
+  {
+    name: 'Teodora Todorova',
+    photo: '/images/wp/4-248x300.jpg',
+    text:
+      'Здравословното хапване никога не е било толкова лесно и вкусно. BOSY са моят go-to снак за офиса и за вкъщи!',
+  },
+  {
+    name: 'Dzhuliyana Gani',
+    photo: '/images/wp/BOSY_SQUARE_2-optimized-300x300.png',
+    text:
+      'Преди и след тренировка - BOSY винаги ме зареждат с енергия. Чист състав, страхотен вкус и удобна опаковка!',
   },
 ]
 
@@ -455,41 +477,34 @@ export default async function HomePage() {
             Какво казват клиентите
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TESTIMONIALS.map((t) => {
-              const initials = t.name
-                .split(' ')
-                .map((w) => w[0])
-                .join('')
-              return (
-                <figure
-                  key={t.name}
-                  className="rounded-2xl p-6 flex flex-col items-center text-center"
-                  style={{
-                    background: '#fdf5f0',
-                    border: '1px solid #f3e6dc',
-                  }}
+            {TESTIMONIALS.map((t) => (
+              <figure
+                key={t.name}
+                className="rounded-2xl p-6 flex flex-col items-center text-center"
+                style={{
+                  background: '#fdf5f0',
+                  border: '1px solid #f3e6dc',
+                }}
+              >
+                <img
+                  src={t.photo}
+                  alt={t.name}
+                  className="mb-4 h-16 w-16 rounded-full object-cover"
+                />
+                <figcaption
+                  className="mb-3 text-sm font-bold"
+                  style={{ color: '#333' }}
                 >
-                  <div
-                    className="mb-4 flex h-14 w-14 items-center justify-center rounded-full text-base font-bold text-white"
-                    style={{ background: '#c77dba' }}
-                  >
-                    {initials}
-                  </div>
-                  <figcaption
-                    className="mb-3 text-sm font-bold"
-                    style={{ color: '#333' }}
-                  >
-                    {t.name}
-                  </figcaption>
-                  <blockquote
-                    className="text-sm leading-relaxed italic"
-                    style={{ color: '#555' }}
-                  >
-                    &ldquo;{t.text}&rdquo;
-                  </blockquote>
-                </figure>
-              )
-            })}
+                  {t.name}
+                </figcaption>
+                <blockquote
+                  className="text-sm leading-relaxed italic"
+                  style={{ color: '#555' }}
+                >
+                  &ldquo;{t.text}&rdquo;
+                </blockquote>
+              </figure>
+            ))}
           </div>
         </div>
       </section>
