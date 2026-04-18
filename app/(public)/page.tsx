@@ -455,29 +455,41 @@ export default async function HomePage() {
             Какво казват клиентите
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TESTIMONIALS.map((t) => (
-              <figure
-                key={t.name}
-                className="rounded-2xl p-6"
-                style={{
-                  background: '#fdf5f0',
-                  border: '1px solid #f3e6dc',
-                }}
-              >
-                <blockquote
-                  className="mb-4 text-sm leading-relaxed italic"
-                  style={{ color: '#555' }}
+            {TESTIMONIALS.map((t) => {
+              const initials = t.name
+                .split(' ')
+                .map((w) => w[0])
+                .join('')
+              return (
+                <figure
+                  key={t.name}
+                  className="rounded-2xl p-6 flex flex-col items-center text-center"
+                  style={{
+                    background: '#fdf5f0',
+                    border: '1px solid #f3e6dc',
+                  }}
                 >
-                  &quot;{t.text}&quot;
-                </blockquote>
-                <figcaption
-                  className="text-xs font-bold uppercase tracking-wider"
-                  style={{ color: '#c77dba' }}
-                >
-                  — {t.name}
-                </figcaption>
-              </figure>
-            ))}
+                  <div
+                    className="mb-4 flex h-14 w-14 items-center justify-center rounded-full text-base font-bold text-white"
+                    style={{ background: '#c77dba' }}
+                  >
+                    {initials}
+                  </div>
+                  <figcaption
+                    className="mb-3 text-sm font-bold"
+                    style={{ color: '#333' }}
+                  >
+                    {t.name}
+                  </figcaption>
+                  <blockquote
+                    className="text-sm leading-relaxed italic"
+                    style={{ color: '#555' }}
+                  >
+                    &ldquo;{t.text}&rdquo;
+                  </blockquote>
+                </figure>
+              )
+            })}
           </div>
         </div>
       </section>
