@@ -19,6 +19,20 @@ export async function POST(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
+    // Auto-confirm the auth user (skip ugly Supabase verification email)
+    const cleanEmail = email.toLowerCase().trim()
+    const { data: { users: matchedUsers } } = await supabase.auth.admin.listUsers({
+      filter: `email.eq.${cleanEmail}`,
+      page: 1,
+      perPage: 1,
+    })
+    const authUser = matchedUsers?.[0]
+    if (authUser && !authUser.email_confirmed_at) {
+      await supabase.auth.admin.updateUserById(authUser.id, {
+        email_confirm: true,
+      })
+    }
+
     // Check if customer already exists
     const { data: existing } = await supabase
       .from('customers')
