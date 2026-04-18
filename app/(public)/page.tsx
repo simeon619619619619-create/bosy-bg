@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { toEur } from '@/lib/currency'
 import { QuickBuyButton } from '@/components/public/quick-buy-button'
+import { TestimonialsCarousel } from '@/components/public/testimonials-carousel'
 
 function absoluteUrl(url: string): string {
   if (!url) return ''
@@ -476,39 +477,8 @@ export default async function HomePage() {
           >
             Какво казват клиентите
           </h2>
-          {/* Mobile: horizontal scroll carousel */}
-          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 md:hidden" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
-            {TESTIMONIALS.map((t) => (
-              <figure
-                key={t.name}
-                className="rounded-2xl p-5 flex flex-col items-center text-center snap-center shrink-0"
-                style={{
-                  background: '#fdf5f0',
-                  border: '1px solid #f3e6dc',
-                  width: '75vw',
-                  maxWidth: '300px',
-                }}
-              >
-                <img
-                  src={t.photo}
-                  alt={t.name}
-                  className="mb-3 h-14 w-14 rounded-full object-cover"
-                />
-                <figcaption
-                  className="mb-2 text-sm font-bold"
-                  style={{ color: '#333' }}
-                >
-                  {t.name}
-                </figcaption>
-                <blockquote
-                  className="text-xs leading-relaxed italic"
-                  style={{ color: '#555' }}
-                >
-                  &ldquo;{t.text}&rdquo;
-                </blockquote>
-              </figure>
-            ))}
-          </div>
+          {/* Mobile: auto-scrolling carousel */}
+          <TestimonialsCarousel items={TESTIMONIALS} />
           {/* Desktop: grid */}
           <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {TESTIMONIALS.map((t) => (
