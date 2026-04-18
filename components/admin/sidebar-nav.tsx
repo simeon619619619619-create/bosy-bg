@@ -11,6 +11,7 @@ import {
   BarChart3,
   Mail,
   Image,
+  Home,
   Truck,
   Settings,
   type LucideIcon,
@@ -57,7 +58,10 @@ const navSections: NavSection[] = [
   },
   {
     title: 'Съдържание',
-    items: [{ label: 'Банери & Блог', href: '/admin/content', icon: Image }],
+    items: [
+      { label: 'Начална страница', href: '/admin/homepage', icon: Home },
+      { label: 'Банери & Блог', href: '/admin/content', icon: Image },
+    ],
     roles: ['manager', 'admin'],
   },
   {

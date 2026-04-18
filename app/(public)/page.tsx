@@ -84,29 +84,42 @@ async function getHeroProducts(): Promise<Product[]> {
   }
 }
 
-// Hand-picked homepage products: mix of drinks, multi-packs, bars, creams
-const FEATURED_SLUGS = [
+// Default featured slugs — overridden by admin settings if available
+const DEFAULT_FEATURED_SLUGS = [
+  'protein-cream-macadamia',
   'lychee-blueberry',
   'dragon-fruit',
   'bubbles-lemongrass-ginger-green-tea',
   'fitbody-4x4',
   'protein-bar-box',
   'protein-crispy-balls-x26',
-  'protein-cream-macadamia',
   'africa-balls-x-16',
 ]
 
 async function getFeaturedProducts(): Promise<Product[]> {
   try {
     const supabase = createPublicSupabaseClient()
+
+    // Check if admin has set custom featured products
+    const { data: setting } = await supabase
+      .from('content_blocks')
+      .select('body')
+      .eq('type', 'setting')
+      .eq('title', 'homepage_featured_slugs')
+      .single()
+
+    const slugs: string[] = setting?.body
+      ? JSON.parse(setting.body)
+      : DEFAULT_FEATURED_SLUGS
+
     const { data } = await supabase
       .from('products')
       .select('id, name, slug, price, compare_price, images, category, description')
       .eq('is_active', true)
-      .in('slug', FEATURED_SLUGS)
+      .in('slug', slugs)
     const rows = (data as Product[] | null) ?? []
     return rows.sort(
-      (a, b) => FEATURED_SLUGS.indexOf(a.slug) - FEATURED_SLUGS.indexOf(b.slug),
+      (a, b) => slugs.indexOf(a.slug) - slugs.indexOf(b.slug),
     )
   } catch {
     return []
