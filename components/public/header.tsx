@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { href: '/about', label: 'За нас' },
   { href: '/blog', label: 'Блог' },
   { href: '/contacts', label: 'Контакти' },
+  { href: '/reviews', label: 'Отзиви' },
   { href: '/bosy-club', label: 'BOSY Club' },
 ]
 

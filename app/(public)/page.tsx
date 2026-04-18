@@ -195,6 +195,9 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productListLd) }}
       />
 
+      {/* H1 — visually hidden for SEO, hero image is the visual hero */}
+      <h1 className="sr-only">BOSY — Здравословни лакомства без захар</h1>
+
       {/* Hero */}
       <section className="relative w-full">
         <Link href="/shop">

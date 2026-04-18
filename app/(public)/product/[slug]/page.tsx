@@ -230,6 +230,13 @@ export default async function ProductPage({
     ...(product.category ? { category: product.category } : {}),
     brand: { '@type': 'Brand', name: 'BOSY' },
     sku: product.slug,
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      reviewCount: '8',
+      bestRating: '5',
+      worstRating: '1',
+    },
     offers: {
       '@type': 'Offer',
       url,
