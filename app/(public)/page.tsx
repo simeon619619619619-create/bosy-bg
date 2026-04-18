@@ -84,6 +84,18 @@ async function getHeroProducts(): Promise<Product[]> {
   }
 }
 
+// Hand-picked homepage products: mix of drinks, multi-packs, bars, creams
+const FEATURED_SLUGS = [
+  'lychee-blueberry',
+  'dragon-fruit',
+  'bubbles-lemongrass-ginger-green-tea',
+  'fitbody-4x4',
+  'protein-bar-box',
+  'protein-crispy-balls-x26',
+  'protein-cream-macadamia',
+  'africa-balls-x-16',
+]
+
 async function getFeaturedProducts(): Promise<Product[]> {
   try {
     const supabase = createPublicSupabaseClient()
@@ -91,10 +103,11 @@ async function getFeaturedProducts(): Promise<Product[]> {
       .from('products')
       .select('id, name, slug, price, compare_price, images, category, description')
       .eq('is_active', true)
-      .not('slug', 'in', `(${FEATURED_EXCLUDE.join(',')})`)
-      .order('created_at', { ascending: false })
-      .limit(8)
-    return (data as Product[] | null) ?? []
+      .in('slug', FEATURED_SLUGS)
+    const rows = (data as Product[] | null) ?? []
+    return rows.sort(
+      (a, b) => FEATURED_SLUGS.indexOf(a.slug) - FEATURED_SLUGS.indexOf(b.slug),
+    )
   } catch {
     return []
   }
