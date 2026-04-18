@@ -4,8 +4,6 @@ import { AnnouncementBar } from '@/components/public/announcement-bar'
 import { Header } from '@/components/public/header'
 import { Footer } from '@/components/public/footer'
 import { CartProvider } from '@/components/public/cart-provider'
-import { EasterPopup } from '@/components/public/easter-popup'
-import { FloatingTimer } from '@/components/public/floating-timer'
 import { NewsletterPopup } from '@/components/public/newsletter-popup'
 
 const montserrat = Montserrat({
@@ -149,8 +147,6 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <Header />
         <main>{children}</main>
         <Footer />
-        <EasterPopup />
-        <FloatingTimer />
         <NewsletterPopup />
       </CartProvider>
     </div>
