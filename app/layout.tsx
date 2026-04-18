@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: '%s | BOSY',
   },
   description: 'BOSY — The Smart Pleasure. Здравословни лакомства без добавена захар и глутен. Доставка в цяла България.',
-  robots: { index: false },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
