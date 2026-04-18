@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getResendClient } from '@/lib/resend/client'
 
 export async function POST(request: Request) {
   try {
@@ -26,7 +27,6 @@ export async function POST(request: Request) {
       .single()
 
     if (existing) {
-      // Customer record already exists — no need to create
       return NextResponse.json({ ok: true })
     }
 
@@ -42,6 +42,51 @@ export async function POST(request: Request) {
 
     if (insertError) {
       return NextResponse.json({ error: insertError.message }, { status: 500 })
+    }
+
+    // Send welcome email with promo code
+    const customerName = name || email.split('@')[0]
+    const resend = getResendClient()
+    if (resend) {
+      await resend.emails.send({
+        from: 'BOSY <orders@bosy.bg>',
+        replyTo: 'marketing@bosy.bg',
+        to: email.toLowerCase().trim(),
+        subject: `Добре дошъл в BOSY, ${customerName}! Ето твоите 20%`,
+        html: `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:20px;font-family:Georgia,'Times New Roman',serif;color:#222;background:#fff;">
+  <table style="max-width:560px;margin:0 auto;" cellpadding="0" cellspacing="0">
+    <tr><td>
+      <p style="margin:0 0 16px;font-size:15px;">Здравей, ${customerName}!</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Благодарим ти, че се регистрира в BOSY. Като наш нов член, получаваш <strong>20% отстъпка</strong> за всички продукти до края на април.</p>
+
+      <div style="margin:24px 0;text-align:center;">
+        <span style="display:inline-block;background:#c77dba;color:#fff;font-family:'Courier New',monospace;font-weight:bold;font-size:22px;padding:14px 32px;border-radius:10px;letter-spacing:3px;">WELCOME20</span>
+      </div>
+
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Просто въведи кода при поръчка на <a href="https://bosy.bg/shop" style="color:#c77dba;font-weight:bold;">bosy.bg</a> и отстъпката ще се приложи автоматично.</p>
+
+      <p style="margin:0 0 16px;font-size:14px;color:#888;">Валиден до: 30 април 2026 г.</p>
+
+      <p style="margin:24px 0;text-align:center;">
+        <a href="https://bosy.bg/shop" style="display:inline-block;background:#c77dba;color:#fff;padding:14px 40px;border-radius:30px;font-family:Montserrat,sans-serif;font-weight:700;font-size:15px;text-decoration:none;">Пазарувай сега</a>
+      </p>
+
+      <p style="margin:16px 0;font-size:15px;line-height:1.6;">Ако имаш въпроси, просто отговори на този имейл.</p>
+      <p style="margin:24px 0 4px;font-size:15px;">Поздрави,</p>
+      <p style="margin:0;font-size:15px;">Екипът на BOSY</p>
+      <p style="margin:4px 0 0;font-size:13px;color:#888;">bosy.bg</p>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+        text: `Здравей, ${customerName}!\n\nБлагодарим ти, че се регистрира в BOSY.\n\nКато наш нов член, получаваш 20% отстъпка за всички продукти до края на април.\n\nТвоят код: WELCOME20\n\nВъведи го при поръчка на bosy.bg.\n\nВалиден до: 30 април 2026 г.\n\nПоздрави,\nЕкипът на BOSY`,
+        headers: {
+          'X-Entity-Ref-ID': `welcome-${Date.now()}`,
+        },
+      }).catch(() => {})
     }
 
     return NextResponse.json({ ok: true })
