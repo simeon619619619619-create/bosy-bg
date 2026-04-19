@@ -506,39 +506,7 @@ export default async function HomePage() {
           >
             Какво казват клиентите
           </h2>
-          {/* Mobile: auto-scrolling carousel */}
           <TestimonialsCarousel items={TESTIMONIALS} />
-          {/* Desktop: grid */}
-          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TESTIMONIALS.map((t) => (
-              <figure
-                key={t.name}
-                className="rounded-2xl p-6 flex flex-col items-center text-center"
-                style={{
-                  background: '#fdf5f0',
-                  border: '1px solid #f3e6dc',
-                }}
-              >
-                <img
-                  src={t.photo}
-                  alt={t.name}
-                  className="mb-4 h-16 w-16 rounded-full object-cover"
-                />
-                <figcaption
-                  className="mb-3 text-sm font-bold"
-                  style={{ color: '#333' }}
-                >
-                  {t.name}
-                </figcaption>
-                <blockquote
-                  className="text-sm leading-relaxed italic"
-                  style={{ color: '#555' }}
-                >
-                  &ldquo;{t.text}&rdquo;
-                </blockquote>
-              </figure>
-            ))}
-          </div>
         </div>
       </section>
     </>

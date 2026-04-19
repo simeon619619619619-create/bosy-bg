@@ -37,7 +37,8 @@ export default async function OrderConfirmationPage({
   const shipping = Number(order.shipping_cost ?? 0)
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const customer = order.customers as { name: string; email: string | null; address: Record<string, unknown> | null } | null
-  const cashbackEarned = Math.round(total * 5) / 100 // 5% cashback
+  // 1 point per 1€ spent
+  const pointsEarned = Math.floor(toEur(total))
 
   // Check if customer has an auth account (has cashback_balance means registered)
   const cashbackBalance = (customer?.address as Record<string, number> | null)?.cashback_balance ?? 0
@@ -129,10 +130,10 @@ export default async function OrderConfirmationPage({
             style={{ background: '#f3e5f0', border: '1px solid #e8cce3' }}
           >
             <p className="text-sm font-bold" style={{ color: '#333' }}>
-              Спечелихте {toEur(cashbackEarned).toFixed(2)}&euro; точки!
+              +{pointsEarned} точки от тази поръчка!
             </p>
             <p className="mt-1 text-xs" style={{ color: '#666' }}>
-              Общ баланс: <strong>{toEur(cashbackBalance + cashbackEarned).toFixed(2)}&euro;</strong> — използвай при следващата поръчка.
+              Използвай точките си за отстъпки при следващата поръчка.
             </p>
           </div>
         ) : (
@@ -144,7 +145,7 @@ export default async function OrderConfirmationPage({
               className="text-lg font-extrabold"
               style={{ color: '#c77dba', fontFamily: 'var(--font-montserrat), Montserrat, sans-serif' }}
             >
-              {toEur(cashbackEarned).toFixed(2)}&euro; точки те чакат!
+              +{pointsEarned} точки те чакат!
             </p>
             <p className="mt-2 text-sm" style={{ color: '#555' }}>
               Направи си безплатна регистрация и започни да трупаш точки с всяка поръчка.
@@ -159,7 +160,7 @@ export default async function OrderConfirmationPage({
                 Регистрирай се и вземи точките
               </Link>
               <p className="text-xs" style={{ color: '#aaa' }}>
-                5% от всяка поръчка се връща като точки в акаунта ти
+                1 точка за всяко изхарчено евро
               </p>
             </div>
           </div>
