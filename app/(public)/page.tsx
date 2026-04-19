@@ -47,6 +47,13 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
+interface CardBadge {
+  text: string
+  bg: string
+  x: number
+  y: number
+}
+
 interface Product {
   id: string
   name: string
@@ -56,6 +63,7 @@ interface Product {
   images: string[] | null
   category: string | null
   description: string | null
+  variants: { card_badges?: CardBadge[] } | null
 }
 
 // Easter 2026 campaign — auto-disables on May 1, 2026 (EEST).
@@ -72,7 +80,7 @@ async function getHeroProducts(): Promise<Product[]> {
     const supabase = createPublicSupabaseClient()
     const { data } = await supabase
       .from('products')
-      .select('id, name, slug, price, compare_price, images, category, description')
+      .select('id, name, slug, price, compare_price, images, category, description, variants')
       .eq('is_active', true)
       .in('slug', HERO_SLUGS)
     const rows = (data as Product[] | null) ?? []
@@ -114,7 +122,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
 
     const { data } = await supabase
       .from('products')
-      .select('id, name, slug, price, compare_price, images, category, description')
+      .select('id, name, slug, price, compare_price, images, category, description, variants')
       .eq('is_active', true)
       .in('slug', slugs)
     const rows = (data as Product[] | null) ?? []
@@ -375,6 +383,7 @@ export default async function HomePage() {
                 const img = p.images?.[0] ?? null
                 const hasDiscount =
                   p.compare_price != null && p.compare_price > p.price
+                const cardBadges = (p.variants?.card_badges ?? []) as CardBadge[]
                 return (
                   <Link
                     key={p.id}
@@ -427,6 +436,21 @@ export default async function HomePage() {
                           BOSY
                         </div>
                       )}
+                      {cardBadges.map((b, bi) => (
+                        <span
+                          key={bi}
+                          className="absolute rounded-md px-2.5 py-1 text-xs font-bold text-white whitespace-nowrap"
+                          style={{
+                            background: b.bg,
+                            left: `${b.x}%`,
+                            top: `${b.y}%`,
+                            transform: 'translate(-50%, -50%)',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                          }}
+                        >
+                          {b.text}
+                        </span>
+                      ))}
                     </div>
                     <div className="px-4 pb-4">
                       <h3

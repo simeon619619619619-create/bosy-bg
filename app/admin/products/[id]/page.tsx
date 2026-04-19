@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { ProductForm } from '@/components/admin/products/product-form'
 import { DeleteProductButton } from '@/components/admin/products/delete-product-button'
+import { BadgeEditor } from '@/components/admin/products/badge-editor'
+import type { Badge } from '@/components/admin/products/badge-editor'
 
 export default async function EditProductPage({
   params,
@@ -34,6 +36,11 @@ export default async function EditProductPage({
       </div>
       <div className="mt-6">
         <ProductForm defaultValues={product} />
+        <BadgeEditor
+          productId={product.id}
+          productImage={product.images?.[0] ?? null}
+          initialBadges={((product.variants as Record<string, unknown>)?.card_badges as Badge[]) ?? []}
+        />
       </div>
     </div>
   )

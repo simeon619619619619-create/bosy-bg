@@ -5,6 +5,13 @@ import Link from 'next/link'
 import { useCart } from '@/components/public/cart-provider'
 import { toEur } from '@/lib/currency'
 
+interface CardBadge {
+  text: string
+  bg: string
+  x: number
+  y: number
+}
+
 interface Product {
   id: string
   name: string
@@ -14,6 +21,7 @@ interface Product {
   images?: string[] | null
   category?: string | null
   stock_quantity?: number | null
+  variants?: { card_badges?: CardBadge[] } | null
 }
 
 export function ProductCard({ product }: { product: Product }) {
@@ -21,6 +29,7 @@ export function ProductCard({ product }: { product: Product }) {
   const [added, setAdded] = useState(false)
   const image = product.images?.[0] ?? null
   const outOfStock = product.stock_quantity != null && product.stock_quantity <= 0
+  const cardBadges = (product.variants?.card_badges ?? []) as CardBadge[]
 
   function handleAdd() {
     if (outOfStock) return
@@ -42,20 +51,35 @@ export function ProductCard({ product }: { product: Product }) {
     >
       <Link href={`/product/${product.slug}`} className="relative block">
         <div
-          className="flex h-60 items-center justify-center p-4"
-          style={{ background: '#fdf5f0', borderBottom: '1px solid #eee5db' }}
+          className="relative flex h-60 items-center justify-center overflow-hidden bg-white p-4"
+          style={{ borderBottom: '1px solid #eee5db' }}
         >
           {image ? (
             <img
               src={image}
               alt={product.name}
-              className={`max-h-full object-contain${outOfStock ? ' opacity-60' : ''}`}
+              className={`h-full w-full object-contain object-center${outOfStock ? ' opacity-60' : ''}`}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-gray-400">
               Няма снимка
             </div>
           )}
+          {cardBadges.map((b, i) => (
+            <span
+              key={i}
+              className="absolute rounded-md px-2.5 py-1 text-xs font-bold text-white whitespace-nowrap"
+              style={{
+                background: b.bg,
+                left: `${b.x}%`,
+                top: `${b.y}%`,
+                transform: 'translate(-50%, -50%)',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+              }}
+            >
+              {b.text}
+            </span>
+          ))}
         </div>
         {outOfStock && (
           <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-2">
