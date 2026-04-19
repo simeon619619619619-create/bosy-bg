@@ -240,64 +240,28 @@ export default async function HomePage() {
         </Link>
       </section>
 
-      {/* Badges */}
-      <section style={{ background: '#fff', padding: '40px 10px' }}>
-        <div className="mx-auto max-w-[1200px]">
-          <ul
-            className="grid list-none grid-cols-5 gap-2 md:gap-6 text-center"
-            style={{ padding: 0, margin: 0 }}
-          >
-            {BADGES.map((b) => (
-              <li
-                key={b}
-                className="flex flex-col items-center gap-2 md:gap-3"
-                style={{ color: '#333' }}
-              >
-                <div
-                  className="flex h-10 w-10 md:h-14 md:w-14 items-center justify-center rounded-full"
-                  style={{
-                    background: '#f3e5f0',
-                    border: '2px solid #c77dba',
-                  }}
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#c77dba"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                </div>
-                <span className="text-[10px] md:text-sm font-semibold leading-tight">{b}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* Value proposition */}
-      <section style={{ background: '#fff', padding: '48px 20px 0' }}>
-        <div className="mx-auto max-w-[900px] grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-          <div className="flex flex-col items-center gap-2">
-            <span style={{ fontSize: 28 }}>&#127942;</span>
-            <p className="text-sm font-bold" style={{ color: '#333' }}>Чист състав</p>
-            <p className="text-xs" style={{ color: '#888' }}>Без добавена захар, без глутен, на растителна основа</p>
+      {/* Trust bar */}
+      <section style={{ background: '#1a1a1a', padding: '20px 16px' }}>
+        <div className="mx-auto max-w-[1100px] flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+          <div className="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c77dba" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span className="text-xs font-medium text-white">Без захар & глутен</span>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <span style={{ fontSize: 28 }}>&#128666;</span>
-            <p className="text-sm font-bold" style={{ color: '#333' }}>Бърза доставка</p>
-            <p className="text-xs" style={{ color: '#888' }}>Безплатна за поръчки над 69.99€ с Speedy</p>
+          <div className="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c77dba" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span className="text-xs font-medium text-white">Безплатна доставка над 69.99€</span>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <span style={{ fontSize: 28 }}>&#11088;</span>
-            <p className="text-sm font-bold" style={{ color: '#333' }}>BOSY Club точки</p>
-            <p className="text-xs" style={{ color: '#888' }}>1 точка за всяко изхарчено евро, използвай за отстъпки</p>
+          <div className="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c77dba" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span className="text-xs font-medium text-white">1 точка за всяко евро</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c77dba" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span className="text-xs font-medium text-white">Растителна основа</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c77dba" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span className="text-xs font-medium text-white">Протеин & Колаген</span>
           </div>
         </div>
       </section>
