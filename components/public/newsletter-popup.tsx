@@ -14,8 +14,10 @@ export function NewsletterPopup() {
     if (dismissed) return
 
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      // Only treat as logged in if there's a valid, non-expired session
+      const loggedIn = !!(session?.access_token && session?.user?.email_confirmed_at)
+      setIsLoggedIn(loggedIn)
       setTimeout(() => setShow(true), 15000)
     })
   }, [])
