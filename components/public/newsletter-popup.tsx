@@ -117,13 +117,20 @@ export function NewsletterPopup() {
             <p className="mt-3 text-sm" style={{ color: '#666' }}>
               Направи си безплатна регистрация и ще получиш промо код за 20% отстъпка на имейла си.
             </p>
-            <div className="mt-5">
+            <div className="mt-5 flex flex-col gap-2">
               <a
                 href="/register"
                 className="inline-block w-full rounded-lg py-3 text-sm font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-90"
                 style={{ background: '#c77dba' }}
               >
                 Регистрирай се
+              </a>
+              <a
+                href="/account/login"
+                className="inline-block w-full rounded-lg py-3 text-sm font-semibold transition-opacity hover:opacity-90"
+                style={{ background: '#f3e5f0', color: '#c77dba' }}
+              >
+                Имам акаунт
               </a>
             </div>
           </>
