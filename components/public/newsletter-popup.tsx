@@ -10,15 +10,18 @@ export function NewsletterPopup() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const dismissed = sessionStorage.getItem('promo-dismissed')
-    if (dismissed) return
+    const shown = sessionStorage.getItem('promo-shown')
+    if (shown) return
 
     const supabase = createClient()
     supabase.auth.getSession().then(({ data: { session } }) => {
-      // Only treat as logged in if there's a valid, non-expired session
       const loggedIn = !!(session?.access_token && session?.user?.email_confirmed_at)
       setIsLoggedIn(loggedIn)
-      setTimeout(() => setShow(true), 15000)
+      setTimeout(() => {
+        // Mark as shown BEFORE displaying — prevents re-show on navigation
+        sessionStorage.setItem('promo-shown', '1')
+        setShow(true)
+      }, 15000)
     })
   }, [])
 
