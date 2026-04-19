@@ -39,7 +39,7 @@ export function QuickBuyButton({ product }: Props) {
   return (
     <button
       onClick={handleClick}
-      className="mt-3 w-full rounded-lg py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-90 md:hidden"
+      className="mt-3 w-full rounded-lg py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-opacity hover:opacity-90"
       style={{
         background: added
           ? '#22c55e'

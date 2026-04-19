@@ -281,10 +281,31 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Value proposition */}
+      <section style={{ background: '#fff', padding: '48px 20px 0' }}>
+        <div className="mx-auto max-w-[900px] grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+          <div className="flex flex-col items-center gap-2">
+            <span style={{ fontSize: 28 }}>&#127942;</span>
+            <p className="text-sm font-bold" style={{ color: '#333' }}>Чист състав</p>
+            <p className="text-xs" style={{ color: '#888' }}>Без добавена захар, без глутен, на растителна основа</p>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <span style={{ fontSize: 28 }}>&#128666;</span>
+            <p className="text-sm font-bold" style={{ color: '#333' }}>Бърза доставка</p>
+            <p className="text-xs" style={{ color: '#888' }}>Безплатна за поръчки над 69.99€ с Speedy</p>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <span style={{ fontSize: 28 }}>&#11088;</span>
+            <p className="text-sm font-bold" style={{ color: '#333' }}>BOSY Club точки</p>
+            <p className="text-xs" style={{ color: '#888' }}>1 точка за всяко изхарчено евро, използвай за отстъпки</p>
+          </div>
+        </div>
+      </section>
+
       {/* Products */}
       <section
         id="products"
-        style={{ background: '#fff', padding: '80px 20px' }}
+        style={{ background: '#fff', padding: '48px 20px 80px' }}
       >
         <div className="mx-auto max-w-[1200px]">
           <h2
