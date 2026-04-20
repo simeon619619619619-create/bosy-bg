@@ -65,6 +65,17 @@ export function ProductForm({
         />
       </div>
 
+      {/* Short name for labels/slips */}
+      <div className="space-y-2">
+        <Label htmlFor="short_name">Кратко име (за товарителници)</Label>
+        <Input
+          id="short_name"
+          name="short_name"
+          defaultValue={(defaultValues as unknown as Record<string, unknown>)?.variants ? ((defaultValues as unknown as Record<string, unknown>).variants as Record<string, string>)?.short_name || '' : ''}
+          placeholder="Напр. Bubbles Лечи (ако е празно, ползва пълното име)"
+        />
+      </div>
+
       {/* Slug */}
       <div className="space-y-2">
         <Label htmlFor="slug">Slug (URL)</Label>

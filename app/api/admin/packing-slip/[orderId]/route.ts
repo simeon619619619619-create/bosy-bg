@@ -49,13 +49,36 @@ export async function GET(
     address: unknown
   } | null
 
-  const items: Array<{
+  // Fetch products to get short_name from variants
+  const rawItems: Array<{
     name: string
     quantity: number
     price: number
     sku?: string
     id?: string
+    slug?: string
   }> = Array.isArray(order.items) ? order.items : []
+
+  const slugs = rawItems.map(i => i.slug).filter(Boolean)
+  let shortNameMap: Record<string, string> = {}
+  if (slugs.length > 0) {
+    const { data: prods } = await supabase
+      .from('products')
+      .select('slug, variants')
+      .in('slug', slugs)
+    if (prods) {
+      shortNameMap = Object.fromEntries(
+        prods
+          .filter(p => (p.variants as Record<string, unknown>)?.short_name)
+          .map(p => [p.slug, (p.variants as Record<string, string>).short_name])
+      )
+    }
+  }
+
+  const items = rawItems.map(i => ({
+    ...i,
+    displayName: (i.slug && shortNameMap[i.slug]) || i.name,
+  }))
 
   const notes = (order.notes as string) ?? ''
   const officeMatch = notes.match(/\[OFFICE:(\d+)\]/)
@@ -77,7 +100,7 @@ export async function GET(
       (i) => `
     <tr>
       <td class="sku">${esc(i.sku ?? i.id ?? '—')}</td>
-      <td>${esc(i.name)}</td>
+      <td>${esc(i.displayName)}</td>
       <td class="num">${esc(i.quantity)}</td>
     </tr>`
     )

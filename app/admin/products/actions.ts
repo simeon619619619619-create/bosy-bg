@@ -58,6 +58,16 @@ export async function updateProduct(id: string, formData: FormData) {
   const stockQuantity = parseInt(formData.get('stock_quantity') as string) || 0
   const isActive = formData.get('is_active') === 'true'
   const imageUrl = formData.get('image_url') as string
+  const shortName = (formData.get('short_name') as string)?.trim() || ''
+
+  // Merge short_name into existing variants JSONB
+  const { data: existing } = await supabase.from('products').select('variants').eq('id', id).single()
+  const variants = (existing?.variants as Record<string, unknown>) ?? {}
+  if (shortName) {
+    variants.short_name = shortName
+  } else {
+    delete variants.short_name
+  }
 
   const { error } = await supabase
     .from('products')
@@ -71,6 +81,7 @@ export async function updateProduct(id: string, formData: FormData) {
       stock_quantity: stockQuantity,
       is_active: isActive,
       image_url: imageUrl || null,
+      variants,
     })
     .eq('id', id)
 
