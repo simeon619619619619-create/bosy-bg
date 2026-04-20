@@ -8,6 +8,7 @@ import { usePromoCode } from '@/app/admin/promo-codes/actions'
 interface OrderItem {
   id: string
   name: string
+  slug?: string
   price: number
   quantity: number
   image?: string | null
@@ -148,6 +149,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
   const orderItems = input.items.map((item) => ({
     id: item.id,
     name: item.name,
+    slug: item.slug,
     price: item.price,
     quantity: item.quantity,
   }))

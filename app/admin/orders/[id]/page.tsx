@@ -193,7 +193,13 @@ export default async function OrderDetailPage({
               </div>
               <div>
                 <span className="text-muted-foreground">Адрес: </span>
-                <span>{customer?.address ? (typeof customer.address === 'string' ? customer.address : Object.values(customer.address).join(', ')) : '—'}</span>
+                <span>{(() => {
+                  if (!customer?.address) return '—'
+                  if (typeof customer.address === 'string') return customer.address
+                  const a = customer.address as Record<string, unknown>
+                  const parts = [a.street, a.city, a.zip].filter(Boolean).map(String)
+                  return parts.length > 0 ? parts.join(', ') : '—'
+                })()}</span>
               </div>
             </div>
           </div>
