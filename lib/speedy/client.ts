@@ -37,7 +37,8 @@ export class SpeedyClient {
   async printLabel(parcelId: string): Promise<PrintResponse> {
     return this.request<PrintResponse>('print', {
       parcels: [{ parcel: { id: parcelId } }],
-      format: 'pdf',
+      paperSize: 'A6',
+      type: 'label',
     })
   }
 }
