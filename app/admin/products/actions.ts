@@ -1,6 +1,6 @@
 'use server'
 
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -14,7 +14,7 @@ function slugify(text: string): string {
 }
 
 export async function createProduct(formData: FormData) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
 
   const name = formData.get('name') as string
   const slug = (formData.get('slug') as string) || slugify(name)
@@ -42,12 +42,12 @@ export async function createProduct(formData: FormData) {
     throw new Error(error.message)
   }
 
-  revalidatePath('/products')
-  redirect('/products')
+  revalidatePath('/admin/products')
+  redirect('/admin/products')
 }
 
 export async function updateProduct(id: string, formData: FormData) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
 
   const name = formData.get('name') as string
   const slug = (formData.get('slug') as string) || slugify(name)
@@ -89,12 +89,12 @@ export async function updateProduct(id: string, formData: FormData) {
     throw new Error(error.message)
   }
 
-  revalidatePath('/products')
-  redirect('/products')
+  revalidatePath('/admin/products')
+  redirect('/admin/products')
 }
 
 export async function deleteProduct(id: string) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
 
   const { error } = await supabase.from('products').delete().eq('id', id)
 
@@ -102,12 +102,12 @@ export async function deleteProduct(id: string) {
     throw new Error(error.message)
   }
 
-  revalidatePath('/products')
-  redirect('/products')
+  revalidatePath('/admin/products')
+  redirect('/admin/products')
 }
 
 export async function exportProductsCSV() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
 
   const { data: products, error } = await supabase
     .from('products')
@@ -154,7 +154,7 @@ export async function exportProductsCSV() {
 }
 
 export async function moveProduct(id: string, direction: 'up' | 'down') {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
 
   // Get all products in current order
   const { data: products } = await supabase
@@ -182,7 +182,7 @@ export async function moveProduct(id: string, direction: 'up' | 'down') {
 }
 
 export async function toggleProductActive(id: string, isActive: boolean) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminSupabaseClient()
 
   const { error } = await supabase
     .from('products')
