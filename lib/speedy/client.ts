@@ -34,12 +34,25 @@ export class SpeedyClient {
     })
   }
 
-  async printLabel(parcelId: string): Promise<PrintResponse> {
-    return this.request<PrintResponse>('print', {
-      parcels: [{ parcel: { id: parcelId } }],
-      paperSize: 'A6',
-      type: 'label',
+  async printLabel(parcelId: string): Promise<ArrayBuffer> {
+    const res = await fetch(`${SPEEDY_BASE}/print`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userName: this.username,
+        password: this.password,
+        parcels: [{ parcel: { id: parcelId } }],
+        paperSize: 'A6',
+        type: 'label',
+      }),
     })
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => '')
+      throw new Error(`Speedy print error: ${res.status} ${text}`)
+    }
+
+    return res.arrayBuffer()
   }
 }
 
