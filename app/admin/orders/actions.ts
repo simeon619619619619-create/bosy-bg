@@ -72,6 +72,22 @@ export async function bulkCancelOrders(ids: string[]) {
   revalidatePath('/admin/orders')
 }
 
+export async function setOrderStatus(id: string, status: string) {
+  const supabase = createAdminSupabaseClient()
+
+  const { error } = await supabase
+    .from('orders')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath('/admin/orders')
+  revalidatePath(`/admin/orders/${id}`)
+}
+
 export async function updateOrderNotes(id: string, notes: string) {
   const supabase = createAdminSupabaseClient()
 

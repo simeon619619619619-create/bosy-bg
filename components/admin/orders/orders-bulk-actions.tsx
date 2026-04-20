@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { OrderStatusBadge } from '@/components/admin/orders/order-status-badge'
+import { OrderStatusSelect } from '@/components/admin/orders/order-status-select'
 import { bulkConfirmOrders, bulkCancelOrders } from '@/app/admin/orders/actions'
 import { Search } from 'lucide-react'
 
@@ -265,10 +265,8 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
                       )}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    <Link href={orderUrl}>
-                      <OrderStatusBadge status={order.status} />
-                    </Link>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
                   </TableCell>
                   <TableCell>
                     <Link href={orderUrl} className="block">

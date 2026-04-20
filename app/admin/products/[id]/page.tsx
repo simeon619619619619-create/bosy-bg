@@ -39,7 +39,7 @@ export default async function EditProductPage({
         <BadgeEditor
           productId={product.id}
           productImage={product.images?.[0] ?? null}
-          initialBadges={((product.variants as Record<string, unknown>)?.card_badges as Badge[]) ?? []}
+          initialBadges={(product.variants && typeof product.variants === 'object' && !Array.isArray(product.variants) ? (product.variants as Record<string, unknown>).card_badges as Badge[] : null) ?? []}
         />
       </div>
     </div>
