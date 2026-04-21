@@ -22,16 +22,35 @@ interface ShippingAddress {
   boxnow_locker_id?: string | null
 }
 
+interface EcontInnerError {
+  type?: string
+  message?: string
+  innerErrors?: EcontInnerError[]
+}
+
 interface EcontLabelResponse {
   label?: {
     shipmentNumber?: string
     pdfURL?: string
   }
   results?: Array<{
-    label?: { shipmentNumber?: string; pdfURL?: string }
+    label?: { shipmentNumber?: string; pdfURL?: string } | null
     shipmentNumber?: string
+    error?: EcontInnerError | null
   }>
   shipmentNumber?: string
+}
+
+function flattenEcontError(err: EcontInnerError | null | undefined): string {
+  if (!err) return ''
+  const out: string[] = []
+  const walk = (e: EcontInnerError) => {
+    const m = (e.message ?? '').trim()
+    if (m) out.push(m)
+    e.innerErrors?.forEach(walk)
+  }
+  walk(err)
+  return out.filter((x, i, arr) => arr.indexOf(x) === i).join(' → ')
 }
 
 async function findCityId(cityName: string): Promise<number | null> {
@@ -198,6 +217,18 @@ export async function POST(request: Request) {
     )
 
     const first = resp.results?.[0]
+
+    // createLabels връща по една запис в results[] за всеки label; ако има
+    // грешка — тя идва във вложената results[i].error (а не в HTTP 4xx).
+    if (first?.error) {
+      const detail = flattenEcontError(first.error)
+      console.error('Econt createLabels failed:', first.error)
+      return NextResponse.json(
+        { error: `Еконт: ${detail || 'неуспешно създаване на пратка'}` },
+        { status: 400 }
+      )
+    }
+
     const shipmentNumber =
       first?.label?.shipmentNumber ||
       first?.shipmentNumber ||
@@ -207,7 +238,7 @@ export async function POST(request: Request) {
     const labelUrl = first?.label?.pdfURL || resp.label?.pdfURL || null
 
     if (!shipmentNumber) {
-      console.error('Econt createLabel no shipmentNumber:', resp)
+      console.error('Econt createLabels no shipmentNumber:', resp)
       return NextResponse.json(
         { error: 'Еконт не върна shipmentNumber' },
         { status: 400 }
