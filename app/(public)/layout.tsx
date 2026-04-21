@@ -151,7 +151,6 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <main>{children}</main>
         <Footer />
         <NewsletterPopup />
-        <ExitIntentPopup />
         <SocialProofToast />
         <CartDrawerWrapper />
       </CartProvider>
