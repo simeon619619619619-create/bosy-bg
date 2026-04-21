@@ -72,6 +72,29 @@ export async function bulkCancelOrders(ids: string[]) {
   revalidatePath('/admin/orders')
 }
 
+export async function markShippedManually(
+  id: string,
+  trackingNumber: string | null
+) {
+  const supabase = createAdminSupabaseClient()
+
+  const { error } = await supabase
+    .from('orders')
+    .update({
+      status: 'shipped',
+      speedy_tracking_number: trackingNumber || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath('/admin/orders')
+  revalidatePath(`/admin/orders/${id}`)
+}
+
 export async function setOrderStatus(id: string, status: string) {
   const supabase = createAdminSupabaseClient()
 
@@ -130,7 +153,7 @@ export async function updateShippingAddress(id: string, address: ShippingAddress
   revalidatePath(`/admin/orders/${id}`)
 }
 
-export async function updateCourier(id: string, courier: 'speedy' | 'econt') {
+export async function updateCourier(id: string, courier: 'speedy' | 'econt' | 'boxnow') {
   const supabase = createAdminSupabaseClient()
 
   const { error } = await supabase

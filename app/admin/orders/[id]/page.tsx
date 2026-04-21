@@ -9,6 +9,7 @@ import {
   CancelOrderButton,
   ShipWithSpeedyButton,
   ShipWithEcontButton,
+  ShipWithBoxNowButton,
 } from '@/components/admin/orders/order-actions'
 import { OrderTimeline } from '@/components/admin/orders/order-timeline'
 import { ShippingAddressEditor } from '@/components/admin/orders/shipping-address-editor'
@@ -80,7 +81,10 @@ export default async function OrderDetailPage({
   }
 
   const meta = parseNoteMetadata(order.notes)
-  const courier: 'speedy' | 'econt' = (order.courier === 'econt' ? 'econt' : 'speedy')
+  const courier: 'speedy' | 'econt' | 'boxnow' =
+    order.courier === 'econt' ? 'econt' :
+    order.courier === 'boxnow' ? 'boxnow' :
+    'speedy'
   const courierLocked = order.status === 'shipped' || order.status === 'delivered'
 
   // Legacy fallback — if customer_note is null but notes has text after the tags, extract it
@@ -270,6 +274,8 @@ export default async function OrderDetailPage({
                 <>
                   {courier === 'econt' ? (
                     <ShipWithEcontButton orderId={order.id} />
+                  ) : courier === 'boxnow' ? (
+                    <ShipWithBoxNowButton orderId={order.id} />
                   ) : (
                     <ShipWithSpeedyButton orderId={order.id} />
                   )}

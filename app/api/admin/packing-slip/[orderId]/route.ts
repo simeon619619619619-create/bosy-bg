@@ -9,11 +9,7 @@ function esc(s: unknown): string {
     .replace(/"/g, '&quot;')
 }
 
-function formatAddress(customer: {
-  address?: unknown
-} | null): string {
-  if (!customer) return '—'
-  const addr = customer.address
+function formatAddress(addr: unknown): string {
   if (!addr) return '—'
   if (typeof addr === 'string') return addr
   if (typeof addr === 'object' && addr !== null) {
@@ -81,15 +77,49 @@ export async function GET(
   }))
 
   const notes = (order.notes as string) ?? ''
-  const officeMatch = notes.match(/\[OFFICE:(\d+)\]/)
-  const econtOfficeMatch = notes.match(/\[ECONT_OFFICE:(\d+)\]/)
   const isCod = notes.includes('[COD]')
   const courier = (order.courier as string) || 'speedy'
-  const courierLabel = courier === 'econt' ? 'Еконт' : 'Speedy'
+  const courierLabel =
+    courier === 'econt' ? 'Еконт' :
+    courier === 'boxnow' ? 'BoxNow' :
+    'Speedy'
 
-  let deliveryLine = formatAddress(customer)
-  if (officeMatch) deliveryLine = `${courierLabel} офис #${officeMatch[1]}`
-  if (econtOfficeMatch) deliveryLine = `Еконт офис #${econtOfficeMatch[1]}`
+  // Prefer the per-order shipping_address snapshot (editable by admin)
+  // and fall back to customer.address for legacy orders.
+  const shippingAddr = (order.shipping_address && typeof order.shipping_address === 'object')
+    ? (order.shipping_address as Record<string, unknown>)
+    : null
+
+  const deliveryType = (shippingAddr?.delivery_type as string) ?? null
+  const speedyOfficeId = shippingAddr?.speedy_office_id ?? null
+  const boxnowLockerId = shippingAddr?.boxnow_locker_id ?? null
+
+  // Legacy fallback — extract from notes tags if snapshot is missing
+  const officeMatch = notes.match(/\[OFFICE:(\d+)\]/)
+  const econtOfficeMatch = notes.match(/\[ECONT_OFFICE:(\d+)\]/)
+  const boxnowMatch = notes.match(/\[BOXNOW:([^\]]+)\]/)
+
+  let deliveryLine: string
+  if (deliveryType === 'office' && speedyOfficeId) {
+    deliveryLine = `${courierLabel} офис #${speedyOfficeId}`
+  } else if (deliveryType === 'boxnow' && boxnowLockerId) {
+    deliveryLine = `BoxNow автомат ${boxnowLockerId}`
+  } else if (shippingAddr) {
+    deliveryLine = formatAddress(shippingAddr)
+  } else if (boxnowMatch) {
+    deliveryLine = `BoxNow автомат ${boxnowMatch[1]}`
+  } else if (officeMatch) {
+    deliveryLine = `${courierLabel} офис #${officeMatch[1]}`
+  } else if (econtOfficeMatch) {
+    deliveryLine = `Еконт офис #${econtOfficeMatch[1]}`
+  } else {
+    deliveryLine = formatAddress(customer?.address ?? null)
+  }
+
+  // Recipient info — prefer snapshot fields, fall back to customer
+  const recipientName = (shippingAddr?.name as string) || customer?.name || '—'
+  const recipientPhone = (shippingAddr?.phone as string) || customer?.phone || '—'
+  const recipientEmail = (shippingAddr?.email as string) || customer?.email || '—'
 
   const totalQty = items.reduce((s, i) => s + (i.quantity ?? 0), 0)
 
@@ -156,9 +186,9 @@ export async function GET(
   <div class="row">
     <div class="box">
       <h2>Получател</h2>
-      <div class="line" style="font-weight:700">${esc(customer?.name ?? '—')}</div>
-      <div class="line">${esc(customer?.phone ?? '—')}</div>
-      <div class="line" style="color:#666;font-size:12px;">${esc(customer?.email ?? '—')}</div>
+      <div class="line" style="font-weight:700">${esc(recipientName)}</div>
+      <div class="line">${esc(recipientPhone)}</div>
+      <div class="line" style="color:#666;font-size:12px;">${esc(recipientEmail)}</div>
     </div>
     <div class="box">
       <h2>Доставка</h2>

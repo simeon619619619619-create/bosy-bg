@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
-import { confirmOrder, cancelOrder } from '@/app/admin/orders/actions'
+import { confirmOrder, cancelOrder, markShippedManually } from '@/app/admin/orders/actions'
 
 export function ConfirmOrderButton({ orderId }: { orderId: string }) {
   const [isPending, startTransition] = useTransition()
@@ -64,6 +64,34 @@ export function ShipWithSpeedyButton({ orderId }: { orderId: string }) {
       }}
     >
       {isPending ? 'Изпращане...' : 'Изпрати с Speedy'}
+    </Button>
+  )
+}
+
+export function ShipWithBoxNowButton({ orderId }: { orderId: string }) {
+  const [isPending, startTransition] = useTransition()
+
+  return (
+    <Button
+      disabled={isPending}
+      onClick={() => {
+        const tracking = window.prompt(
+          'Въведи BoxNow tracking номер (по желание, от BoxNow портала):',
+          ''
+        )
+        // Cancelled prompt
+        if (tracking === null) return
+
+        startTransition(async () => {
+          try {
+            await markShippedManually(orderId, tracking.trim() || null)
+          } catch (e) {
+            alert(e instanceof Error ? e.message : 'Грешка при маркиране')
+          }
+        })
+      }}
+    >
+      {isPending ? 'Обработка...' : 'Маркирай като изпратена (BoxNow)'}
     </Button>
   )
 }
