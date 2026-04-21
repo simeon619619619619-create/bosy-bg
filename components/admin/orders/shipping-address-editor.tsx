@@ -136,84 +136,27 @@ export function ShippingAddressEditor({
             }
           >
             <option value="address">До адрес</option>
-            <option value="office">До офис (Speedy / Еконт)</option>
+            <option value="office">До офис Speedy</option>
             <option value="boxnow">До BoxNow автомат</option>
           </select>
         </label>
 
         {form.delivery_type === 'office' && (
-          <div className="grid gap-3 rounded-md border border-border p-3">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-muted-foreground">Куриер:</span>
-              <button
-                type="button"
-                onClick={() =>
-                  setForm({
-                    ...form,
-                    speedy_office_id: form.speedy_office_id,
-                    econt_office_id: null,
-                    econt_office_label: null,
-                  })
-                }
-                className={`rounded px-2 py-1 ${
-                  !form.econt_office_id && !form.econt_office_label
-                    ? 'bg-primary text-primary-foreground'
-                    : 'border border-border'
-                }`}
-              >
-                Speedy
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setForm({
-                    ...form,
-                    econt_office_id: form.econt_office_id ?? 0,
-                    speedy_office_id: null,
-                    speedy_office_label: null,
-                  })
-                }
-                className={`rounded px-2 py-1 ${
-                  form.econt_office_id || form.econt_office_label
-                    ? 'bg-primary text-primary-foreground'
-                    : 'border border-border'
-                }`}
-              >
-                Еконт
-              </button>
-            </div>
-
-            {form.econt_office_id || form.econt_office_label ? (
-              <OfficePicker
-                kind="econt"
-                selectedId={form.econt_office_id ?? null}
-                initialCity={form.city}
-                onSelect={(id, label) =>
-                  setForm({
-                    ...form,
-                    econt_office_id: Number(id),
-                    econt_office_label: label,
-                    speedy_office_id: null,
-                    speedy_office_label: null,
-                  })
-                }
-              />
-            ) : (
-              <OfficePicker
-                kind="speedy"
-                selectedId={form.speedy_office_id ?? null}
-                initialCity={form.city}
-                onSelect={(id, label) =>
-                  setForm({
-                    ...form,
-                    speedy_office_id: Number(id),
-                    speedy_office_label: label,
-                    econt_office_id: null,
-                    econt_office_label: null,
-                  })
-                }
-              />
-            )}
+          <div className="rounded-md border border-border p-3">
+            <OfficePicker
+              kind="speedy"
+              selectedId={form.speedy_office_id ?? null}
+              initialCity={form.city}
+              onSelect={(id, label) =>
+                setForm({
+                  ...form,
+                  speedy_office_id: Number(id),
+                  speedy_office_label: label,
+                  econt_office_id: null,
+                  econt_office_label: null,
+                })
+              }
+            />
           </div>
         )}
 

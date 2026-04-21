@@ -34,7 +34,9 @@ export function CourierSelector({ orderId, initial, locked }: Props) {
     })
   }
 
-  const options: Courier[] = ['speedy', 'econt', 'boxnow']
+  // Еконт временно disabled — production акаунт неактивен, demo пратките
+  // не достигат реален куриер.
+  const options: Courier[] = ['speedy', 'boxnow']
 
   return (
     <div className="rounded-lg border border-border bg-card p-6">
@@ -48,7 +50,7 @@ export function CourierSelector({ orderId, initial, locked }: Props) {
           Текущ: <span className="font-medium text-foreground">{LABELS[current]}</span>
         </p>
       ) : (
-        <div className="mt-4 grid grid-cols-3 gap-2">
+        <div className="mt-4 grid grid-cols-2 gap-2">
           {options.map((c) => (
             <button
               key={c}
