@@ -127,8 +127,10 @@ export async function POST(request: Request) {
       shipAddr.econt_office_id ??
       (econtOfficeMatch ? Number(econtOfficeMatch[1]) : null)
 
-    // Build receiver block
-    let receiverAddress: Record<string, unknown>
+    // Econt createLabels ползва receiverOfficeCode за доставка до офис
+    // (top-level на label-а), НЕ receiverAddress. Lookup office by id → code.
+    let receiverOfficeCode: string | null = null
+    let receiverAddress: Record<string, unknown> | null = null
 
     if (deliveryType === 'office') {
       if (!officeId) {
@@ -137,7 +139,18 @@ export async function POST(request: Request) {
           { status: 400 }
         )
       }
-      receiverAddress = { id: officeId }
+      // Resolve id → office.code (Econt createLabels очаква code, не id)
+      try {
+        const officesResp = await econtPost<{
+          offices: Array<{ id: number; code?: string }>
+        }>('/Nomenclatures/NomenclaturesService.getOffices.json', {
+          countryCode: 'BGR',
+        })
+        const match = officesResp.offices.find((o) => o.id === officeId)
+        receiverOfficeCode = match?.code ?? String(officeId)
+      } catch {
+        receiverOfficeCode = String(officeId)
+      }
     } else {
       const addr: CustomerAddress = {
         street: shipAddr.street?.trim(),
@@ -161,9 +174,14 @@ export async function POST(request: Request) {
           { status: 400 }
         )
       }
+      // Парсваме "улица Име 5" → street="улица Име", num="5" (Econt изисква num)
+      const streetMatch = addr.street.match(/^(.+?)\s+(\S+)$/)
+      const streetName = streetMatch?.[1] ?? addr.street
+      const streetNum = streetMatch?.[2] ?? '1'
       receiverAddress = {
         city: { id: cityId },
-        street: addr.street,
+        street: streetName,
+        num: streetNum,
       }
     }
 
@@ -173,9 +191,16 @@ export async function POST(request: Request) {
       'Стоки'
 
     const senderOfficeCode = process.env.ECONT_SENDER_OFFICE_CODE
+    const senderCity = process.env.ECONT_SENDER_CITY ?? 'София'
+    const senderStreet = process.env.ECONT_SENDER_STREET ?? 'бул. Цариградско шосе'
+    const senderNum = process.env.ECONT_SENDER_NUM ?? '1'
     const senderAddressPayload: Record<string, unknown> = senderOfficeCode
       ? { office: { code: senderOfficeCode } }
-      : {}
+      : {
+          city: { name: senderCity, country: { code3: 'BGR' } },
+          street: senderStreet,
+          num: senderNum,
+        }
 
     const label: Record<string, unknown> = {
       senderClient: {
@@ -191,7 +216,9 @@ export async function POST(request: Request) {
         phones: [recipientPhone],
         ...(recipientEmail && { email: recipientEmail }),
       },
-      receiverAddress,
+      ...(receiverOfficeCode
+        ? { receiverOfficeCode }
+        : { receiverAddress }),
       shipmentType: 'PACK',
       packCount: 1,
       weight: 1,
