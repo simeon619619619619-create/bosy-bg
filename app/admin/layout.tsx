@@ -14,7 +14,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh" style={{ background: '#fff' }}>
       <Sidebar user={{ name: user.name, email: user.email, role: user.role }} />
       <main className="ml-[260px] p-8">{children}</main>
     </div>
