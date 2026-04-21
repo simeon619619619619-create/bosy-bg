@@ -28,6 +28,17 @@ const nextConfig: NextConfig = {
         destination: '/contacts',
         permanent: true,
       },
+      // /products/* → canonical routes
+      {
+        source: '/products',
+        destination: '/shop',
+        permanent: true,
+      },
+      {
+        source: '/products/:slug',
+        destination: '/product/:slug',
+        permanent: true,
+      },
     ];
   },
 };
