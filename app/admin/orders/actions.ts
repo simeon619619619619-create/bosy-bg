@@ -135,7 +135,11 @@ export interface ShippingAddressInput {
   zip: string
   delivery_type?: 'address' | 'office' | 'boxnow'
   speedy_office_id?: number | null
+  speedy_office_label?: string | null
+  econt_office_id?: number | null
+  econt_office_label?: string | null
   boxnow_locker_id?: string | null
+  boxnow_locker_label?: string | null
 }
 
 export async function updateShippingAddress(id: string, address: ShippingAddressInput) {

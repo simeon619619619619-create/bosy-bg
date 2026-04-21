@@ -9,6 +9,19 @@ interface CustomerAddress {
   zip?: string
 }
 
+interface ShippingAddress {
+  name?: string
+  phone?: string
+  email?: string | null
+  street?: string
+  city?: string
+  zip?: string
+  delivery_type?: 'address' | 'office' | 'boxnow'
+  speedy_office_id?: number | null
+  econt_office_id?: number | null
+  boxnow_locker_id?: string | null
+}
+
 interface EcontLabelResponse {
   label?: {
     shipmentNumber?: string
@@ -66,7 +79,14 @@ export async function POST(request: Request) {
       address: CustomerAddress | string | null
     } | null
 
-    if (!customer?.phone) {
+    // Admin-edited shipping address (overrides customer fields when present)
+    const shipAddr = (order.shipping_address as ShippingAddress | null) ?? {}
+
+    const recipientName = shipAddr.name || customer?.name || ''
+    const recipientPhone = shipAddr.phone || customer?.phone || ''
+    const recipientEmail = shipAddr.email || customer?.email || null
+
+    if (!recipientPhone) {
       return NextResponse.json(
         { error: 'Липсва телефон на клиента' },
         { status: 400 }
@@ -76,27 +96,38 @@ export async function POST(request: Request) {
     const notes = (order.notes as string) ?? ''
     const isCod = notes.includes('[COD]')
     const econtOfficeMatch = notes.match(/\[ECONT_OFFICE:(\d+)\]/)
-    const officeId = econtOfficeMatch ? Number(econtOfficeMatch[1]) : null
 
-    // Parse customer address
-    let addr: CustomerAddress = {}
-    if (typeof customer.address === 'object' && customer.address !== null) {
-      addr = customer.address
-    } else if (typeof customer.address === 'string') {
-      const parts = customer.address.split(',').map((s) => s.trim())
-      addr = { zip: parts[0], city: parts[1], street: parts[2] }
-    }
+    // Delivery type: prefer shipping_address, fallback to notes tag
+    const deliveryType =
+      shipAddr.delivery_type ?? (econtOfficeMatch ? 'office' : 'address')
+    const officeId =
+      shipAddr.econt_office_id ??
+      (econtOfficeMatch ? Number(econtOfficeMatch[1]) : null)
 
     // Build receiver block
     let receiverAddress: Record<string, unknown>
 
-    if (officeId) {
-      // To office
+    if (deliveryType === 'office') {
+      if (!officeId) {
+        return NextResponse.json(
+          { error: 'Липсва ID на офис Еконт за доставка до офис' },
+          { status: 400 }
+        )
+      }
       receiverAddress = { id: officeId }
     } else {
+      const addr: CustomerAddress = {
+        street: shipAddr.street?.trim(),
+        city: shipAddr.city?.trim(),
+        zip: shipAddr.zip?.trim(),
+      }
+
       if (!addr.city || !addr.street) {
         return NextResponse.json(
-          { error: 'Адресът на клиента е непълен' },
+          {
+            error:
+              'Липсва град или улица в адреса за доставка. Отвори "Редактирай" и запази адреса преди изпращане.',
+          },
           { status: 400 }
         )
       }
@@ -134,9 +165,9 @@ export async function POST(request: Request) {
         },
         senderAddress: senderAddressPayload,
         receiverClient: {
-          name: customer.name,
-          phones: [customer.phone],
-          ...(customer.email && { email: customer.email }),
+          name: recipientName,
+          phones: [recipientPhone],
+          ...(recipientEmail && { email: recipientEmail }),
         },
         receiverAddress,
         shipmentType: 'PACK',

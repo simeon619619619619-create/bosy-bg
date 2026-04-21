@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { updateShippingAddress, type ShippingAddressInput } from '@/app/admin/orders/actions'
+import { OfficePicker } from './office-picker'
 
 interface Props {
   orderId: string
@@ -12,12 +13,27 @@ interface Props {
   customerEmail: string | null
 }
 
-export function ShippingAddressEditor({ orderId, initial, customerName, customerPhone, customerEmail }: Props) {
+interface FormState extends ShippingAddressInput {
+  speedy_office_label?: string | null
+  econt_office_id?: number | null
+  econt_office_label?: string | null
+  boxnow_locker_label?: string | null
+}
+
+export function ShippingAddressEditor({
+  orderId,
+  initial,
+  customerName,
+  customerPhone,
+  customerEmail,
+}: Props) {
   const [editing, setEditing] = useState(false)
   const [saved, setSaved] = useState(false)
   const [isPending, startTransition] = useTransition()
 
-  const [form, setForm] = useState<ShippingAddressInput>({
+  const initialAny = (initial ?? {}) as Partial<FormState>
+
+  const [form, setForm] = useState<FormState>({
     name: initial?.name ?? customerName,
     phone: initial?.phone ?? customerPhone,
     email: initial?.email ?? customerEmail,
@@ -26,7 +42,11 @@ export function ShippingAddressEditor({ orderId, initial, customerName, customer
     zip: initial?.zip ?? '',
     delivery_type: initial?.delivery_type ?? 'address',
     speedy_office_id: initial?.speedy_office_id ?? null,
+    speedy_office_label: initialAny.speedy_office_label ?? null,
+    econt_office_id: initialAny.econt_office_id ?? null,
+    econt_office_label: initialAny.econt_office_label ?? null,
     boxnow_locker_id: initial?.boxnow_locker_id ?? null,
+    boxnow_locker_label: initialAny.boxnow_locker_label ?? null,
   })
 
   function handleSave() {
@@ -40,9 +60,21 @@ export function ShippingAddressEditor({ orderId, initial, customerName, customer
 
   const deliveryLabel =
     form.delivery_type === 'office'
-      ? `Офис Speedy${form.speedy_office_id ? ` #${form.speedy_office_id}` : ''}`
+      ? form.speedy_office_label
+        ? `Офис Speedy · ${form.speedy_office_label}`
+        : form.econt_office_label
+          ? `Офис Еконт · ${form.econt_office_label}`
+          : form.speedy_office_id
+            ? `Офис Speedy #${form.speedy_office_id}`
+            : form.econt_office_id
+              ? `Офис Еконт #${form.econt_office_id}`
+              : 'Офис (не е избран)'
       : form.delivery_type === 'boxnow'
-        ? `BoxNow${form.boxnow_locker_id ? ` ${form.boxnow_locker_id}` : ''}`
+        ? form.boxnow_locker_label
+          ? `BoxNow · ${form.boxnow_locker_label}`
+          : form.boxnow_locker_id
+            ? `BoxNow ${form.boxnow_locker_id}`
+            : 'BoxNow (не е избран)'
         : 'Адрес'
 
   if (!editing) {
@@ -62,7 +94,9 @@ export function ShippingAddressEditor({ orderId, initial, customerName, customer
           <p><span className="text-muted-foreground">Получател: </span>{form.name || '—'}</p>
           <p><span className="text-muted-foreground">Телефон: </span>{form.phone || '—'}</p>
           <p><span className="text-muted-foreground">Вид: </span>{deliveryLabel}</p>
-          <p><span className="text-muted-foreground">Адрес: </span>{parts || '—'}</p>
+          {form.delivery_type === 'address' && (
+            <p><span className="text-muted-foreground">Адрес: </span>{parts || '—'}</p>
+          )}
           {saved && <p className="text-xs text-green-500">Запазено</p>}
         </div>
       </div>
@@ -94,58 +128,141 @@ export function ShippingAddressEditor({ orderId, initial, customerName, customer
           <select
             className="rounded-md border border-border bg-background px-3 py-2"
             value={form.delivery_type ?? 'address'}
-            onChange={(e) => setForm({ ...form, delivery_type: e.target.value as 'address' | 'office' | 'boxnow' })}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                delivery_type: e.target.value as 'address' | 'office' | 'boxnow',
+              })
+            }
           >
             <option value="address">До адрес</option>
-            <option value="office">До офис Speedy</option>
+            <option value="office">До офис (Speedy / Еконт)</option>
             <option value="boxnow">До BoxNow автомат</option>
           </select>
         </label>
+
         {form.delivery_type === 'office' && (
-          <label className="grid gap-1">
-            <span className="text-muted-foreground">ID на офис Speedy</span>
-            <input
-              type="number"
-              className="rounded-md border border-border bg-background px-3 py-2"
-              value={form.speedy_office_id ?? ''}
-              onChange={(e) => setForm({ ...form, speedy_office_id: e.target.value ? Number(e.target.value) : null })}
-            />
-          </label>
+          <div className="grid gap-3 rounded-md border border-border p-3">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-muted-foreground">Куриер:</span>
+              <button
+                type="button"
+                onClick={() =>
+                  setForm({
+                    ...form,
+                    speedy_office_id: form.speedy_office_id,
+                    econt_office_id: null,
+                    econt_office_label: null,
+                  })
+                }
+                className={`rounded px-2 py-1 ${
+                  !form.econt_office_id && !form.econt_office_label
+                    ? 'bg-primary text-primary-foreground'
+                    : 'border border-border'
+                }`}
+              >
+                Speedy
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setForm({
+                    ...form,
+                    econt_office_id: form.econt_office_id ?? 0,
+                    speedy_office_id: null,
+                    speedy_office_label: null,
+                  })
+                }
+                className={`rounded px-2 py-1 ${
+                  form.econt_office_id || form.econt_office_label
+                    ? 'bg-primary text-primary-foreground'
+                    : 'border border-border'
+                }`}
+              >
+                Еконт
+              </button>
+            </div>
+
+            {form.econt_office_id || form.econt_office_label ? (
+              <OfficePicker
+                kind="econt"
+                selectedId={form.econt_office_id ?? null}
+                initialCity={form.city}
+                onSelect={(id, label) =>
+                  setForm({
+                    ...form,
+                    econt_office_id: Number(id),
+                    econt_office_label: label,
+                    speedy_office_id: null,
+                    speedy_office_label: null,
+                  })
+                }
+              />
+            ) : (
+              <OfficePicker
+                kind="speedy"
+                selectedId={form.speedy_office_id ?? null}
+                initialCity={form.city}
+                onSelect={(id, label) =>
+                  setForm({
+                    ...form,
+                    speedy_office_id: Number(id),
+                    speedy_office_label: label,
+                    econt_office_id: null,
+                    econt_office_label: null,
+                  })
+                }
+              />
+            )}
+          </div>
         )}
+
         {form.delivery_type === 'boxnow' && (
-          <label className="grid gap-1">
-            <span className="text-muted-foreground">BoxNow locker ID</span>
-            <input
-              className="rounded-md border border-border bg-background px-3 py-2"
-              value={form.boxnow_locker_id ?? ''}
-              onChange={(e) => setForm({ ...form, boxnow_locker_id: e.target.value || null })}
+          <div className="rounded-md border border-border p-3">
+            <OfficePicker
+              kind="boxnow"
+              selectedId={form.boxnow_locker_id ?? null}
+              initialCity={form.city}
+              onSelect={(id, label) =>
+                setForm({
+                  ...form,
+                  boxnow_locker_id: String(id),
+                  boxnow_locker_label: label,
+                })
+              }
             />
-          </label>
+          </div>
         )}
-        <label className="grid gap-1">
-          <span className="text-muted-foreground">Улица / адрес</span>
-          <input
-            className="rounded-md border border-border bg-background px-3 py-2"
-            value={form.street}
-            onChange={(e) => setForm({ ...form, street: e.target.value })}
-          />
-        </label>
-        <label className="grid gap-1">
-          <span className="text-muted-foreground">Град</span>
-          <input
-            className="rounded-md border border-border bg-background px-3 py-2"
-            value={form.city}
-            onChange={(e) => setForm({ ...form, city: e.target.value })}
-          />
-        </label>
-        <label className="grid gap-1">
-          <span className="text-muted-foreground">Пощенски код</span>
-          <input
-            className="rounded-md border border-border bg-background px-3 py-2"
-            value={form.zip}
-            onChange={(e) => setForm({ ...form, zip: e.target.value })}
-          />
-        </label>
+
+        {form.delivery_type === 'address' && (
+          <>
+            <label className="grid gap-1">
+              <span className="text-muted-foreground">Улица / адрес</span>
+              <input
+                className="rounded-md border border-border bg-background px-3 py-2"
+                value={form.street}
+                onChange={(e) => setForm({ ...form, street: e.target.value })}
+              />
+            </label>
+            <label className="grid gap-1">
+              <span className="text-muted-foreground">Град</span>
+              <input
+                className="rounded-md border border-border bg-background px-3 py-2"
+                value={form.city}
+                onChange={(e) => setForm({ ...form, city: e.target.value })}
+              />
+            </label>
+            <label className="grid gap-1">
+              <span className="text-muted-foreground">Пощенски код</span>
+              <input
+                className="rounded-md border border-border bg-background px-3 py-2"
+                value={form.zip}
+                onChange={(e) => setForm({ ...form, zip: e.target.value })}
+              />
+            </label>
+          </>
+        )}
+
         <div className="flex gap-2">
           <Button size="sm" disabled={isPending} onClick={handleSave}>
             {isPending ? 'Запазване...' : 'Запази'}

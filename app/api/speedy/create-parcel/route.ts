@@ -31,6 +31,18 @@ interface CustomerAddress {
   zip?: string
 }
 
+interface ShippingAddress {
+  name?: string
+  phone?: string
+  email?: string | null
+  street?: string
+  city?: string
+  zip?: string
+  delivery_type?: 'address' | 'office' | 'boxnow'
+  speedy_office_id?: number | null
+  boxnow_locker_id?: string | null
+}
+
 export async function POST(request: Request) {
   try {
     const { orderId } = await request.json()
@@ -65,39 +77,58 @@ export async function POST(request: Request) {
       address: CustomerAddress | string | null
     } | null
 
-    if (!customer?.phone) {
+    // Admin-edited shipping address (overrides customer fields when present)
+    const shipAddr = (order.shipping_address as ShippingAddress | null) ?? {}
+
+    const recipientName = shipAddr.name || customer?.name || ''
+    const recipientPhone = shipAddr.phone || customer?.phone || ''
+    const recipientEmail = shipAddr.email || customer?.email || null
+
+    if (!recipientPhone) {
       return NextResponse.json(
         { error: 'Customer phone is required for shipping' },
         { status: 400 }
       )
     }
 
-    // Determine delivery type from notes ([OFFICE:X] tag)
     const notes = (order.notes as string) ?? ''
     const isCod = notes.includes('[COD]')
     const officeMatch = notes.match(/\[OFFICE:(\d+)\]/)
-    const deliveryToOffice = !!officeMatch
-    const pickupOfficeId = officeMatch ? Number(officeMatch[1]) : null
+
+    // Delivery type: prefer shipping_address, fallback to notes tag
+    const deliveryType =
+      shipAddr.delivery_type ?? (officeMatch ? 'office' : 'address')
+    const pickupOfficeId =
+      shipAddr.speedy_office_id ?? (officeMatch ? Number(officeMatch[1]) : null)
 
     // Build recipient block based on delivery type
     let recipientLocation: Record<string, unknown>
 
-    if (deliveryToOffice && pickupOfficeId) {
-      // Delivery to Speedy office — only need pickupOfficeId
+    if (deliveryType === 'office') {
+      if (!pickupOfficeId) {
+        return NextResponse.json(
+          { error: 'Липсва ID на офис Speedy за доставка до офис' },
+          { status: 400 }
+        )
+      }
       recipientLocation = { pickupOfficeId }
     } else {
-      // Delivery to address — need full street info
-      let addr: CustomerAddress = {}
-      if (typeof customer.address === 'object' && customer.address !== null) {
-        addr = customer.address
-      } else if (typeof customer.address === 'string') {
-        const parts = customer.address.split(',').map((s) => s.trim())
-        addr = { zip: parts[0], city: parts[1], street: parts[2] }
+      // Address fields: prefer order.shipping_address. customer.address е legacy
+      // free-text поле и често няма city/street keys → не го ползваме за
+      // Speedy validation (иначе потребителят получава "Адресът е непълен"
+      // дори след като е попълнил и запазил адреса).
+      const addr: CustomerAddress = {
+        street: shipAddr.street?.trim(),
+        city: shipAddr.city?.trim(),
+        zip: shipAddr.zip?.trim(),
       }
 
       if (!addr.city || !addr.street) {
         return NextResponse.json(
-          { error: 'Адресът на клиента е непълен (липсва град или улица)' },
+          {
+            error:
+              'Липсва град или улица в адреса за доставка. Отвори "Редактирай" и запази адреса преди изпращане.',
+          },
           { status: 400 }
         )
       }
@@ -158,9 +189,9 @@ export async function POST(request: Request) {
         }),
       },
       recipient: {
-        phone1: { number: customer.phone },
-        clientName: customer.name,
-        ...(customer.email && { email: customer.email }),
+        phone1: { number: recipientPhone },
+        clientName: recipientName,
+        ...(recipientEmail && { email: recipientEmail }),
         privatePerson: true,
         ...recipientLocation,
       },

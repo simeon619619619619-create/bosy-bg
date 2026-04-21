@@ -167,18 +167,39 @@ export default async function OrderDetailPage({
 
           {/* Shipping info */}
           {(order.status === 'shipped' || order.status === 'delivered') &&
-            (order.speedy_tracking_number || order.econt_tracking_number) && (
+            (order.speedy_tracking_number ||
+              order.econt_tracking_number ||
+              order.boxnow_tracking_number) && (
               <div className="rounded-lg border border-border bg-card p-6">
                 <h2 className="text-lg font-semibold">
-                  Доставка · {courier === 'econt' ? 'Еконт' : 'Speedy'}
+                  Доставка ·{' '}
+                  {courier === 'econt'
+                    ? 'Еконт'
+                    : courier === 'boxnow'
+                      ? 'BoxNow'
+                      : 'Speedy'}
                 </h2>
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Tracking номер</span>
                     <span className="font-mono text-primary">
-                      {order.econt_tracking_number || order.speedy_tracking_number}
+                      {order.boxnow_tracking_number ||
+                        order.econt_tracking_number ||
+                        order.speedy_tracking_number}
                     </span>
                   </div>
+                  {order.boxnow_label_url && (
+                    <div className="mt-3">
+                      <a
+                        href={order.boxnow_label_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline"
+                      >
+                        Принтирай BoxNow етикет
+                      </a>
+                    </div>
+                  )}
                   {order.econt_label_url && (
                     <div className="mt-3">
                       <a
@@ -191,18 +212,20 @@ export default async function OrderDetailPage({
                       </a>
                     </div>
                   )}
-                  {!order.econt_label_url && order.speedy_parcel_id && (
-                    <div className="mt-3">
-                      <a
-                        href={`/api/speedy/label?parcelId=${order.speedy_parcel_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-primary hover:underline"
-                      >
-                        Принтирай Speedy етикет
-                      </a>
-                    </div>
-                  )}
+                  {!order.econt_label_url &&
+                    !order.boxnow_label_url &&
+                    order.speedy_parcel_id && (
+                      <div className="mt-3">
+                        <a
+                          href={`/api/speedy/label?parcelId=${order.speedy_parcel_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          Принтирай Speedy етикет
+                        </a>
+                      </div>
+                    )}
                 </div>
               </div>
             )}
@@ -319,6 +342,20 @@ export default async function OrderDetailPage({
                   }
                 >
                   Принтирай Еконт етикет
+                </Button>
+              )}
+              {order.status === 'shipped' && order.boxnow_label_url && (
+                <Button
+                  variant="outline"
+                  render={
+                    <a
+                      href={order.boxnow_label_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  }
+                >
+                  Принтирай BoxNow етикет
                 </Button>
               )}
               {order.status === 'shipped' && (
