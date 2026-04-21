@@ -18,7 +18,8 @@ interface Product {
   category: string | null
   stock_quantity: number | null
   is_active: boolean
-  image_url: string | null
+  images: string[] | null
+  variants: Record<string, unknown> | null
 }
 
 function slugify(text: string): string {
@@ -71,7 +72,13 @@ export function ProductForm({
         <Input
           id="short_name"
           name="short_name"
-          defaultValue={(defaultValues as unknown as Record<string, unknown>)?.variants ? ((defaultValues as unknown as Record<string, unknown>).variants as Record<string, string>)?.short_name || '' : ''}
+          defaultValue={
+            (defaultValues?.variants &&
+              typeof defaultValues.variants === 'object' &&
+              typeof (defaultValues.variants as Record<string, unknown>).short_name === 'string'
+              ? ((defaultValues.variants as Record<string, unknown>).short_name as string)
+              : '')
+          }
           placeholder="Напр. Bubbles Лечи (ако е празно, ползва пълното име)"
         />
       </div>
@@ -153,15 +160,14 @@ export function ProductForm({
         />
       </div>
 
-      {/* Image URL */}
+      {/* Image URL — maps to images[0] in the DB */}
       <div className="space-y-2">
         <Label htmlFor="image_url">URL на снимка</Label>
         <Input
           id="image_url"
           name="image_url"
-          type="url"
-          defaultValue={defaultValues?.image_url || ''}
-          placeholder="https://..."
+          defaultValue={defaultValues?.images?.[0] || ''}
+          placeholder="https://... или /products/slug/featured.png"
         />
       </div>
 

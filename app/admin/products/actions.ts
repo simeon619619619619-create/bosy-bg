@@ -24,7 +24,11 @@ export async function createProduct(formData: FormData) {
   const category = formData.get('category') as string
   const stockQuantity = parseInt(formData.get('stock_quantity') as string) || 0
   const isActive = formData.get('is_active') === 'true'
-  const imageUrl = formData.get('image_url') as string
+  const imageUrl = ((formData.get('image_url') as string) ?? '').trim()
+  const shortName = ((formData.get('short_name') as string) ?? '').trim()
+
+  const variants: Record<string, unknown> = {}
+  if (shortName) variants.short_name = shortName
 
   const { error } = await supabase.from('products').insert({
     name,
@@ -35,7 +39,8 @@ export async function createProduct(formData: FormData) {
     category,
     stock_quantity: stockQuantity,
     is_active: isActive,
-    image_url: imageUrl || null,
+    images: imageUrl ? [imageUrl] : [],
+    variants,
   })
 
   if (error) {
@@ -57,16 +62,35 @@ export async function updateProduct(id: string, formData: FormData) {
   const category = formData.get('category') as string
   const stockQuantity = parseInt(formData.get('stock_quantity') as string) || 0
   const isActive = formData.get('is_active') === 'true'
-  const imageUrl = formData.get('image_url') as string
-  const shortName = (formData.get('short_name') as string)?.trim() || ''
+  const imageUrl = ((formData.get('image_url') as string) ?? '').trim()
+  const shortName = ((formData.get('short_name') as string) ?? '').trim()
+
+  const { data: existing } = await supabase
+    .from('products')
+    .select('variants, images')
+    .eq('id', id)
+    .single()
 
   // Merge short_name into existing variants JSONB
-  const { data: existing } = await supabase.from('products').select('variants').eq('id', id).single()
   const variants = (existing?.variants as Record<string, unknown>) ?? {}
   if (shortName) {
     variants.short_name = shortName
   } else {
     delete variants.short_name
+  }
+
+  // Replace the first image when the URL changes; keep other images intact.
+  // Empty URL clears all images (matches what the form displays).
+  const existingImages = Array.isArray(existing?.images) ? (existing.images as string[]) : []
+  let newImages: string[]
+  if (!imageUrl) {
+    newImages = []
+  } else if (existingImages.length === 0) {
+    newImages = [imageUrl]
+  } else if (existingImages[0] === imageUrl) {
+    newImages = existingImages
+  } else {
+    newImages = [imageUrl, ...existingImages.slice(1)]
   }
 
   const { error } = await supabase
@@ -80,7 +104,7 @@ export async function updateProduct(id: string, formData: FormData) {
       category,
       stock_quantity: stockQuantity,
       is_active: isActive,
-      image_url: imageUrl || null,
+      images: newImages,
       variants,
     })
     .eq('id', id)
