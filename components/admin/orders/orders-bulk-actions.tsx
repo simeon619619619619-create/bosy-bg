@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { OrderStatusSelect } from '@/components/admin/orders/order-status-select'
+import { InlineNotePopover } from '@/components/admin/orders/inline-note-popover'
 import { bulkConfirmOrders, bulkCancelOrders } from '@/app/admin/orders/actions'
 import { Search } from 'lucide-react'
 
@@ -82,6 +83,8 @@ interface Order {
   speedy_tracking_number: string | null
   econt_tracking_number?: string | null
   created_at: string
+  customer_note: string | null
+  admin_notes: string
 }
 
 export function OrdersListClient({ orders }: { orders: Order[] }) {
@@ -226,6 +229,7 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
               <TableHead>Статус</TableHead>
               <TableHead>Куриер</TableHead>
               <TableHead>Tracking</TableHead>
+              <TableHead className="w-10">Бел.</TableHead>
               <TableHead>Дата</TableHead>
             </TableRow>
           </TableHeader>
@@ -285,6 +289,13 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
                         <span className="text-muted-foreground">—</span>
                       )}
                     </Link>
+                  </TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <InlineNotePopover
+                      orderId={order.id}
+                      customerNote={order.customer_note}
+                      initialAdminNotes={order.admin_notes}
+                    />
                   </TableCell>
                   <TableCell>
                     <Link href={orderUrl} className="block text-muted-foreground">

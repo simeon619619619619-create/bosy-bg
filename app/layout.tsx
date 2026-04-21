@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html
       lang="bg"
-      className={`${geistSans.variable} ${geistMono.variable} dark`}
+      className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <head>
         <script

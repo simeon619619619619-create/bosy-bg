@@ -71,7 +71,7 @@ export function ShopContent({
             style={{
               borderColor: '#ddd',
               color: '#333',
-              background: '#fdf5f0',
+              background: '#fff',
               // @ts-expect-error CSS custom property
               '--tw-ring-color': '#c77dba',
             }}
@@ -92,7 +92,7 @@ export function ShopContent({
             updateParams({ category: e.target.value || undefined })
           }
           className="h-10 cursor-pointer rounded-md border px-3 text-sm outline-none"
-          style={{ borderColor: '#ddd', color: '#333', background: '#fdf5f0' }}
+          style={{ borderColor: '#ddd', color: '#333', background: '#fff' }}
         >
           <option value="">Всички категории</option>
           {categories.map((cat) => (
@@ -109,7 +109,7 @@ export function ShopContent({
             updateParams({ sort: e.target.value || undefined })
           }
           className="h-10 cursor-pointer rounded-md border px-3 text-sm outline-none"
-          style={{ borderColor: '#ddd', color: '#333', background: '#fdf5f0' }}
+          style={{ borderColor: '#ddd', color: '#333', background: '#fff' }}
         >
           <option value="">Най-нови</option>
           <option value="price_asc">Цена: ниска към висока</option>

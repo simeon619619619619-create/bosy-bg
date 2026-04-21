@@ -117,7 +117,7 @@ export default async function ShopPage({
   }
 
   return (
-    <div style={{ background: '#fdf5f0', minHeight: '100vh' }}>
+    <div style={{ background: '#fff', minHeight: '100vh' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}

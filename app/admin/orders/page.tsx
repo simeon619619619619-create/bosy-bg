@@ -55,6 +55,8 @@ export default async function OrdersPage({
       speedy_tracking_number: order.speedy_tracking_number,
       econt_tracking_number: order.econt_tracking_number,
       created_at: order.created_at,
+      customer_note: notes || null,
+      admin_notes: (order.admin_notes as string) ?? '',
     }
   })
 
