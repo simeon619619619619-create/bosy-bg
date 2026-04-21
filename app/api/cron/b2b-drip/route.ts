@@ -21,7 +21,7 @@ const SIGNATURE = `
       <p style="margin:24px 0 4px;font-size:15px;">Поздрави,</p>
       <p style="margin:0;font-size:15px;font-weight:bold;">Саня Генова</p>
       <p style="margin:2px 0;font-size:13px;color:#888;">Търговски екип · BOSY</p>
-      <p style="margin:2px 0;font-size:13px;color:#888;">+359 879 89 89 88 · sales@bosy.bg</p>
+      <p style="margin:2px 0;font-size:13px;color:#888;">+359 876 4444 67 · sales@bosy.bg</p>
       <p style="margin:2px 0;font-size:13px;color:#888;">bosy.bg</p>`
 
 function email1Html(name: string): string {
@@ -39,7 +39,7 @@ function email1Html(name: string): string {
       <li>БИО протеинови кремове с макадамия</li>
       <li>Детокс серия — билкови капки и чай</li>
     </ul>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Работим без минимум за първа поръчка при дропси, чай и бонбони. Прилагам продуктовата ни ценова листа за едро. Можете да я разгледате и <a href="https://bosy.bg/bosy-b2b-catalogue.pdf" style="color:#c77dba;font-weight:bold;">онлайн тук</a>.</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Работим без минимум за първа поръчка при детокс капки, чай и бонбони. Прилагам продуктовата ни ценова листа за едро. Можете да я разгледате и <a href="https://bosy.bg/bosy-b2b-catalogue.pdf" style="color:#c77dba;font-weight:bold;">онлайн тук</a>.</p>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Ако имате интерес, просто отговорете на този имейл и ще Ви изпратя мостри.</p>
     ${SIGNATURE}
   </td></tr></table>
@@ -60,7 +60,7 @@ function email2Html(name: string): string {
       <li>Доставка в цяла България</li>
       <li>Цени от 0.96 лв. без ДДС на бройка</li>
     </ul>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Ако предпочитате, можете да ме потърсите и на <strong>+359 879 89 89 88</strong>.</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Ако предпочитате, можете да ме потърсите и на <strong>+359 876 4444 67</strong>.</p>
     ${SIGNATURE}
   </td></tr></table>
 </body></html>`
@@ -78,7 +78,7 @@ function email3Html(name: string): string {
       <p style="margin:0;font-size:18px;font-weight:bold;color:#c77dba;">5% допълнителна отстъпка</p>
       <p style="margin:4px 0 0;font-size:14px;color:#666;">върху B2B цените за първите 3 месеца</p>
     </div>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Офертата важи до края на май. Просто отговорете на този имейл или се обадете на <strong>+359 879 89 89 88</strong>.</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Офертата важи до края на май. Просто отговорете на този имейл или се обадете на <strong>+359 876 4444 67</strong>.</p>
     <p style="margin:0 0 16px;font-size:14px;color:#888;">Няма да Ви пиша повече, освен ако не се свържете с нас.</p>
     ${SIGNATURE}
   </td></tr></table>
