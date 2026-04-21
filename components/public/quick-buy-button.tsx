@@ -15,7 +15,7 @@ interface Props {
 }
 
 export function QuickBuyButton({ product }: Props) {
-  const { addToCart } = useCart()
+  const { addToCart, openCartDrawer } = useCart()
   const [added, setAdded] = useState(false)
 
   function handleClick(e: React.MouseEvent) {
@@ -33,6 +33,7 @@ export function QuickBuyButton({ product }: Props) {
       1
     )
     setAdded(true)
+    openCartDrawer()
     setTimeout(() => setAdded(false), 1500)
   }
 

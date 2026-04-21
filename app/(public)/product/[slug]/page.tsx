@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createPublicSupabaseClient } from '@/lib/supabase/public'
 import { AddToCartButton } from '@/components/public/add-to-cart-button'
 import { StickyMobileBuy } from '@/components/public/sticky-mobile-buy'
+import { RecentlyViewed } from '@/components/public/recently-viewed'
 import { ProductGallery } from '@/components/public/product-gallery'
 import Link from 'next/link'
 import { toEur } from '@/lib/currency'
@@ -670,6 +671,8 @@ export default async function ProductPage({
           </section>
         )}
       </div>
+
+      <RecentlyViewed currentSlug={slug} />
 
       <StickyMobileBuy
         product={{

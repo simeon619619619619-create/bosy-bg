@@ -25,7 +25,7 @@ interface Product {
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const { addToCart } = useCart()
+  const { addToCart, openCartDrawer } = useCart()
   const [added, setAdded] = useState(false)
   const image = product.images?.[0] ?? null
   const outOfStock = product.stock_quantity != null && product.stock_quantity <= 0
@@ -42,6 +42,7 @@ export function ProductCard({ product }: { product: Product }) {
       price: product.price,
       image,
     })
+    openCartDrawer()
   }
 
   return (

@@ -10,6 +10,7 @@ import { validatePromoCode } from '@/app/admin/promo-codes/actions'
 import { toEur } from '@/lib/currency'
 import { SpeedyOfficeSelector } from '@/components/checkout/speedy-office-selector'
 import { BoxNowLockerSelector } from '@/components/checkout/boxnow-locker-selector'
+import { CheckoutTrustBadges } from '@/components/public/checkout-trust-badges'
 
 interface SelectedOffice {
   id: number
@@ -801,6 +802,7 @@ export default function CheckoutPage() {
                 : (paymentMethod === 'card' ? 'Плати с карта (-5%)' : 'Поръчай с наложен платеж')
               }
             </button>
+            <CheckoutTrustBadges />
           </div>
         </div>
       </form>

@@ -5,6 +5,9 @@ import { Header } from '@/components/public/header'
 import { Footer } from '@/components/public/footer'
 import { CartProvider } from '@/components/public/cart-provider'
 import { NewsletterPopup } from '@/components/public/newsletter-popup'
+import { ExitIntentPopup } from '@/components/public/exit-intent-popup'
+import { SocialProofToast } from '@/components/public/social-proof-toast'
+import { CartDrawerWrapper } from '@/components/public/cart-drawer-wrapper'
 
 const montserrat = Montserrat({
   subsets: ['latin', 'cyrillic'],
@@ -148,6 +151,9 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <main>{children}</main>
         <Footer />
         <NewsletterPopup />
+        <ExitIntentPopup />
+        <SocialProofToast />
+        <CartDrawerWrapper />
       </CartProvider>
     </div>
   )

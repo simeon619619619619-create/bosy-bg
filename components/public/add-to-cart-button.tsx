@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function AddToCartButton({ product }: Props) {
-  const { addToCart } = useCart()
+  const { addToCart, openCartDrawer } = useCart()
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
 
@@ -36,6 +36,7 @@ export function AddToCartButton({ product }: Props) {
       quantity
     )
     setAdded(true)
+    openCartDrawer()
     setTimeout(() => setAdded(false), 1500)
   }
 
