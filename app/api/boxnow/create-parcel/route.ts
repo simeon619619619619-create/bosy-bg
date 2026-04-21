@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { sendShippingNotification } from '@/lib/resend/client'
-import {
-  boxnowJson,
-  boxnowPartnerId,
-  boxnowWarehouseId,
-} from '@/lib/boxnow/client'
+import { boxnowJson } from '@/lib/boxnow/client'
 
 interface ShippingAddress {
   name?: string
@@ -16,16 +12,10 @@ interface ShippingAddress {
 }
 
 interface BoxNowDeliveryResponse {
-  data?: {
-    id?: string
-    orderNumber?: string
-    referenceNumber?: string
-    parcels?: Array<{ id?: string; boxId?: string }>
-  }
   id?: string
   orderNumber?: string
   referenceNumber?: string
-  parcels?: Array<{ id?: string; boxId?: string }>
+  parcels?: Array<{ id?: string }>
 }
 
 function digitsOnly(s: string): string {
@@ -101,51 +91,46 @@ export async function POST(request: Request) {
       )
     }
 
-    const partnerId = boxnowPartnerId()
-    const warehouseId = boxnowWarehouseId()
-
     const items = Array.isArray(order.items) ? order.items : []
     const contents =
       items.map((i: { name: string }) => i.name).join(', ').slice(0, 100) ||
       'Стоки'
 
-    const declaredValue = Number(order.total ?? 0)
-    const codAmount = isCod ? declaredValue : 0
+    const declaredValue = Number(order.total ?? 0).toFixed(2)
+    const codAmount = isCod ? Number(order.total ?? 0).toFixed(2) : '0'
 
-    // Partner API delivery request. Keeping the field set conservative —
-    // BoxNow ignores unknown keys but requires partnerId, senderName,
-    // addressLine1 on sender (warehouse fallback), recipientName/phone,
-    // destination deliveryBoxId.
+    // BoxNow Partner API schema (verified live 2026-04-21): numeric monetary
+    // fields go as STRINGS; locationId is a string; origin/destination share
+    // the same anyOf schema (either `locationId` for APM or a full address).
     const payload = {
-      partnerId,
       orderNumber: String(order.order_number ?? order.id),
-      parcelValue: declaredValue * 100, // cents
-      parcelWeight: 1000, // grams — override later if we track real weight
-      compartmentSize: 1, // 1=small, 2=medium, 3=large
+      paymentMode: isCod ? 'cod' : 'prepaid',
+      amountToBeCollected: codAmount,
+      invoiceValue: declaredValue,
+      itemsCount: 1,
       items: [
         {
           description: contents,
-          quantity: 1,
+          value: declaredValue,
         },
       ],
-      ...(codAmount > 0 && {
-        codAmount: Math.round(codAmount * 100),
-        codCurrency: 'BGN',
-      }),
-      sender: {
-        warehouseId: Number(warehouseId),
-        name: process.env.BOXNOW_SENDER_NAME ?? 'BOSY',
-        phone: toE164BG(process.env.BOXNOW_SENDER_PHONE ?? '0888000000'),
+      origin: {
+        addressLine1: process.env.BOXNOW_SENDER_ADDRESS ?? 'ул. Тест 1',
+        addressLine2: process.env.BOXNOW_SENDER_CITY ?? 'София',
+        postalCode: process.env.BOXNOW_SENDER_POSTCODE ?? '1000',
+        country: 'BG',
+        contactName: process.env.BOXNOW_SENDER_NAME ?? 'BOSY',
+        contactNumber: toE164BG(process.env.BOXNOW_SENDER_PHONE ?? '0888000000'),
         ...(process.env.BOXNOW_SENDER_EMAIL && {
-          email: process.env.BOXNOW_SENDER_EMAIL,
+          contactEmail: process.env.BOXNOW_SENDER_EMAIL,
         }),
       },
-      recipient: {
-        name: recipientName,
-        phone: toE164BG(recipientPhoneRaw),
-        ...(recipientEmail && { email: recipientEmail }),
+      destination: {
+        locationId: String(lockerId),
+        contactName: recipientName,
+        contactNumber: toE164BG(recipientPhoneRaw),
+        contactEmail: recipientEmail ?? 'noreply@bosy.bg',
       },
-      deliveryBoxId: lockerId,
     }
 
     const resp = await boxnowJson<BoxNowDeliveryResponse>(
@@ -156,13 +141,14 @@ export async function POST(request: Request) {
       }
     )
 
-    const payloadData = resp.data ?? resp
+    // Response shape (verified live): { id, parcels: [{ id }] }. `id` is the
+    // delivery-request reference; `parcels[0].id` is what we track and what
+    // the /parcels/{id}/label.pdf endpoint expects.
     const trackingNumber =
-      payloadData.parcels?.[0]?.id ||
-      payloadData.parcels?.[0]?.boxId ||
-      payloadData.id ||
-      payloadData.orderNumber ||
-      payloadData.referenceNumber ||
+      resp.parcels?.[0]?.id ??
+      resp.id ??
+      resp.orderNumber ??
+      resp.referenceNumber ??
       null
 
     if (!trackingNumber) {

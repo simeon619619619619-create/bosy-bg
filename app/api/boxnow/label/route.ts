@@ -11,16 +11,11 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'id is required' }, { status: 400 })
     }
 
-    // BoxNow returns labels under /delivery-requests/{id}/shipping-labels.
-    // Some partners get them via /parcels/{id}/label.pdf — try both.
-    let res = await boxnowFetch(
-      `/api/v1/delivery-requests/${encodeURIComponent(id)}/shipping-labels`
+    // Verified live 2026-04-21: `id` is the parcel id returned under
+    // response.parcels[0].id. Endpoint is /api/v1/parcels/{id}/label.pdf.
+    const res = await boxnowFetch(
+      `/api/v1/parcels/${encodeURIComponent(id)}/label.pdf`
     )
-    if (!res.ok) {
-      res = await boxnowFetch(
-        `/api/v1/parcels/${encodeURIComponent(id)}/label.pdf`
-      )
-    }
     if (!res.ok) {
       const text = await res.text().catch(() => '')
       return NextResponse.json(

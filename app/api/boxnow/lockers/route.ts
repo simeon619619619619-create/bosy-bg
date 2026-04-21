@@ -1,34 +1,31 @@
 import { NextResponse } from 'next/server'
 import { boxnowJson, type BoxNowLocker } from '@/lib/boxnow/client'
 
-interface RawLocker {
+interface RawDestination {
   id?: string | number
-  boxId?: string | number
   name?: string
+  title?: string
   addressLine1?: string
-  address?: string
+  addressLine2?: string
   postalCode?: string
-  zip?: string
-  city?: string
-  town?: string
-  lat?: number
-  lng?: number
-  latitude?: number
-  longitude?: number
-  status?: string
+  country?: string
+  region?: string
+  lat?: string | number
+  lng?: string | number
   type?: string
+  note?: string
 }
 
-function normalizeLocker(r: RawLocker): BoxNowLocker {
-  const id = String(r.id ?? r.boxId ?? '')
+function normalizeLocker(r: RawDestination): BoxNowLocker {
+  const id = String(r.id ?? '')
   return {
     id,
-    name: r.name ?? `BoxNow ${id}`,
-    addressLine1: r.addressLine1 ?? r.address ?? '',
-    postalCode: r.postalCode ?? r.zip ?? '',
-    city: r.city ?? r.town ?? '',
-    lat: r.lat ?? r.latitude,
-    lng: r.lng ?? r.longitude,
+    name: r.name ?? r.title ?? `BoxNow ${id}`,
+    addressLine1: r.addressLine1 ?? '',
+    postalCode: r.postalCode ?? '',
+    city: r.addressLine2 ?? '',
+    lat: r.lat ? Number(r.lat) : undefined,
+    lng: r.lng ? Number(r.lng) : undefined,
   }
 }
 
@@ -39,12 +36,12 @@ export async function GET(request: Request) {
     const cityQuery = (searchParams.get('city') ?? '').trim().toLowerCase()
     const freeQuery = (searchParams.get('q') ?? '').trim().toLowerCase()
 
-    // BoxNow returns ~400 lockers total — fetch all, filter server-side.
+    // BoxNow's destinations endpoint returns ~400 APMs for BG.
     const data = await boxnowJson<
-      { data?: RawLocker[] } | RawLocker[]
-    >('/api/v1/lockers?limit=2000')
+      { data?: RawDestination[] } | RawDestination[]
+    >('/api/v1/destinations?limit=2000')
 
-    const raw: RawLocker[] = Array.isArray(data)
+    const raw: RawDestination[] = Array.isArray(data)
       ? data
       : Array.isArray(data.data)
         ? data.data
