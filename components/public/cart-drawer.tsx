@@ -37,6 +37,9 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   if (!open) return null
 
   const total = getCartTotal()
+  const totalEur = toEur(total)
+  const FREE_SHIPPING_THRESHOLD = 69.99
+  const remaining = FREE_SHIPPING_THRESHOLD - totalEur
 
   return (
     <div className="fixed inset-0 z-[9998]">
@@ -133,6 +136,29 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         {/* Footer */}
         {items.length > 0 && (
           <div className="border-t px-6 py-4" style={{ borderColor: '#eee' }}>
+            {remaining > 0 ? (
+              <div className="mb-3 rounded-lg p-3 text-center" style={{ background: '#fdf5f0' }}>
+                <p className="text-xs" style={{ color: '#666' }}>
+                  Добави още <strong style={{ color: '#c77dba' }}>{remaining.toFixed(2)}&euro;</strong> за безплатна доставка
+                </p>
+                <div className="mt-2 h-1.5 w-full rounded-full" style={{ background: '#e5e7eb' }}>
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      background: '#c77dba',
+                      width: `${Math.min(100, (totalEur / FREE_SHIPPING_THRESHOLD) * 100)}%`,
+                      transition: 'width 0.3s',
+                    }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="mb-3 rounded-lg p-2 text-center" style={{ background: '#f0fce8' }}>
+                <p className="text-xs font-medium" style={{ color: '#22c55e' }}>
+                  Имаш безплатна доставка!
+                </p>
+              </div>
+            )}
             <div className="mb-4 flex items-center justify-between">
               <span className="text-sm font-medium" style={{ color: '#666' }}>Общо:</span>
               <span className="text-lg font-bold" style={{ color: '#333' }}>
