@@ -10,14 +10,26 @@ import {
   ShipWithSpeedyButton,
   ShipWithEcontButton,
 } from '@/components/admin/orders/order-actions'
-import { OrderNotes } from '@/components/admin/orders/order-notes'
 import { OrderTimeline } from '@/components/admin/orders/order-timeline'
+import { ShippingAddressEditor } from '@/components/admin/orders/shipping-address-editor'
+import { CourierSelector } from '@/components/admin/orders/courier-selector'
+import { AdminNotesEditor } from '@/components/admin/orders/admin-notes-editor'
+import type { ShippingAddressInput } from '@/app/admin/orders/actions'
 import { ArrowLeft } from 'lucide-react'
 
 interface OrderItem {
   name: string
   quantity: number
   price: number
+}
+
+function parseNoteMetadata(notes: string | null | undefined) {
+  if (!notes) return { paymentMethod: null, promoCode: null, officeId: null, boxnowId: null }
+  const paymentMethod = /\[(COD|CARD)\]/.exec(notes)?.[1] ?? null
+  const promoCode = /\[PROMO:([^\]]+)\]/.exec(notes)?.[1] ?? null
+  const officeId = /\[OFFICE:([^\]]+)\]/.exec(notes)?.[1] ?? null
+  const boxnowId = /\[BOXNOW:([^\]]+)\]/.exec(notes)?.[1] ?? null
+  return { paymentMethod, promoCode, officeId, boxnowId }
 }
 
 export default async function OrderDetailPage({
@@ -49,6 +61,33 @@ export default async function OrderDetailPage({
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shipping = Number(order.shipping_cost ?? 0)
   const total = Number(order.total ?? subtotal + shipping)
+
+  // Shipping address snapshot — fall back to customer.address for legacy orders
+  let shippingAddress: Partial<ShippingAddressInput> | null = null
+  if (order.shipping_address && typeof order.shipping_address === 'object') {
+    shippingAddress = order.shipping_address as Partial<ShippingAddressInput>
+  } else if (customer?.address && typeof customer.address === 'object') {
+    const a = customer.address as Record<string, unknown>
+    shippingAddress = {
+      name: customer.name,
+      phone: customer.phone ?? '',
+      email: customer.email,
+      street: String(a.street ?? ''),
+      city: String(a.city ?? ''),
+      zip: String(a.zip ?? ''),
+      delivery_type: 'address',
+    }
+  }
+
+  const meta = parseNoteMetadata(order.notes)
+  const courier: 'speedy' | 'econt' = (order.courier === 'econt' ? 'econt' : 'speedy')
+  const courierLocked = order.status === 'shipped' || order.status === 'delivered'
+
+  // Legacy fallback — if customer_note is null but notes has text after the tags, extract it
+  const customerNoteFallback = order.customer_note
+    ?? (order.notes
+      ? order.notes.replace(/^(\[[A-Z0-9:_-]+\]\s*)+/g, '').trim() || null
+      : null)
 
   return (
     <div>
@@ -127,7 +166,7 @@ export default async function OrderDetailPage({
             (order.speedy_tracking_number || order.econt_tracking_number) && (
               <div className="rounded-lg border border-border bg-card p-6">
                 <h2 className="text-lg font-semibold">
-                  Доставка · {order.courier === 'econt' ? 'Еконт' : 'Speedy'}
+                  Доставка · {courier === 'econt' ? 'Еконт' : 'Speedy'}
                 </h2>
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-sm">
@@ -164,6 +203,17 @@ export default async function OrderDetailPage({
               </div>
             )}
 
+          {/* Customer note + metadata badges + internal admin notes */}
+          <AdminNotesEditor
+            orderId={order.id}
+            initial={order.admin_notes ?? ''}
+            customerNote={customerNoteFallback}
+            paymentMethod={meta.paymentMethod}
+            promoCode={meta.promoCode}
+            officeId={meta.officeId}
+            boxnowId={meta.boxnowId}
+          />
+
           {/* Timeline */}
           <OrderTimeline
             status={order.status}
@@ -173,7 +223,7 @@ export default async function OrderDetailPage({
           />
         </div>
 
-        {/* Right column — customer + actions + notes */}
+        {/* Right column — customer + address + courier + actions */}
         <div className="space-y-6">
           {/* Customer info */}
           <div className="rounded-lg border border-border bg-card p-6">
@@ -191,18 +241,20 @@ export default async function OrderDetailPage({
                 <span className="text-muted-foreground">Телефон: </span>
                 <span>{customer?.phone ?? '—'}</span>
               </div>
-              <div>
-                <span className="text-muted-foreground">Адрес: </span>
-                <span>{(() => {
-                  if (!customer?.address) return '—'
-                  if (typeof customer.address === 'string') return customer.address
-                  const a = customer.address as Record<string, unknown>
-                  const parts = [a.street, a.city, a.zip].filter(Boolean).map(String)
-                  return parts.length > 0 ? parts.join(', ') : '—'
-                })()}</span>
-              </div>
             </div>
           </div>
+
+          {/* Editable shipping address */}
+          <ShippingAddressEditor
+            orderId={order.id}
+            initial={shippingAddress}
+            customerName={customer?.name ?? ''}
+            customerPhone={customer?.phone ?? ''}
+            customerEmail={customer?.email ?? null}
+          />
+
+          {/* Courier selector */}
+          <CourierSelector orderId={order.id} initial={courier} locked={courierLocked} />
 
           {/* Actions */}
           <div className="rounded-lg border border-border bg-card p-6">
@@ -216,7 +268,7 @@ export default async function OrderDetailPage({
               )}
               {order.status === 'confirmed' && (
                 <>
-                  {(order.courier ?? 'speedy') === 'econt' ? (
+                  {courier === 'econt' ? (
                     <ShipWithEcontButton orderId={order.id} />
                   ) : (
                     <ShipWithSpeedyButton orderId={order.id} />
@@ -284,9 +336,6 @@ export default async function OrderDetailPage({
               )}
             </div>
           </div>
-
-          {/* Notes */}
-          <OrderNotes orderId={order.id} initialNotes={order.notes ?? ''} />
         </div>
       </div>
     </div>

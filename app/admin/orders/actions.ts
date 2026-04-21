@@ -102,3 +102,60 @@ export async function updateOrderNotes(id: string, notes: string) {
 
   revalidatePath(`/admin/orders/${id}`)
 }
+
+export interface ShippingAddressInput {
+  name: string
+  phone: string
+  email?: string | null
+  street: string
+  city: string
+  zip: string
+  delivery_type?: 'address' | 'office' | 'boxnow'
+  speedy_office_id?: number | null
+  boxnow_locker_id?: string | null
+}
+
+export async function updateShippingAddress(id: string, address: ShippingAddressInput) {
+  const supabase = createAdminSupabaseClient()
+
+  const { error } = await supabase
+    .from('orders')
+    .update({ shipping_address: address, updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath(`/admin/orders/${id}`)
+}
+
+export async function updateCourier(id: string, courier: 'speedy' | 'econt') {
+  const supabase = createAdminSupabaseClient()
+
+  const { error } = await supabase
+    .from('orders')
+    .update({ courier, updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath(`/admin/orders/${id}`)
+}
+
+export async function updateAdminNotes(id: string, adminNotes: string) {
+  const supabase = createAdminSupabaseClient()
+
+  const { error } = await supabase
+    .from('orders')
+    .update({ admin_notes: adminNotes, updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  revalidatePath(`/admin/orders/${id}`)
+}

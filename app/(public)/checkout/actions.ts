@@ -154,7 +154,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     quantity: item.quantity,
   }))
 
-  // Build notes with delivery and payment metadata tags
+  // Metadata tags (payment method, promo, office/boxnow) — stored in notes for backward compat
   const noteTags = [`[${input.paymentMethod.toUpperCase()}]`]
   if (input.promoCode) noteTags.push(`[PROMO:${input.promoCode}]`)
   if (input.deliveryType === 'office' && input.speedyOfficeId) {
@@ -167,6 +167,22 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     ? `${noteTags.join(' ')} ${input.notes}`
     : noteTags.join(' ')
 
+  // Courier: Econt pickup is not supported yet → default speedy; BoxNow uses Speedy API under the hood
+  const courier: 'speedy' | 'econt' = 'speedy'
+
+  // Snapshot of the shipping address at purchase time (immutable per-order, editable by admin)
+  const shippingAddress = {
+    name: input.name,
+    phone: input.phone,
+    email: input.email,
+    street: input.address,
+    city: input.city,
+    zip: input.postalCode,
+    delivery_type: input.deliveryType ?? 'address',
+    speedy_office_id: input.speedyOfficeId ?? null,
+    boxnow_locker_id: input.boxnowLockerId ?? null,
+  }
+
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
@@ -177,6 +193,9 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       total,
       status: 'pending',
       notes: fullNotes,
+      customer_note: input.notes || null,
+      shipping_address: shippingAddress,
+      courier,
     })
     .select('id, order_number')
     .single()
