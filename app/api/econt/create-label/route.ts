@@ -27,6 +27,10 @@ interface EcontLabelResponse {
     shipmentNumber?: string
     pdfURL?: string
   }
+  results?: Array<{
+    label?: { shipmentNumber?: string; pdfURL?: string }
+    shipmentNumber?: string
+  }>
   shipmentNumber?: string
 }
 
@@ -154,49 +158,53 @@ export async function POST(request: Request) {
       ? { office: { code: senderOfficeCode } }
       : {}
 
-    const payload: Record<string, unknown> = {
-      label: {
-        senderClient: {
-          name: process.env.ECONT_SENDER_NAME ?? 'BOSY',
-          phones: [process.env.ECONT_SENDER_PHONE ?? '0888000000'],
-          ...(process.env.ECONT_SENDER_EMAIL && {
-            email: process.env.ECONT_SENDER_EMAIL,
-          }),
-        },
-        senderAddress: senderAddressPayload,
-        receiverClient: {
-          name: recipientName,
-          phones: [recipientPhone],
-          ...(recipientEmail && { email: recipientEmail }),
-        },
-        receiverAddress,
-        shipmentType: 'PACK',
-        packCount: 1,
-        weight: 1,
-        shipmentDescription: contents,
-        services: {
-          ...(isCod && {
-            cdAmount: Number(order.total ?? 0),
-            cdCurrency: 'BGN',
-            cdPayOptionsTemplate: 'ON_DELIVERY',
-          }),
-          declaredValueAmount: Number(order.total ?? 0),
-          declaredValueCurrency: 'BGN',
-        },
-        payAfterAccept: false,
-        payAfterTest: false,
+    const label: Record<string, unknown> = {
+      senderClient: {
+        name: process.env.ECONT_SENDER_NAME ?? 'BOSY',
+        phones: [process.env.ECONT_SENDER_PHONE ?? '0888000000'],
+        ...(process.env.ECONT_SENDER_EMAIL && {
+          email: process.env.ECONT_SENDER_EMAIL,
+        }),
       },
-      mode: 'create',
+      senderAddress: senderAddressPayload,
+      receiverClient: {
+        name: recipientName,
+        phones: [recipientPhone],
+        ...(recipientEmail && { email: recipientEmail }),
+      },
+      receiverAddress,
+      shipmentType: 'PACK',
+      packCount: 1,
+      weight: 1,
+      shipmentDescription: contents,
+      services: {
+        ...(isCod && {
+          cdAmount: Number(order.total ?? 0),
+          cdCurrency: 'BGN',
+          cdPayOptionsTemplate: 'ON_DELIVERY',
+        }),
+        declaredValueAmount: Number(order.total ?? 0),
+        declaredValueCurrency: 'BGN',
+      },
+      payAfterAccept: false,
+      payAfterTest: false,
     }
 
+    // Econt Label Service: createLabels (plural) приема labels array.
+    // Singular createLabel не съществува като JSON method.
     const resp = await econtPost<EcontLabelResponse>(
-      '/Shipments/ShipmentService.createLabel.json',
-      payload
+      '/Shipments/LabelService.createLabels.json',
+      { labels: [label], mode: 'create' }
     )
 
+    const first = resp.results?.[0]
     const shipmentNumber =
-      resp.label?.shipmentNumber || resp.shipmentNumber || null
-    const labelUrl = resp.label?.pdfURL || null
+      first?.label?.shipmentNumber ||
+      first?.shipmentNumber ||
+      resp.label?.shipmentNumber ||
+      resp.shipmentNumber ||
+      null
+    const labelUrl = first?.label?.pdfURL || resp.label?.pdfURL || null
 
     if (!shipmentNumber) {
       console.error('Econt createLabel no shipmentNumber:', resp)
