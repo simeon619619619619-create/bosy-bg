@@ -51,6 +51,7 @@ export default async function OrdersPage({
       total: Number(order.total ?? 0),
       status: order.status,
       payment_method,
+      payment_status: (order.payment_status as string) ?? 'unpaid',
       courier: (order.courier as string) ?? 'speedy',
       speedy_tracking_number: order.speedy_tracking_number,
       econt_tracking_number: order.econt_tracking_number,

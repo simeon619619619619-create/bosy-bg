@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendNewOrderNotification } from '@/lib/resend/client'
+import { verifyTransaction } from '@/lib/viva/client'
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url)
@@ -27,7 +28,28 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(new URL('/checkout?error=order_not_found', req.url))
   }
 
-  // Update order as paid
+  // Verify the transaction with Viva API before marking as paid
+  try {
+    const txn = await verifyTransaction(transactionId)
+    // statusId 'F' = completed/paid; check orderCode matches too
+    if (txn.statusId !== 'F' || String(txn.orderCode) !== orderCode) {
+      console.error('Viva verification failed:', { statusId: txn.statusId, orderCode: txn.orderCode, expected: orderCode })
+      await supabase
+        .from('orders')
+        .update({ payment_status: 'failed' })
+        .eq('id', order.id)
+      return NextResponse.redirect(new URL('/checkout?error=payment_not_verified', req.url))
+    }
+  } catch (err) {
+    console.error('Viva verify error:', err)
+    await supabase
+      .from('orders')
+      .update({ payment_status: 'failed' })
+      .eq('id', order.id)
+    return NextResponse.redirect(new URL('/checkout?error=payment_verification_failed', req.url))
+  }
+
+  // Update order as paid (verified with Viva)
   await supabase
     .from('orders')
     .update({

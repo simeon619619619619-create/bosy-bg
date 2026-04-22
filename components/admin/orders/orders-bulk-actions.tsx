@@ -79,6 +79,7 @@ interface Order {
   total: number
   status: string
   payment_method: string | null
+  payment_status: string
   courier?: string
   speedy_tracking_number: string | null
   econt_tracking_number?: string | null
@@ -263,7 +264,13 @@ export function OrdersListClient({ orders }: { orders: Order[] }) {
                   <TableCell>
                     <Link href={orderUrl} className="block">
                       {order.payment_method === 'card' ? (
-                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">Карта</span>
+                        order.payment_status === 'paid' ? (
+                          <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">Платена</span>
+                        ) : order.payment_status === 'failed' ? (
+                          <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-400">Неуспешна</span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">Неплатена</span>
+                        )
                       ) : (
                         <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Наложен</span>
                       )}
