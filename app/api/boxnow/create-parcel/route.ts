@@ -102,18 +102,24 @@ export async function POST(request: Request) {
     // BoxNow Partner API schema (verified live 2026-04-21): numeric monetary
     // fields go as STRINGS; locationId is a string; origin/destination share
     // the same anyOf schema (either `locationId` for APM or a full address).
+    const totalQty = items.reduce(
+      (sum: number, i: { quantity?: number }) => sum + (i.quantity ?? 1),
+      0
+    )
+
     const payload = {
       orderNumber: String(order.order_number ?? order.id),
       paymentMode: isCod ? 'cod' : 'prepaid',
       amountToBeCollected: codAmount,
       invoiceValue: declaredValue,
-      itemsCount: 1,
-      items: [
-        {
-          description: contents,
-          value: declaredValue,
-        },
-      ],
+      allowReturn: true,
+      comment: contents,
+      itemsCount: totalQty,
+      items: items.map((i: { name: string; quantity?: number; price?: number }) => ({
+        description: i.name,
+        quantity: i.quantity ?? 1,
+        value: String(Number(i.price ?? 0).toFixed(2)),
+      })),
       origin: {
         addressLine1: process.env.BOXNOW_SENDER_ADDRESS ?? 'ул. Тест 1',
         addressLine2: process.env.BOXNOW_SENDER_CITY ?? 'София',
