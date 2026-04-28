@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendNewOrderNotification } from '@/lib/resend/client'
 import { verifyTransaction } from '@/lib/viva/client'
+import { decrementOrderStock } from '@/lib/orders/stock'
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url)
@@ -58,6 +59,11 @@ export async function GET(req: NextRequest) {
       status: 'pending',
     })
     .eq('id', order.id)
+
+  // Stock decrement за CARD — едва сега, след потвърждение от Viva.
+  await decrementOrderStock(supabase, order.id).catch((e) => {
+    console.error('decrementOrderStock failed for paid CARD order', order.id, e)
+  })
 
   // Send email notifications
   const customer = order.customers

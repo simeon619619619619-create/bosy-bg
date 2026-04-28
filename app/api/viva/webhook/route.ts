@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyTransaction } from '@/lib/viva/client'
+import { decrementOrderStock } from '@/lib/orders/stock'
 
 // Viva Wallet sends a verification GET request first
 export async function GET() {
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    await supabase
+    const { data: updated } = await supabase
       .from('orders')
       .update({
         viva_transaction_id: String(transactionId),
@@ -65,6 +66,14 @@ export async function POST(req: NextRequest) {
         status: 'pending',
       })
       .eq('viva_order_code', orderCode)
+      .select('id')
+      .single()
+
+    if (updated?.id) {
+      await decrementOrderStock(supabase, updated.id).catch((e) => {
+        console.error('decrementOrderStock failed for webhook-paid order', updated.id, e)
+      })
+    }
 
     return NextResponse.json({ ok: true })
   } catch (err) {

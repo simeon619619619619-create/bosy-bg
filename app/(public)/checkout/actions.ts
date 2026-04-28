@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { sendNewOrderNotification, sendEasterPromoEmail } from '@/lib/resend/client'
 import { getSiteSettings } from '@/lib/settings'
 import { usePromoCode } from '@/app/admin/promo-codes/actions'
+import { decrementOrderStock } from '@/lib/orders/stock'
 
 interface OrderItem {
   id: string
@@ -78,7 +79,7 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
 
   // Calculate totals
   const subtotal = input.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shippingCost = subtotal >= 69.99 * 1.95583 ? 0 : 3.99 * 1.95583
+  const shippingCost = subtotal >= 99.99 * 1.95583 ? 0 : 3.99 * 1.95583
   const codFee = input.paymentMethod === 'cod' ? 0.99 * 1.95583 : 0 // 0.99 EUR in BGN
   const discount = input.cardDiscount ?? 0
   const promoDiscount = input.promoDiscount ?? 0
@@ -247,6 +248,12 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
       input.items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
       'cod'
     ).catch(() => {})
+
+    // Stock decrement за COD — поръчката е финална.
+    // За CARD го правим в /api/viva/success след verify.
+    await decrementOrderStock(supabase, order.id).catch((e) => {
+      console.error('decrementOrderStock failed for COD order', order.id, e)
+    })
   }
 
   // 7. Send Easter promo code email + track in promo_sends

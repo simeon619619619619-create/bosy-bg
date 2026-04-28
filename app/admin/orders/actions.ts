@@ -4,6 +4,7 @@ import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { sendOrderConfirmation } from '@/lib/resend/client'
 import { assertOrderShippable, runGuarded, type GuardedActionResult } from '@/lib/orders/payment-guard'
+import { restoreOrderStock } from '@/lib/orders/stock'
 
 export async function confirmOrder(id: string): Promise<GuardedActionResult> {
   const supabase = createAdminSupabaseClient()
@@ -56,6 +57,12 @@ export async function cancelOrder(id: string) {
   if (error) {
     throw new Error(error.message)
   }
+
+  // Възстанови наличностите ако са били намалени.
+  // restoreOrderStock е idempotent — ако няма [STOCK-DEC] в notes, не прави нищо.
+  await restoreOrderStock(supabase, id).catch((e) => {
+    console.error('restoreOrderStock failed for cancelled order', id, e)
+  })
 
   revalidatePath('/admin/orders')
   revalidatePath(`/admin/orders/${id}`)
@@ -120,6 +127,12 @@ export async function setOrderStatus(
 
     if (error) {
       throw new Error(error.message)
+    }
+
+    if (status === 'cancelled') {
+      await restoreOrderStock(supabase, id).catch((e) => {
+        console.error('restoreOrderStock failed via setOrderStatus', id, e)
+      })
     }
 
     revalidatePath('/admin/orders')
