@@ -118,6 +118,18 @@ export async function GET(request: Request) {
 
   const debug: Record<string, unknown> = {}
 
+  // Diagnostic: count total rows + sample one
+  const { count: totalCount, error: cntErr } = await supabase
+    .from('b2b_campaigns')
+    .select('*', { count: 'exact', head: true })
+  debug.total_rows = totalCount
+  debug.cnt_error = cntErr?.message
+  const { data: sample } = await supabase
+    .from('b2b_campaigns')
+    .select('email,sent_1,replied_at')
+    .limit(3)
+  debug.sample = sample
+
   // Email 1: not sent yet
   if (sent < BATCH_SIZE) {
     const { data: batch1, error: e1 } = await supabase
