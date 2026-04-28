@@ -21,7 +21,7 @@ const SIGNATURE = `
       <p style="margin:24px 0 4px;font-size:15px;">Поздрави,</p>
       <p style="margin:0;font-size:15px;font-weight:bold;">Саня Генова</p>
       <p style="margin:2px 0;font-size:13px;color:#888;">Търговски екип · BOSY</p>
-      <p style="margin:2px 0;font-size:13px;color:#888;">+359 876 4444 67 · sales@bosy.bg</p>
+      <p style="margin:2px 0;font-size:13px;color:#888;">+359 87 989 89 88 · sales@bosy.bg</p>
       <p style="margin:2px 0;font-size:13px;color:#888;">bosy.bg</p>`
 
 function email1Html(name: string): string {
@@ -39,8 +39,9 @@ function email1Html(name: string): string {
       <li>БИО протеинови кремове с макадамия</li>
       <li>Детокс серия — билкови капки и чай</li>
     </ul>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Работим без минимум за първа поръчка при детокс капки, чай и бонбони. Прилагам продуктовата ни ценова листа за едро. Можете да я разгледате и <a href="https://bosy.bg/bosy-b2b-catalogue.pdf" style="color:#c77dba;font-weight:bold;">онлайн тук</a>.</p>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Ако имате интерес, просто отговорете на този имейл и ще Ви изпратя мостри.</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Прилагам продуктовия ни каталог. Можете да го разгледате и <a href="https://bosy.bg/bosy-b2b-catalogue.pdf" style="color:#c77dba;font-weight:bold;">онлайн тук</a>.</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Бих искала да Ви предложа <strong>лична среща</strong> в обекта Ви, за да представя продуктите, да Ви оставя мостри и да обсъдим персонална оферта. Удобно ли е през следващите 1–2 седмици?</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Просто отговорете на този имейл с ден и час, или се обадете на <strong>+359 87 989 89 88</strong>.</p>
     ${SIGNATURE}
   </td></tr></table>
 </body></html>`
@@ -53,14 +54,9 @@ function email2Html(name: string): string {
 <body style="margin:0;padding:20px;font-family:Georgia,'Times New Roman',serif;color:#222;background:#fff;">
   <table style="max-width:560px;margin:0 auto;" cellpadding="0" cellspacing="0"><tr><td>
     <p style="margin:0 0 16px;font-size:15px;">${greeting},</p>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Пиша Ви отново за продуктите на BOSY. Видяхте ли ценовата листа, която изпратих преди няколко дни?</p>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Няколко неща, които искам да подчертая:</p>
-    <ul style="margin:0 0 16px;padding-left:20px;font-size:15px;line-height:1.8;">
-      <li>Без минимална поръчка за първа заявка</li>
-      <li>Доставка в цяла България</li>
-      <li>Цени от 0.96 лв. без ДДС на бройка</li>
-    </ul>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Ако предпочитате, можете да ме потърсите и на <strong>+359 876 4444 67</strong>.</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Пиша Ви отново за продуктите на BOSY. Видяхте ли каталога, който изпратих преди няколко дни?</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Все още държа на предложението — мога да дойда лично в обекта Ви, да представя продуктите и да оставя мостри. Срещата отнема 15–20 минути.</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Кой ден и час Ви е удобен през следващата седмица? Или ми се обадете директно на <strong>+359 87 989 89 88</strong>.</p>
     ${SIGNATURE}
   </td></tr></table>
 </body></html>`
@@ -73,12 +69,12 @@ function email3Html(name: string): string {
 <body style="margin:0;padding:20px;font-family:Georgia,'Times New Roman',serif;color:#222;background:#fff;">
   <table style="max-width:560px;margin:0 auto;" cellpadding="0" cellspacing="0"><tr><td>
     <p style="margin:0 0 16px;font-size:15px;">${greeting},</p>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Това е последното ми писмо по тази тема. Искам да Ви предложа нещо специално:</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Това е последното ми писмо по тази тема.</p>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Все още с удоволствие бих дошла на кратка среща в обекта Ви — носи мостри от всички серии и презентация на продуктите. Без ангажимент за поръчка.</p>
     <div style="margin:20px 0;padding:16px 20px;background:#f3e5f0;border-radius:10px;text-align:center;">
-      <p style="margin:0;font-size:18px;font-weight:bold;color:#c77dba;">5% допълнителна отстъпка</p>
-      <p style="margin:4px 0 0;font-size:14px;color:#666;">върху B2B цените за първите 3 месеца</p>
+      <p style="margin:0;font-size:15px;color:#c77dba;font-weight:bold;">Свържете се за лична среща</p>
+      <p style="margin:6px 0 0;font-size:14px;color:#444;">отговор на имейла или обаждане на <strong>+359 87 989 89 88</strong></p>
     </div>
-    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;">Офертата важи до края на май. Просто отговорете на този имейл или се обадете на <strong>+359 876 4444 67</strong>.</p>
     <p style="margin:0 0 16px;font-size:14px;color:#888;">Няма да Ви пиша повече, освен ако не се свържете с нас.</p>
     ${SIGNATURE}
   </td></tr></table>
@@ -135,7 +131,7 @@ export async function GET(request: Request) {
           to: contact.email,
           subject: 'BOSY — протеинови продукти за Вашия обект',
           html: email1Html(contact.name),
-          ...(pdfBuffer ? { attachments: [{ filename: 'BOSY-B2B-Ценова-листа.pdf', content: pdfBuffer }] } : {}),
+          ...(pdfBuffer ? { attachments: [{ filename: 'BOSY-B2B-Каталог.pdf', content: pdfBuffer }] } : {}),
           headers: { 'X-Entity-Ref-ID': `b2b-1-${contact.id}` },
         })
         await supabase.from('b2b_campaigns').update({ sent_1: new Date().toISOString() }).eq('id', contact.id)
@@ -164,7 +160,7 @@ export async function GET(request: Request) {
           from: 'Саня от BOSY <sales@bosy.bg>',
           replyTo: 'sales@bosy.bg',
           to: contact.email,
-          subject: 'Видяхте ли ценовата листа?',
+          subject: 'Кога Ви е удобно да дойда с мостри?',
           html: email2Html(contact.name),
           headers: { 'X-Entity-Ref-ID': `b2b-2-${contact.id}` },
         })
@@ -194,7 +190,7 @@ export async function GET(request: Request) {
           from: 'Саня от BOSY <sales@bosy.bg>',
           replyTo: 'sales@bosy.bg',
           to: contact.email,
-          subject: '5% допълнителна отстъпка за 3 месеца',
+          subject: 'Последно — среща с мостри без ангажимент',
           html: email3Html(contact.name),
           headers: { 'X-Entity-Ref-ID': `b2b-3-${contact.id}` },
         })
