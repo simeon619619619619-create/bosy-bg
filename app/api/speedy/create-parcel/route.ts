@@ -174,11 +174,31 @@ export async function POST(request: Request) {
         .slice(0, 100) || 'Стоки'
 
     // Build Speedy shipment payload
+    const totalAmount = Number(order.total ?? 0)
     const payload: Record<string, unknown> = {
       userName: process.env.SPEEDY_USERNAME,
       password: process.env.SPEEDY_PASSWORD,
       language: 'BG',
-      service: { serviceId: 505, autoAdjustPickupDate: true },
+      service: {
+        serviceId: 505,
+        autoAdjustPickupDate: true,
+        // additionalServices = инструкции за услугите КОИТО куриерът да изпълни.
+        // payment.cod е само описание как ние получаваме обратно парите —
+        // не казва на куриера да ги събира. Затова label-ът беше „Нал. платеж: ---".
+        additionalServices: {
+          ...(isCod && {
+            cod: {
+              amount: totalAmount,
+              processingType: 'CASH',
+            },
+          }),
+          declaredValue: {
+            amount: totalAmount,
+            fragile: false,
+            ignoreIfRepeated: true,
+          },
+        },
+      },
       content: {
         parcelsCount: 1,
         totalWeight: 1,
@@ -187,14 +207,14 @@ export async function POST(request: Request) {
       },
       payment: {
         courierServicePayer: 'RECIPIENT',
+        // Запазваме payment.cod за payout settings (как Speedy ни плаща обратно
+        // събраните пари) — не е свързано с показването на сумата на label-а.
         ...(isCod && {
           cod: {
-            amount: Number(order.total ?? 0),
+            amount: totalAmount,
             processingType: 'CASH',
           },
         }),
-        declaredValueAmount: Number(order.total ?? 0),
-        declaredValueCurrency: 'BGN',
       },
       sender: {
         phone1: { number: process.env.SPEEDY_SENDER_PHONE ?? '0888000000' },
