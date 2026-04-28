@@ -69,7 +69,8 @@ export async function GET(req: NextRequest) {
       order.total,
       (order.items as Array<{ name: string; quantity: number; price: number }>).map(
         (i) => ({ name: i.name, quantity: i.quantity, price: i.price })
-      )
+      ),
+      'card'
     ).catch(() => {})
   }
 

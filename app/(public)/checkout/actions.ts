@@ -233,15 +233,21 @@ export async function createOrder(input: CreateOrderInput): Promise<{ orderId: s
     await usePromoCode(input.promoCode).catch(() => {})
   }
 
-  // 6. Send email notifications (customer + admin)
+  // 6. Send email notifications.
+  // За CARD: НЕ пращаме нотификация тук — клиентът още не е минал през Viva.
+  // Notification се праща от /api/viva/success СЛЕД успешна верификация.
+  // За COD: пращаме веднага — поръчката е финална.
   const orderNum = String(order.order_number)
-  await sendNewOrderNotification(
-    input.email,
-    input.name,
-    orderNum,
-    total,
-    input.items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }))
-  ).catch(() => {})
+  if (input.paymentMethod === 'cod') {
+    await sendNewOrderNotification(
+      input.email,
+      input.name,
+      orderNum,
+      total,
+      input.items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
+      'cod'
+    ).catch(() => {})
+  }
 
   // 7. Send Easter promo code email + track in promo_sends
   const EASTER_PROMO = 'VELIKDEN20'

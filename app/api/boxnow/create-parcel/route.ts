@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { sendShippingNotification } from '@/lib/resend/client'
 import { boxnowJson } from '@/lib/boxnow/client'
+import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
 
 interface ShippingAddress {
   name?: string
@@ -55,6 +56,15 @@ export async function POST(request: Request) {
       )
     }
 
+    try {
+      await assertOrderShippable(supabase, orderId, 'shipped')
+    } catch (e) {
+      if (e instanceof UnpaidCardOrderError) {
+        return NextResponse.json({ error: e.message }, { status: 402 })
+      }
+      throw e
+    }
+
     const customer = order.customers as {
       name: string
       email: string | null
@@ -93,8 +103,13 @@ export async function POST(request: Request) {
 
     const items = Array.isArray(order.items) ? order.items : []
     const contents =
-      items.map((i: { name: string }) => i.name).join(', ').slice(0, 100) ||
-      'Стоки'
+      items
+        .map((i: { name: string; quantity?: number }) => {
+          const qty = Number(i.quantity ?? 1)
+          return qty > 1 ? `${qty}x ${i.name}` : i.name
+        })
+        .join(', ')
+        .slice(0, 100) || 'Стоки'
 
     const declaredValue = Number(order.total ?? 0).toFixed(2)
     const codAmount = isCod ? Number(order.total ?? 0).toFixed(2) : '0'

@@ -3,9 +3,12 @@
 import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { sendOrderConfirmation } from '@/lib/resend/client'
+import { assertOrderShippable } from '@/lib/orders/payment-guard'
 
 export async function confirmOrder(id: string) {
   const supabase = createAdminSupabaseClient()
+
+  await assertOrderShippable(supabase, id, 'confirmed')
 
   const { data: order, error: fetchError } = await supabase
     .from('orders')
@@ -78,6 +81,8 @@ export async function markShippedManually(
 ) {
   const supabase = createAdminSupabaseClient()
 
+  await assertOrderShippable(supabase, id, 'shipped')
+
   const { error } = await supabase
     .from('orders')
     .update({
@@ -97,6 +102,8 @@ export async function markShippedManually(
 
 export async function setOrderStatus(id: string, status: string) {
   const supabase = createAdminSupabaseClient()
+
+  await assertOrderShippable(supabase, id, status)
 
   const { error } = await supabase
     .from('orders')

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { verifyTransaction } from '@/lib/viva/client'
 
 // Viva Wallet sends a verification GET request first
 export async function GET() {
@@ -16,7 +17,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
 
-    // Viva sends different event types
     const eventTypeId = body.EventTypeId
     const eventData = body.EventData
 
@@ -32,16 +32,35 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
+    // Verify with Viva API independently — webhook payload alone is not trusted
+    // (webhook endpoint has no signature; previous code accepted any caller).
+    let txn
+    try {
+      txn = await verifyTransaction(String(transactionId))
+    } catch (err) {
+      console.error('Viva webhook verify error:', err)
+      return NextResponse.json({ ok: true })
+    }
+
+    if (txn.statusId !== 'F' || String(txn.orderCode) !== orderCode) {
+      console.warn('Viva webhook ignored — unverified', {
+        transactionId,
+        webhookOrderCode: orderCode,
+        apiStatusId: txn.statusId,
+        apiOrderCode: txn.orderCode,
+      })
+      return NextResponse.json({ ok: true })
+    }
+
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Update order as paid (backup for redirect flow)
     await supabase
       .from('orders')
       .update({
-        viva_transaction_id: transactionId,
+        viva_transaction_id: String(transactionId),
         payment_status: 'paid',
         status: 'pending',
       })

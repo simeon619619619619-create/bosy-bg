@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { sendShippingNotification } from '@/lib/resend/client'
+import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
 
 const SPEEDY_BASE = 'https://api.speedy.bg/v1'
 
@@ -68,6 +69,15 @@ export async function POST(request: Request) {
         { error: 'Order must be confirmed before shipping' },
         { status: 400 }
       )
+    }
+
+    try {
+      await assertOrderShippable(supabase, orderId, 'shipped')
+    } catch (e) {
+      if (e instanceof UnpaidCardOrderError) {
+        return NextResponse.json({ error: e.message }, { status: 402 })
+      }
+      throw e
     }
 
     const customer = order.customers as {
@@ -150,11 +160,16 @@ export async function POST(request: Request) {
       }
     }
 
-    // Build contents description from items
+    // Build contents description from items.
+    // Format: "2x Iron Maiden, 1x Барбел" — slice(0,100) defends срещу Speedy
+    // limit на полето; quantity prefix дава на admin/получател видим брой.
     const items = Array.isArray(order.items) ? order.items : []
     const contents =
       items
-        .map((i: { name: string }) => i.name)
+        .map((i: { name: string; quantity?: number }) => {
+          const qty = Number(i.quantity ?? 1)
+          return qty > 1 ? `${qty}x ${i.name}` : i.name
+        })
         .join(', ')
         .slice(0, 100) || 'Стоки'
 

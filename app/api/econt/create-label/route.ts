@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { sendShippingNotification } from '@/lib/resend/client'
 import { econtPost, type EcontCity } from '@/lib/econt/client'
+import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
 
 interface CustomerAddress {
   city?: string
@@ -93,6 +94,15 @@ export async function POST(request: Request) {
         { error: 'Поръчката трябва да е потвърдена преди изпращане' },
         { status: 400 }
       )
+    }
+
+    try {
+      await assertOrderShippable(supabase, orderId, 'shipped')
+    } catch (e) {
+      if (e instanceof UnpaidCardOrderError) {
+        return NextResponse.json({ error: e.message }, { status: 402 })
+      }
+      throw e
     }
 
     const customer = order.customers as {
@@ -187,8 +197,13 @@ export async function POST(request: Request) {
 
     const items = Array.isArray(order.items) ? order.items : []
     const contents =
-      items.map((i: { name: string }) => i.name).join(', ').slice(0, 100) ||
-      'Стоки'
+      items
+        .map((i: { name: string; quantity?: number }) => {
+          const qty = Number(i.quantity ?? 1)
+          return qty > 1 ? `${qty}x ${i.name}` : i.name
+        })
+        .join(', ')
+        .slice(0, 100) || 'Стоки'
 
     const senderOfficeCode = process.env.ECONT_SENDER_OFFICE_CODE
     const senderCity = process.env.ECONT_SENDER_CITY ?? 'София'

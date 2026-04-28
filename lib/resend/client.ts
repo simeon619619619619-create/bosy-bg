@@ -15,10 +15,13 @@ export async function sendNewOrderNotification(
   customerName: string,
   orderNumber: string,
   total: number,
-  items: Array<{ name: string; quantity: number; price: number }>
+  items: Array<{ name: string; quantity: number; price: number }>,
+  paymentMethod: 'cod' | 'card' = 'cod'
 ) {
   const resend = getResendClient()
   if (!resend) return null
+
+  const payTag = paymentMethod === 'card' ? '💳 КАРТА (платена)' : '📦 НАЛОЖЕН ПЛАТЕЖ'
 
   const itemsText = items
     .map(i => `  - ${i.name} × ${i.quantity} — ${toEur(i.price * i.quantity).toFixed(2)} EUR`)
@@ -90,12 +93,13 @@ bosy.bg`
     },
   }).catch(() => {})
 
-  // Send to admin (simpler)
+  // Send to admin (simpler) — payment method goes in the subject so opening
+  // the email is enough to know if money has actually been collected.
   await resend.emails.send({
     from: 'BOSY <orders@bosy.bg>',
     to: 'marketing@bosy.bg',
-    subject: `Нова поръчка №${orderNumber} — ${customerName} — ${toEur(total).toFixed(2)} EUR`,
-    text: `Нова поръчка №${orderNumber}\n\nКлиент: ${customerName} (${customerEmail})\n\n${itemsText}\n\nОбща сума: ${toEur(total).toFixed(2)} EUR`,
+    subject: `[${payTag}] Нова поръчка №${orderNumber} — ${customerName} — ${toEur(total).toFixed(2)} EUR`,
+    text: `${payTag}\n\nНова поръчка №${orderNumber}\n\nКлиент: ${customerName} (${customerEmail})\n\n${itemsText}\n\nОбща сума: ${toEur(total).toFixed(2)} EUR`,
   }).catch(() => {})
 
   return true
