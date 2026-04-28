@@ -47,3 +47,28 @@ export async function assertOrderShippable(
     `🚫 Поръчка #${order.order_number} е CARD, но не е платена във Viva (payment_status="${paymentStatus}"). Не може да се пакетира/изпраща. Свържи се с клиента за нова платежна линия или отказ.`
   )
 }
+
+/**
+ * Server-action helper — runs `op` and converts UnpaidCardOrderError throw
+ * to a structured result the client can show as a toast/alert without
+ * triggering the error boundary (which would replace the whole page).
+ *
+ * Other errors propagate normally.
+ */
+export type GuardedActionResult =
+  | { ok: true }
+  | { ok: false; error: string }
+
+export async function runGuarded(
+  op: () => Promise<void>
+): Promise<GuardedActionResult> {
+  try {
+    await op()
+    return { ok: true }
+  } catch (e) {
+    if (e instanceof UnpaidCardOrderError) {
+      return { ok: false, error: e.message }
+    }
+    throw e
+  }
+}

@@ -3,44 +3,46 @@
 import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { sendOrderConfirmation } from '@/lib/resend/client'
-import { assertOrderShippable } from '@/lib/orders/payment-guard'
+import { assertOrderShippable, runGuarded, type GuardedActionResult } from '@/lib/orders/payment-guard'
 
-export async function confirmOrder(id: string) {
+export async function confirmOrder(id: string): Promise<GuardedActionResult> {
   const supabase = createAdminSupabaseClient()
 
-  await assertOrderShippable(supabase, id, 'confirmed')
+  return runGuarded(async () => {
+    await assertOrderShippable(supabase, id, 'confirmed')
 
-  const { data: order, error: fetchError } = await supabase
-    .from('orders')
-    .select('order_number, total, customers(email)')
-    .eq('id', id)
-    .single()
+    const { data: order, error: fetchError } = await supabase
+      .from('orders')
+      .select('order_number, total, customers(email)')
+      .eq('id', id)
+      .single()
 
-  if (fetchError) {
-    throw new Error(fetchError.message)
-  }
-
-  const { error } = await supabase
-    .from('orders')
-    .update({ status: 'confirmed', updated_at: new Date().toISOString() })
-    .eq('id', id)
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  // Send confirmation email
-  const email = (order.customers as unknown as { email: string | null } | null)?.email
-  if (email && order.order_number) {
-    try {
-      await sendOrderConfirmation(email, order.order_number, Number(order.total ?? 0))
-    } catch (e) {
-      console.error('Failed to send confirmation email:', e)
+    if (fetchError) {
+      throw new Error(fetchError.message)
     }
-  }
 
-  revalidatePath('/admin/orders')
-  revalidatePath(`/admin/orders/${id}`)
+    const { error } = await supabase
+      .from('orders')
+      .update({ status: 'confirmed', updated_at: new Date().toISOString() })
+      .eq('id', id)
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    // Send confirmation email
+    const email = (order.customers as unknown as { email: string | null } | null)?.email
+    if (email && order.order_number) {
+      try {
+        await sendOrderConfirmation(email, order.order_number, Number(order.total ?? 0))
+      } catch (e) {
+        console.error('Failed to send confirmation email:', e)
+      }
+    }
+
+    revalidatePath('/admin/orders')
+    revalidatePath(`/admin/orders/${id}`)
+  })
 }
 
 export async function cancelOrder(id: string) {
@@ -78,44 +80,51 @@ export async function bulkCancelOrders(ids: string[]) {
 export async function markShippedManually(
   id: string,
   trackingNumber: string | null
-) {
+): Promise<GuardedActionResult> {
   const supabase = createAdminSupabaseClient()
 
-  await assertOrderShippable(supabase, id, 'shipped')
+  return runGuarded(async () => {
+    await assertOrderShippable(supabase, id, 'shipped')
 
-  const { error } = await supabase
-    .from('orders')
-    .update({
-      status: 'shipped',
-      speedy_tracking_number: trackingNumber || null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id)
+    const { error } = await supabase
+      .from('orders')
+      .update({
+        status: 'shipped',
+        speedy_tracking_number: trackingNumber || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
 
-  if (error) {
-    throw new Error(error.message)
-  }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-  revalidatePath('/admin/orders')
-  revalidatePath(`/admin/orders/${id}`)
+    revalidatePath('/admin/orders')
+    revalidatePath(`/admin/orders/${id}`)
+  })
 }
 
-export async function setOrderStatus(id: string, status: string) {
+export async function setOrderStatus(
+  id: string,
+  status: string
+): Promise<GuardedActionResult> {
   const supabase = createAdminSupabaseClient()
 
-  await assertOrderShippable(supabase, id, status)
+  return runGuarded(async () => {
+    await assertOrderShippable(supabase, id, status)
 
-  const { error } = await supabase
-    .from('orders')
-    .update({ status, updated_at: new Date().toISOString() })
-    .eq('id', id)
+    const { error } = await supabase
+      .from('orders')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', id)
 
-  if (error) {
-    throw new Error(error.message)
-  }
+    if (error) {
+      throw new Error(error.message)
+    }
 
-  revalidatePath('/admin/orders')
-  revalidatePath(`/admin/orders/${id}`)
+    revalidatePath('/admin/orders')
+    revalidatePath(`/admin/orders/${id}`)
+  })
 }
 
 export async function updateOrderNotes(id: string, notes: string) {

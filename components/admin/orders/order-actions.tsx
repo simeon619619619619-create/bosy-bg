@@ -12,7 +12,8 @@ export function ConfirmOrderButton({ orderId }: { orderId: string }) {
       disabled={isPending}
       onClick={() => {
         startTransition(async () => {
-          await confirmOrder(orderId)
+          const res = await confirmOrder(orderId)
+          if (!res.ok) alert(res.error)
         })
       }}
     >

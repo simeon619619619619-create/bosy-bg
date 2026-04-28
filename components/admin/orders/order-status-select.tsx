@@ -26,7 +26,12 @@ export function OrderStatusSelect({
     const newStatus = e.target.value
     if (newStatus === currentStatus) return
     startTransition(async () => {
-      await setOrderStatus(orderId, newStatus)
+      const res = await setOrderStatus(orderId, newStatus)
+      if (!res.ok) {
+        alert(res.error)
+        // Revert visible select to previous value happens automatically on next render
+        // because page state is server-rendered and we did not change it.
+      }
     })
   }
 
