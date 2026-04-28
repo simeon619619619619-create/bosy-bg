@@ -113,15 +113,19 @@ export async function GET(request: Request) {
   let sent = 0
   const errors: string[] = []
 
+  const debug: Record<string, unknown> = {}
+
   // Email 1: not sent yet
   if (sent < BATCH_SIZE) {
-    const { data: batch1 } = await supabase
+    const { data: batch1, error: e1 } = await supabase
       .from('b2b_campaigns')
       .select('*')
       .is('sent_1', null)
       .is('replied_at', null)
       .order('created_at')
       .limit(BATCH_SIZE - sent)
+
+    debug.e1_query = { count: batch1?.length ?? 0, error: e1?.message }
 
     for (const contact of batch1 ?? []) {
       try {
@@ -207,5 +211,6 @@ export async function GET(request: Request) {
     errors: errors.length,
     errorDetails: errors.slice(0, 5),
     timestamp: new Date().toISOString(),
+    debug: { ...debug, pdf: pdfBuffer ? `${pdfBuffer.length} bytes` : 'missing' },
   })
 }
