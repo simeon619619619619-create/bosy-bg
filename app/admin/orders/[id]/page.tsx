@@ -41,15 +41,28 @@ export default async function OrderDetailPage({
   const { id } = await params
   const supabase = await createServerSupabaseClient()
 
-  const { data: order } = await supabase
+  const { data: order, error: fetchError } = await supabase
     .from('orders')
     .select('*, customers(name, email, phone, address)')
     .eq('id', id)
     .single()
 
+  if (fetchError) {
+    console.error('[admin/orders/[id]] supabase fetch error', { id, fetchError })
+    throw new Error(`Supabase fetch failed: ${fetchError.message ?? 'unknown'}`)
+  }
   if (!order) {
     notFound()
   }
+  console.log('[admin/orders/[id]] order loaded', {
+    id,
+    order_number: order.order_number,
+    status: order.status,
+    courier: order.courier,
+    has_shipping_address: !!order.shipping_address,
+    notes: order.notes,
+    items_type: Array.isArray(order.items) ? 'array' : typeof order.items,
+  })
 
   const customer = order.customers as {
     name: string
