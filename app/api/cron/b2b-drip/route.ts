@@ -4,6 +4,9 @@ import { Resend } from 'resend'
 import fs from 'fs'
 import path from 'path'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const BATCH_SIZE = 50
 const BG_TZ_OFFSET = 3 // UTC+3
 
