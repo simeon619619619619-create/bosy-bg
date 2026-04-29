@@ -182,9 +182,6 @@ export async function POST(request: Request) {
       service: {
         serviceId: 505,
         autoAdjustPickupDate: true,
-        // additionalServices = инструкции за услугите КОИТО куриерът да изпълни.
-        // payment.cod е само описание как ние получаваме обратно парите —
-        // не казва на куриера да ги събира. Затова label-ът беше „Нал. платеж: ---".
         additionalServices: {
           ...(isCod && {
             cod: {
@@ -207,14 +204,6 @@ export async function POST(request: Request) {
       },
       payment: {
         courierServicePayer: 'RECIPIENT',
-        // Запазваме payment.cod за payout settings (как Speedy ни плаща обратно
-        // събраните пари) — не е свързано с показването на сумата на label-а.
-        ...(isCod && {
-          cod: {
-            amount: totalAmount,
-            processingType: 'CASH',
-          },
-        }),
       },
       sender: {
         phone1: { number: process.env.SPEEDY_SENDER_PHONE ?? '0888000000' },
