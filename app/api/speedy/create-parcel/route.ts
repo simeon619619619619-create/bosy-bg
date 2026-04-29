@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { sendShippingNotification } from '@/lib/resend/client'
 import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
+import { assertCodPayloadIntegrity } from '@/lib/shipping/cod-invariants'
 
 const SPEEDY_BASE = 'https://api.speedy.bg/v1'
 
@@ -221,6 +222,14 @@ export async function POST(request: Request) {
       },
       ref1: String(order.order_number ?? order.id),
     }
+
+    // Pre-flight COD integrity check — fail closed ако сумата е дублирана
+    // или различна от order.total (защита срещу bug-а от 28.04 #67).
+    assertCodPayloadIntegrity(payload, {
+      courier: 'speedy',
+      isCod,
+      total: totalAmount,
+    })
 
     // Call Speedy API
     const speedyRes = await fetch(`${SPEEDY_BASE}/shipment`, {

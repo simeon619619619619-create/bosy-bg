@@ -3,6 +3,7 @@ import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { sendShippingNotification } from '@/lib/resend/client'
 import { econtPost, type EcontCity } from '@/lib/econt/client'
 import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
+import { assertCodPayloadIntegrity } from '@/lib/shipping/cod-invariants'
 
 interface CustomerAddress {
   city?: string
@@ -250,6 +251,13 @@ export async function POST(request: Request) {
       payAfterAccept: false,
       payAfterTest: false,
     }
+
+    // Pre-flight COD integrity check
+    assertCodPayloadIntegrity(label, {
+      courier: 'econt',
+      isCod,
+      total: Number(order.total ?? 0),
+    })
 
     // Econt Label Service: createLabels (plural) приема labels array.
     // Singular createLabel не съществува като JSON method.

@@ -3,6 +3,7 @@ import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { sendShippingNotification } from '@/lib/resend/client'
 import { boxnowJson } from '@/lib/boxnow/client'
 import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
+import { assertCodPayloadIntegrity } from '@/lib/shipping/cod-invariants'
 
 interface ShippingAddress {
   name?: string
@@ -153,6 +154,13 @@ export async function POST(request: Request) {
         contactEmail: recipientEmail ?? 'noreply@bosy.bg',
       },
     }
+
+    // Pre-flight COD integrity check
+    assertCodPayloadIntegrity(payload, {
+      courier: 'boxnow',
+      isCod,
+      total: Number(order.total ?? 0),
+    })
 
     const resp = await boxnowJson<BoxNowDeliveryResponse>(
       '/api/v1/delivery-requests',
