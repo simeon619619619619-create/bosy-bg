@@ -3,6 +3,7 @@ import { createAdminSupabaseClient } from '@/lib/supabase/admin'
 import { sendShippingNotification } from '@/lib/resend/client'
 import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
 import { assertCodPayloadIntegrity } from '@/lib/shipping/cod-invariants'
+import { notifyAdmin } from '@/lib/notify/admin'
 
 const SPEEDY_BASE = 'https://api.speedy.bg/v1'
 
@@ -249,6 +250,37 @@ export async function POST(request: Request) {
 
     const parcelId: string = shipmentData.id
     const trackingNumber: string = shipmentData.parcels?.[0]?.id ?? parcelId
+
+    // Audit log + admin email — за всяка COD пратка веднага казваме на админа
+    // ТОЧНО какво сме пратили на Speedy, за да може да сравни с label-а.
+    // Така ако някога Speedy покаже различна сума, веднага знаем че проблемът
+    // е там (account setting, currency, etc), а не в нашия код.
+    if (isCod) {
+      console.log(
+        `[speedy.create-parcel] order=${order.order_number} cod_sent=${totalAmount} parcel=${parcelId}`,
+      )
+      const speedyCodInPayload = (
+        payload.service as { additionalServices?: { cod?: { amount?: number } } }
+      )?.additionalServices?.cod?.amount
+
+      const auditBody = [
+        `Поръчка: #${order.order_number}`,
+        `Сума в нашия админ: ${totalAmount.toFixed(2)} EUR`,
+        `COD което казахме на Speedy: ${speedyCodInPayload?.toFixed(2) ?? '—'} EUR`,
+        `Speedy parcel ID: ${parcelId}`,
+        `Tracking: ${trackingNumber}`,
+        '',
+        'Сравни тази сума със Speedy label-а.',
+        'Ако НЕ съвпадат → обади се на Speedy ПРЕДИ доставка и провери account settings.',
+        'Ако СЪВПАДАТ → fix-ът работи, всичко е наред.',
+      ].join('\n')
+
+      // Не блокира поръчката ако email-ът фейлне
+      notifyAdmin({
+        subject: `📦 Speedy COD изпратена — #${order.order_number} (${totalAmount.toFixed(2)} EUR)`,
+        body: auditBody,
+      }).catch((e) => console.error('[speedy] audit email failed:', e))
+    }
 
     // Create shipment record
     await supabase.from('shipments').insert({
