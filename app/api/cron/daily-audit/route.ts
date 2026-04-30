@@ -80,7 +80,6 @@ export async function GET(request: Request) {
         'id, order_number, total, status, payment_status, notes, created_at, updated_at, courier',
       )
       .in('status', ['confirmed', 'shipped'])
-      .gte('created_at', sevenDaysAgo)
       .returns<OrderRow[]>(),
     supabase
       .from('products')
@@ -90,6 +89,8 @@ export async function GET(request: Request) {
   ])
 
   const orders = orders24h.data ?? []
+  // openOrders НЕ филтрираме по created_at — stuck-shipped по дефиниция са
+  // стари поръчки, нужно ни е целия отворен бекъл за регресионния check.
   const openOrders = allOpenOrders.data ?? []
   const activeProducts = products.data ?? []
 
