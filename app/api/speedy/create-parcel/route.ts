@@ -191,11 +191,11 @@ export async function POST(request: Request) {
               processingType: 'CASH',
             },
           }),
-          declaredValue: {
-            amount: totalAmount,
-            fragile: false,
-            ignoreIfRepeated: true,
-          },
+          // declaredValue ПРЕМАХНАТ от additionalServices.
+          // Хипотеза: Speedy сумира всяка `*.amount` под additionalServices →
+          // declaredValue.amount + cod.amount → 2× COD на товарителницата.
+          // declaredValue е optional (само за застраховка) — без него парчетата
+          // са non-insured, ама COD ще е правилен.
         },
       },
       content: {

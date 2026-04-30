@@ -1,12 +1,13 @@
 /**
  * Pre-flight guard срещу COD payload бъгове в shipping API integrations.
  *
- * Провалена ревизия: 28.04 commit 34a3df1 пращаше cod amount на ДВЕ места
- * в Speedy payload-а → Speedy сумираше → клиентът получаваше 2× сумата.
- * Този guard щеше да хване бъга преди първата поръчка.
+ * Известни бъгове:
+ *  - 28.04 commit 34a3df1: cod amount на ДВЕ места (additionalServices + payment)
+ *  - 30.04: declaredValue.amount + cod.amount под additionalServices →
+ *    Speedy сумираше всяка sub-stuctura amount-и под additionalServices
  *
- * Подход: stringify payload → broad regex намира ВСЯКА поява на COD сумата
- * (без значение в кой клон е) → проверяваме count + match с order.total.
+ * Подход: stringify payload → broad regex намира ВСЯКА поява на сума под
+ * `cod` или `declaredValue` (Speedy) → checks count + match с order.total.
  */
 
 type Courier = 'speedy' | 'econt' | 'boxnow'
@@ -18,8 +19,9 @@ interface CodInvariantInput {
 }
 
 const COD_AMOUNT_PATTERNS: Record<Courier, RegExp> = {
-  // Speedy: { "cod": { "amount": 60.42, ... } } — на service.additionalServices И/ИЛИ payment
-  speedy: /"cod"\s*:\s*\{[^}]*?"amount"\s*:\s*([\d.]+)/g,
+  // Speedy: всяка `*.amount` под cod ИЛИ declaredValue. Speedy сумира тези
+  // полета вътре в additionalServices, затова двете заедно = 2× COD.
+  speedy: /"(?:cod|declaredValue)"\s*:\s*\{[^}]*?"amount"\s*:\s*([\d.]+)/g,
   // Econt: { "cdAmount": 60.42 }
   econt: /"cdAmount"\s*:\s*([\d.]+)/g,
   // BoxNow: { "amountToBeCollected": "60.42" } (string, ама regex прихваща и числа)
