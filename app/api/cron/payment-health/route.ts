@@ -103,29 +103,36 @@ export async function GET(request: Request) {
     })
   }
 
-  if (sections.length === 0) {
-    return NextResponse.json({ status: 'healthy', checks: 3 })
+  // Email-ите се пращат САМО за критични 🚨 (CARD shipped без плащане).
+  // Warning-ите ⚠️ (awaiting_payment, stuck shipped) са recurring noise — те
+  // отиват в дневния отчет /api/cron/daily-audit, не flood-ват inbox-а на
+  // 10 минути.
+  const criticalSections = sections.filter((s) => s.title.startsWith('🚨'))
+
+  if (criticalSections.length === 0) {
+    return NextResponse.json({
+      status: sections.length === 0 ? 'healthy' : 'warnings_deferred',
+      warnings_deferred: sections.length,
+      sections: sections.map((s) => s.title),
+    })
   }
 
   const timestamp = new Date().toLocaleString('bg', {
     timeZone: 'Europe/Sofia',
   })
   const body = [
-    `BOSY Payment Health Alert — ${timestamp}`,
+    `BOSY Critical Payment Alert — ${timestamp}`,
     '',
-    ...sections.flatMap((s) => [s.title, ...s.lines, '']),
+    ...criticalSections.flatMap((s) => [s.title, ...s.lines, '']),
   ].join('\n')
 
-  // Subject отразява най-сериозния alert (🚨 > ⚠️) за инбокс приоритет
-  const isCritical = sections.some((s) => s.title.startsWith('🚨'))
-  const subject = isCritical
-    ? `🚨 BOSY Payment Alert — ${sections.length} проблема`
-    : `⚠️ BOSY Payment Health — ${sections.length} забележки`
-
-  await notifyAdmin({ subject, body })
+  await notifyAdmin({
+    subject: `🚨 BOSY Payment Alert — ${criticalSections.length} критични`,
+    body,
+  })
 
   return NextResponse.json({
-    alerts: sections.length,
-    sections: sections.map((s) => s.title),
+    critical: criticalSections.length,
+    deferred_warnings: sections.length - criticalSections.length,
   })
 }
