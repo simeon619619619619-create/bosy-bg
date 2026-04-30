@@ -4,6 +4,7 @@ import { sendShippingNotification } from '@/lib/resend/client'
 import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
 import { assertCodPayloadIntegrity } from '@/lib/shipping/cod-invariants'
 import { notifyAdmin } from '@/lib/notify/admin'
+import { toEur } from '@/lib/currency'
 
 const SPEEDY_BASE = 'https://api.speedy.bg/v1'
 
@@ -176,7 +177,13 @@ export async function POST(request: Request) {
         .slice(0, 100) || 'Стоки'
 
     // Build Speedy shipment payload
-    const totalAmount = Number(order.total ?? 0)
+    // order.total е историческо в BGN (legacy схема преди EUR adoption).
+    // Сайтът/админът показват toEur(total) = 6.57 € за #76. Преди този fix
+    // пращахме 12.85 към Speedy с currencyCode='EUR' → панелът показваше
+    // 12.85 € (≈ 2× очакваната сума). Сега конвертираме към EUR на ръба
+    // на куриерската интеграция, за да съвпада с admin display и Viva.
+    const totalAmountBgn = Number(order.total ?? 0)
+    const totalAmount = Number(toEur(totalAmountBgn).toFixed(2))
     const payload: Record<string, unknown> = {
       userName: process.env.SPEEDY_USERNAME,
       password: process.env.SPEEDY_PASSWORD,
@@ -188,18 +195,10 @@ export async function POST(request: Request) {
           ...(isCod && {
             cod: {
               amount: totalAmount,
-              // currencyCode е задължителен за нас — без него Speedy
-              // приема BG default = BGN и прилага × 1.95583 курс,
-              // съхранявайки стойността като EUR. Резултат: панелът показваше
-              // 12.85€ за 6.57€ COD. С 'EUR' Speedy знае че 6.57 вече е EUR
-              // и не прави конверсия.
               currencyCode: 'EUR',
               processingType: 'CASH',
             },
           }),
-          // declaredValue не се добавя — Speedy сумира всяка `*.amount` под
-          // additionalServices, така че declaredValue.amount + cod.amount =
-          // 2× COD на товарителницата. Загубата на застраховка е приемлива.
         },
       },
       content: {
@@ -222,7 +221,10 @@ export async function POST(request: Request) {
         phone1: { number: recipientPhone },
         clientName: recipientName,
         ...(recipientEmail && { email: recipientEmail }),
-        privatePerson: true,
+        // privatePerson: false → label-ът показва пълно име И COD сумата.
+        // С true Speedy маскира като ****.** (GDPR), което клиентите четат
+        // като "няма какво да платя". За e-shop B2C това е приемливо.
+        privatePerson: false,
         ...recipientLocation,
       },
       ref1: String(order.order_number ?? order.id),
@@ -267,16 +269,18 @@ export async function POST(request: Request) {
         payload.service as { additionalServices?: { cod?: { amount?: number } } }
       )?.additionalServices?.cod?.amount
 
+      const expectedBgn = (totalAmount * 1.95583).toFixed(2)
       const auditBody = [
         `Поръчка: #${order.order_number}`,
-        `Сума в нашия админ: ${totalAmount.toFixed(2)} EUR`,
-        `COD което казахме на Speedy: ${speedyCodInPayload?.toFixed(2) ?? '—'} EUR`,
+        `Сума в нашия админ: ${totalAmount.toFixed(2)} EUR (DB total ${totalAmountBgn.toFixed(2)} BGN ÷ 1.95583)`,
+        `COD което казахме на Speedy: ${speedyCodInPayload?.toFixed(2) ?? '—'} EUR + currencyCode='EUR'`,
         `Speedy parcel ID: ${parcelId}`,
         `Tracking: ${trackingNumber}`,
         '',
-        'Сравни тази сума със Speedy label-а.',
-        'Ако НЕ съвпадат → обади се на Speedy ПРЕДИ доставка и провери account settings.',
-        'Ако СЪВПАДАТ → fix-ът работи, всичко е наред.',
+        `Очакван display в Speedy панела: ${totalAmount.toFixed(2)} € / ${expectedBgn} лв.`,
+        `Куриерът трябва да събере: ${expectedBgn} лв. (= ${totalAmount.toFixed(2)} EUR)`,
+        '',
+        'Ако Speedy показва ДРУГА сума → обади се ПРЕДИ доставка.',
       ].join('\n')
 
       // Не блокира поръчката ако email-ът фейлне

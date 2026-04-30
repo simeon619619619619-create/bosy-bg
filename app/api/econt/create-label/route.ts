@@ -4,6 +4,7 @@ import { sendShippingNotification } from '@/lib/resend/client'
 import { econtPost, type EcontCity } from '@/lib/econt/client'
 import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
 import { assertCodPayloadIntegrity } from '@/lib/shipping/cod-invariants'
+import { toEur } from '@/lib/currency'
 
 interface CustomerAddress {
   city?: string
@@ -206,6 +207,10 @@ export async function POST(request: Request) {
         .join(', ')
         .slice(0, 100) || 'Стоки'
 
+    // order.total е в BGN (legacy преди EUR adoption). Сайтът/админът показват
+    // toEur(total). Конвертираме към EUR на ръба, за да съвпада с display.
+    const totalAmountEur = Number(toEur(Number(order.total ?? 0)).toFixed(2))
+
     const senderOfficeCode = process.env.ECONT_SENDER_OFFICE_CODE
     const senderCity = process.env.ECONT_SENDER_CITY ?? 'София'
     const senderStreet = process.env.ECONT_SENDER_STREET ?? 'бул. Цариградско шосе'
@@ -241,12 +246,12 @@ export async function POST(request: Request) {
       shipmentDescription: contents,
       services: {
         ...(isCod && {
-          cdAmount: Number(order.total ?? 0),
-          cdCurrency: 'BGN',
+          cdAmount: totalAmountEur,
+          cdCurrency: 'EUR',
           cdPayOptionsTemplate: 'ON_DELIVERY',
         }),
-        declaredValueAmount: Number(order.total ?? 0),
-        declaredValueCurrency: 'BGN',
+        declaredValueAmount: totalAmountEur,
+        declaredValueCurrency: 'EUR',
       },
       payAfterAccept: false,
       payAfterTest: false,
@@ -256,7 +261,7 @@ export async function POST(request: Request) {
     assertCodPayloadIntegrity(label, {
       courier: 'econt',
       isCod,
-      total: Number(order.total ?? 0),
+      total: totalAmountEur,
     })
 
     // Econt Label Service: createLabels (plural) приема labels array.

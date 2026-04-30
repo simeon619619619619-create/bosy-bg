@@ -4,6 +4,7 @@ import { sendShippingNotification } from '@/lib/resend/client'
 import { boxnowJson } from '@/lib/boxnow/client'
 import { assertOrderShippable, UnpaidCardOrderError } from '@/lib/orders/payment-guard'
 import { assertCodPayloadIntegrity } from '@/lib/shipping/cod-invariants'
+import { toEur } from '@/lib/currency'
 
 interface ShippingAddress {
   name?: string
@@ -112,8 +113,11 @@ export async function POST(request: Request) {
         .join(', ')
         .slice(0, 100) || 'Стоки'
 
-    const declaredValue = Number(order.total ?? 0).toFixed(2)
-    const codAmount = isCod ? Number(order.total ?? 0).toFixed(2) : '0'
+    // order.total е в BGN (legacy). Конвертираме към EUR на ръба, за да
+    // съвпада със сумата която клиентът е видял на сайта/Viva.
+    const totalAmountEur = Number(toEur(Number(order.total ?? 0)).toFixed(2))
+    const declaredValue = totalAmountEur.toFixed(2)
+    const codAmount = isCod ? totalAmountEur.toFixed(2) : '0'
 
     // BoxNow Partner API schema (verified live 2026-04-21): numeric monetary
     // fields go as STRINGS; locationId is a string; origin/destination share
@@ -134,7 +138,7 @@ export async function POST(request: Request) {
       items: items.map((i: { name: string; quantity?: number; price?: number }) => ({
         description: i.name,
         quantity: i.quantity ?? 1,
-        value: String(Number(i.price ?? 0).toFixed(2)),
+        value: String(toEur(Number(i.price ?? 0)).toFixed(2)),
       })),
       origin: {
         addressLine1: process.env.BOXNOW_SENDER_ADDRESS ?? 'ул. Тест 1',
@@ -159,7 +163,7 @@ export async function POST(request: Request) {
     assertCodPayloadIntegrity(payload, {
       courier: 'boxnow',
       isCod,
-      total: Number(order.total ?? 0),
+      total: totalAmountEur,
     })
 
     const resp = await boxnowJson<BoxNowDeliveryResponse>(
