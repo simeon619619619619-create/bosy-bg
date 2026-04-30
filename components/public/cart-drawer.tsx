@@ -38,7 +38,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   const total = getCartTotal()
   const totalEur = toEur(total)
-  const FREE_SHIPPING_THRESHOLD = 69.99
+  const FREE_SHIPPING_THRESHOLD = 99.99
   const remaining = FREE_SHIPPING_THRESHOLD - totalEur
 
   return (

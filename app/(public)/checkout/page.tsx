@@ -18,7 +18,7 @@ interface SelectedOffice {
   address: string
 }
 
-const SHIPPING_THRESHOLD = 69.99 * 1.95583 // 69.99€ in BGN
+const SHIPPING_THRESHOLD = 99.99 * 1.95583 // 99.99€ in BGN
 const SHIPPING_COST = 3.99 * 1.95583 // 3.99€ in BGN
 
 interface CustomerProfile {
