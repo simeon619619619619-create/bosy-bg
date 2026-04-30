@@ -163,27 +163,30 @@ export async function POST(request: Request) {
       }
     }
 
-    // Build contents description from items.
-    // Format: "2x Iron Maiden, 1x Барбел" — slice(0,100) defends срещу Speedy
-    // limit на полето; quantity prefix дава на admin/получател видим брой.
+    // order.total е историческо в BGN (legacy схема преди EUR adoption).
+    // Сайтът/админът показват toEur(total) = 6.57 € за #76. Преди fix-а от
+    // 30.04 пращахме 12.85 към Speedy с currencyCode='EUR' → панелът показваше
+    // 12.85 € (≈ 2× очакваната сума). Конвертираме към EUR на ръба.
+    const totalAmountBgn = Number(order.total ?? 0)
+    const totalAmount = Number(toEur(totalAmountBgn).toFixed(2))
+
+    // Build contents description.
+    // Speedy маскира COD сумата на label-а като ****.** при privatePerson:true
+    // (GDPR), което клиентите четат като "няма какво да платя". Затова добавяме
+    // COD-а като префикс в contents (полето "съдържание" НЕ е маскирано).
+    // Speedy позволява до 100 символа в contents.
     const items = Array.isArray(order.items) ? order.items : []
-    const contents =
+    const itemsList =
       items
         .map((i: { name: string; quantity?: number }) => {
           const qty = Number(i.quantity ?? 1)
           return qty > 1 ? `${qty}x ${i.name}` : i.name
         })
-        .join(', ')
-        .slice(0, 100) || 'Стоки'
-
-    // Build Speedy shipment payload
-    // order.total е историческо в BGN (legacy схема преди EUR adoption).
-    // Сайтът/админът показват toEur(total) = 6.57 € за #76. Преди този fix
-    // пращахме 12.85 към Speedy с currencyCode='EUR' → панелът показваше
-    // 12.85 € (≈ 2× очакваната сума). Сега конвертираме към EUR на ръба
-    // на куриерската интеграция, за да съвпада с admin display и Viva.
-    const totalAmountBgn = Number(order.total ?? 0)
-    const totalAmount = Number(toEur(totalAmountBgn).toFixed(2))
+        .join(', ') || 'Стоки'
+    const codPrefix = isCod
+      ? `НП ${(totalAmount * 1.95583).toFixed(2)}лв | `
+      : ''
+    const contents = (codPrefix + itemsList).slice(0, 100)
     const payload: Record<string, unknown> = {
       userName: process.env.SPEEDY_USERNAME,
       password: process.env.SPEEDY_PASSWORD,
@@ -220,14 +223,11 @@ export async function POST(request: Request) {
       recipient: {
         phone1: { number: recipientPhone },
         clientName: recipientName,
-        // contactName е задължителен при privatePerson:false (Speedy счита
-        // recipient за фирма и иска лице за контакт). Ползваме същото име.
-        contactName: recipientName,
         ...(recipientEmail && { email: recipientEmail }),
-        // privatePerson: false → label-ът показва пълно име И COD сумата.
-        // С true Speedy маскира като ****.** (GDPR), което клиентите четат
-        // като "няма какво да платя". За e-shop B2C това е приемливо.
-        privatePerson: false,
+        // privatePerson:true е правилният semantic за B2C — Speedy
+        // изисква clientName ≠ contactName при false, което не работи за
+        // частни лица. COD-сумата се появява в contents префикса вместо.
+        privatePerson: true,
         ...recipientLocation,
       },
       ref1: String(order.order_number ?? order.id),
