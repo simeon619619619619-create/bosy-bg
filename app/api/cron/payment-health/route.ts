@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { notifyAdmin } from '@/lib/telegram/notify'
+import { notifyAdmin } from '@/lib/notify/admin'
 
 /**
  * Payment Health Watchdog
@@ -107,14 +107,22 @@ export async function GET(request: Request) {
     return NextResponse.json({ status: 'healthy', checks: 3 })
   }
 
-  const message = [
-    '<b>BOSY Payment Health Alert</b>',
-    new Date().toLocaleString('bg', { timeZone: 'Europe/Sofia' }),
+  const timestamp = new Date().toLocaleString('bg', {
+    timeZone: 'Europe/Sofia',
+  })
+  const body = [
+    `BOSY Payment Health Alert — ${timestamp}`,
     '',
     ...sections.flatMap((s) => [s.title, ...s.lines, '']),
   ].join('\n')
 
-  await notifyAdmin(message)
+  // Subject отразява най-сериозния alert (🚨 > ⚠️) за инбокс приоритет
+  const isCritical = sections.some((s) => s.title.startsWith('🚨'))
+  const subject = isCritical
+    ? `🚨 BOSY Payment Alert — ${sections.length} проблема`
+    : `⚠️ BOSY Payment Health — ${sections.length} забележки`
+
+  await notifyAdmin({ subject, body })
 
   return NextResponse.json({
     alerts: sections.length,
