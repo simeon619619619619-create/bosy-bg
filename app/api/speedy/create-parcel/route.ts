@@ -220,6 +220,9 @@ export async function POST(request: Request) {
       recipient: {
         phone1: { number: recipientPhone },
         clientName: recipientName,
+        // contactName е задължителен при privatePerson:false (Speedy счита
+        // recipient за фирма и иска лице за контакт). Ползваме същото име.
+        contactName: recipientName,
         ...(recipientEmail && { email: recipientEmail }),
         // privatePerson: false → label-ът показва пълно име И COD сумата.
         // С true Speedy маскира като ****.** (GDPR), което клиентите четат
