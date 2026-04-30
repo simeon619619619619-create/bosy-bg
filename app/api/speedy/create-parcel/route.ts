@@ -188,14 +188,18 @@ export async function POST(request: Request) {
           ...(isCod && {
             cod: {
               amount: totalAmount,
+              // currencyCode е задължителен за нас — без него Speedy
+              // приема BG default = BGN и прилага × 1.95583 курс,
+              // съхранявайки стойността като EUR. Резултат: панелът показваше
+              // 12.85€ за 6.57€ COD. С 'EUR' Speedy знае че 6.57 вече е EUR
+              // и не прави конверсия.
+              currencyCode: 'EUR',
               processingType: 'CASH',
             },
           }),
-          // declaredValue ПРЕМАХНАТ от additionalServices.
-          // Хипотеза: Speedy сумира всяка `*.amount` под additionalServices →
-          // declaredValue.amount + cod.amount → 2× COD на товарителницата.
-          // declaredValue е optional (само за застраховка) — без него парчетата
-          // са non-insured, ама COD ще е правилен.
+          // declaredValue не се добавя — Speedy сумира всяка `*.amount` под
+          // additionalServices, така че declaredValue.amount + cod.amount =
+          // 2× COD на товарителницата. Загубата на застраховка е приемлива.
         },
       },
       content: {
