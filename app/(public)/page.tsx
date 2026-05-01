@@ -70,10 +70,8 @@ interface Product {
 const EASTER_END = new Date('2026-04-30T23:59:59+03:00')
 const isEasterActive = () => Date.now() < EASTER_END.getTime()
 
-const HERO_SLUGS = isEasterActive() ? ['detox-trio-bundle'] : []
-const FEATURED_EXCLUDE = isEasterActive()
-  ? ['detox-trio-bundle', 'detox-drops-herbal-extract', 'detox-me-baby', 'herbal-boost']
-  : []
+const HERO_SLUGS = ['detox-trio-bundle']
+const FEATURED_EXCLUDE = ['detox-trio-bundle', 'detox-drops-herbal-extract', 'detox-me-baby', 'herbal-boost']
 
 async function getHeroProducts(): Promise<Product[]> {
   try {
