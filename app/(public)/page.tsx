@@ -14,7 +14,7 @@ function absoluteUrl(url: string): string {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const heroImage = 'https://bosy.bg/og-homepage-v3.jpg'
+  const heroImage = 'https://bosy.bg/hero-banner-easter.jpg'
 
   return {
     title: 'BOSY — The Smart Pleasure | Здравословни лакомства без захар',
@@ -236,7 +236,7 @@ export default async function HomePage() {
       <section className="relative w-full">
         <Link href="/shop">
           <Image
-            src={isEasterActive() ? '/hero-banner-easter.jpg' : '/hero-banner.jpg'}
+            src='/hero-banner-easter.jpg'
             alt="BOSY — The Smart Pleasure"
             width={1920}
             height={1075}
