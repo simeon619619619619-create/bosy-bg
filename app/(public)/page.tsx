@@ -236,7 +236,7 @@ export default async function HomePage() {
       <section className="relative w-full">
         <Link href="/shop">
           <Image
-            src='/hero-banner-easter.jpg'
+            src="/hero-banner-easter.jpg"
             alt="BOSY — The Smart Pleasure"
             width={1920}
             height={1075}
@@ -257,7 +257,7 @@ export default async function HomePage() {
           </div>
           <div className="flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c77dba" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-            <span className="text-xs font-medium text-white">Безплатна доставка над 69.99€</span>
+            <span className="text-xs font-medium text-white">Безплатна доставка над 99.99€</span>
           </div>
           <div className="flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c77dba" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
